@@ -431,12 +431,7 @@ Github-Pull: #<PR number>
 Rebased-From: <commit hash of the original commit>
 ```
 
-Have a look at [an example backport PR](
-https://github.com/bitcoin/bitcoin/pull/16189).
-
-Also see the [backport.py script](
-https://github.com/bitcoin-core/bitcoin-maintainer-tools#backport).
-
+Have a look at [an 
 Copyright
 ---------
 
