@@ -1,0 +1,10 @@
+            - name: Set up Qob
+  # You may pin to the exact commit or the version.
+  # uses: cl-qob/setup-qob@7e3175da158f3a12ef45a1aa5da7c6dd3091b041
+  uses: cl-qob/setup-qob@v1
+  with:
+    # The version of Qob to install, e.g. "0.0.8", or "snapshot" for a recent development version.
+    version: # optional, default is snapshot
+    # The target architecture (x64, arm64) of the Qob-CLI.
+    architecture: # optional, default is x64
+          
