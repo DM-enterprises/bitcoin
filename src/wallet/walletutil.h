@@ -25,7 +25,7 @@ enum WalletFeature
 
     FEATURE_NO_DEFAULT_KEY = 159900, // Wallet without a default key written
 
-    FEATURE_PRE_SPLIT_KEYPOOL = 169900, // Upgraded to HD SPLIT and can have a pre-split keypool
+    FEATURE_PRE_SPLIT_KEYPOOL = 216300, // Upgraded to HD SPLIT and can have a pre-split keypool
 
     FEATURE_LATEST = FEATURE_PRE_SPLIT_KEYPOOL
 };
@@ -111,9 +111,11 @@ public:
         SER_READ(obj, obj.DeserializeDescriptor(descriptor_str));
     }
 
-    WalletDescriptor() {}
+    WalletDescriptor() = default;
     WalletDescriptor(std::shared_ptr<Descriptor> descriptor, uint64_t creation_time, int32_t range_start, int32_t range_end, int32_t next_index) : descriptor(descriptor), id(DescriptorID(*descriptor)), creation_time(creation_time), range_start(range_start), range_end(range_end), next_index(next_index) { }
 };
+
+WalletDescriptor GenerateWalletDescriptor(const CExtPubKey& master_key, const OutputType& output_type, bool internal);
 } // namespace wallet
 
 #endif // BITCOIN_WALLET_WALLETUTIL_H

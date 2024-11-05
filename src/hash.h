@@ -18,6 +18,8 @@
 #include <string>
 #include <vector>
 
+#include <groestlcoin.h>
+
 typedef uint256 ChainCode;
 
 /** A hasher class for Bitcoin's 256-bit hash (double SHA-256). */
@@ -115,7 +117,7 @@ public:
     uint256 GetHash() {
         uint256 result;
         ctx.Finalize(result.begin());
-        ctx.Reset().Write(result.begin(), CSHA256::OUTPUT_SIZE).Finalize(result.begin());
+        // GRS ctx.Reset().Write(result.begin(), CSHA256::OUTPUT_SIZE).Finalize(result.begin());
         return result;
     }
 

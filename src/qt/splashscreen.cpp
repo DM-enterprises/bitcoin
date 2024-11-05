@@ -2,11 +2,11 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#if defined(HAVE_CONFIG_H)
-#include <config/bitcoin-config.h>
-#endif
+#include <config/bitcoin-config.h> // IWYU pragma: keep
 
 #include <qt/splashscreen.h>
+
+#include <common/args.h> // GRS
 
 #include <clientversion.h>
 #include <common/system.h>
@@ -55,6 +55,7 @@ SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
     // change to HiDPI if it makes sense
     pixmap.setDevicePixelRatio(devicePixelRatio);
 
+
     QPainter pixPaint(&pixmap);
     pixPaint.setPen(QColor(100,100,100));
 
@@ -65,13 +66,16 @@ SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
     QRect rGradient(QPoint(0,0), splashSize);
     pixPaint.fillRect(rGradient, gradient);
 
-    // draw the bitcoin icon, expected size of PNG: 1024x1024
-    QRect rectIcon(QPoint(-150,-122), QSize(430,430));
+    // draw the groestlcoin icon, expected size of PNG: 1024x1024
+    QRect rectIcon(QPoint(0,0), QSize(480,320));
 
     const QSize requiredSize(1024,1024);
     QPixmap icon(networkStyle->getAppIcon().pixmap(requiredSize));
 
-    pixPaint.drawPixmap(rectIcon, icon);
+    // GRS  pixPaint.drawPixmap(rectIcon, icon);
+    // load the bitmap for writing some text over it
+    QPixmap pixmapSplash(gArgs.GetBoolArg("-testnet", false) ? ":/images/splash_testnet" : ":/images/splash");	// GRS
+    pixPaint.drawPixmap(rectIcon, pixmapSplash); // GRS
 
     // check font size and drawing with
     pixPaint.setFont(QFont(font, 33*fontFactor));
@@ -95,7 +99,8 @@ SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
         pixPaint.setFont(QFont(font, 10*fontFactor));
         titleVersionVSpace -= 5;
     }
-    pixPaint.drawText(pixmap.width()/devicePixelRatio-titleTextWidth-paddingRight+2,paddingTop+titleVersionVSpace,versionText);
+    int xCopyright = 20+pixmap.width()/devicePixelRatio-titleTextWidth-paddingRight;
+    pixPaint.drawText(xCopyright,paddingTop+titleVersionVSpace,versionText);
 
     // draw copyright stuff
     {
@@ -117,6 +122,7 @@ SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
     }
 
     pixPaint.end();
+
 
     // Set window title
     setWindowTitle(titleText + " " + titleAddText);

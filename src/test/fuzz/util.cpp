@@ -43,9 +43,9 @@ CMutableTransaction ConsumeTransaction(FuzzedDataProvider& fuzzed_data_provider,
 {
     CMutableTransaction tx_mut;
     const auto p2wsh_op_true = fuzzed_data_provider.ConsumeBool();
-    tx_mut.nVersion = fuzzed_data_provider.ConsumeBool() ?
+    tx_mut.version = fuzzed_data_provider.ConsumeBool() ?
                           CTransaction::CURRENT_VERSION :
-                          fuzzed_data_provider.ConsumeIntegral<int32_t>();
+                          fuzzed_data_provider.ConsumeIntegral<uint32_t>();
     tx_mut.nLockTime = fuzzed_data_provider.ConsumeIntegral<uint32_t>();
     const auto num_in = fuzzed_data_provider.ConsumeIntegralInRange<int>(0, max_num_in);
     const auto num_out = fuzzed_data_provider.ConsumeIntegralInRange<int>(0, max_num_out);
@@ -214,6 +214,9 @@ CTxDestination ConsumeTxDestination(FuzzedDataProvider& fuzzed_data_provider) no
             tx_destination = WitnessV1Taproot{XOnlyPubKey{ConsumeUInt256(fuzzed_data_provider)}};
         },
         [&] {
+            tx_destination = PayToAnchor{};
+        },
+        [&] {
             std::vector<unsigned char> program{ConsumeRandomLengthByteVector(fuzzed_data_provider, /*max_length=*/40)};
             if (program.size() < 2) {
                 program = {0, 0};
@@ -272,7 +275,7 @@ FILE* FuzzedFileProvider::open()
         [&] {
             mode = "a+";
         });
-#if defined _GNU_SOURCE && !defined __ANDROID__
+#if defined _GNU_SOURCE && (defined(__linux__) || defined(__FreeBSD__))
     const cookie_io_functions_t io_hooks = {
         FuzzedFileProvider::read,
         FuzzedFileProvider::write,

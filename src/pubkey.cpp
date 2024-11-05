@@ -13,6 +13,7 @@
 #include <secp256k1_schnorrsig.h>
 #include <span.h>
 #include <uint256.h>
+#include <util/strencodings.h>
 
 #include <algorithm>
 #include <cassert>
@@ -35,7 +36,7 @@ struct Secp256k1SelfTester
  *
  *  Supported violations include negative integers, excessive padding, garbage
  *  at the end, and overly long length descriptors. This is safe to use in
- *  Bitcoin because since the activation of BIP66, signatures are verified to be
+ *  Groestlcoin because since the activation of BIP66, signatures are verified to be
  *  strict DER before being passed to this module, and we know it supports all
  *  violations present in the blockchain before that point.
  */
@@ -180,6 +181,17 @@ int ecdsa_signature_parse_der_lax(secp256k1_ecdsa_signature* sig, const unsigned
     }
     return 1;
 }
+
+/** Nothing Up My Sleeve (NUMS) point
+ *
+ *  NUMS_H is a point with an unknown discrete logarithm, constructed by taking the sha256 of 'g'
+ *  (uncompressed encoding), which happens to be a point on the curve.
+ *
+ *  For an example script for calculating H, refer to the unit tests in
+ *  ./test/functional/test_framework/crypto/secp256k1.py
+ */
+static const std::vector<unsigned char> NUMS_H_DATA{ParseHex("50929b74c1a04954b78b4b6035e97a5e078a5a0f28ec96d547bfee9ace803ac0")};
+const XOnlyPubKey XOnlyPubKey::NUMS_H{NUMS_H_DATA};
 
 XOnlyPubKey::XOnlyPubKey(Span<const unsigned char> bytes)
 {

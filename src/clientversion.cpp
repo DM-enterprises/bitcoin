@@ -2,21 +2,25 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include <config/bitcoin-config.h> // IWYU pragma: keep
+
 #include <clientversion.h>
+#include <util/string.h>
 #include <util/translation.h>
 
 #include <tinyformat.h>
 
-#include <sstream>
 #include <string>
 #include <vector>
 
+using util::Join;
+
 /**
  * Name of client reported in the 'version' message. Report the same name
- * for both bitcoind and bitcoin-qt, to make it harder for attackers to
+ * for both groestlcoind and groestlcoin-qt, to make it harder for attackers to
  * target servers or GUI users specifically.
  */
-const std::string CLIENT_NAME("Satoshi");
+const std::string CLIENT_NAME("Groestlcoin");
 
 
 #ifdef HAVE_BUILD_INFO
@@ -62,25 +66,19 @@ std::string FormatFullVersion()
  */
 std::string FormatSubVersion(const std::string& name, int nClientVersion, const std::vector<std::string>& comments)
 {
-    std::ostringstream ss;
-    ss << "/";
-    ss << name << ":" << FormatVersion(nClientVersion);
-    if (!comments.empty())
-    {
-        std::vector<std::string>::const_iterator it(comments.begin());
-        ss << "(" << *it;
-        for(++it; it != comments.end(); ++it)
-            ss << "; " << *it;
-        ss << ")";
-    }
-    ss << "/";
-    return ss.str();
+    std::string comments_str;
+    if (!comments.empty()) comments_str = strprintf("(%s)", Join(comments, "; "));
+    return strprintf("/%s:%s%s/", name, FormatVersion(nClientVersion), comments_str);
 }
 
 std::string CopyrightHolders(const std::string& strPrefix)
 {
+  std::string prefix2014 = strPrefix; // GRS
+  size_t index2009 = strPrefix.find("2009");
+  if (index2009 != std::string::npos)
+  prefix2014.replace(index2009, 4, "2014");
     const auto copyright_devs = strprintf(_(COPYRIGHT_HOLDERS).translated, COPYRIGHT_HOLDERS_SUBSTITUTION);
-    std::string strCopyrightHolders = strPrefix + copyright_devs;
+    std::string strCopyrightHolders = prefix2014 + copyright_devs;
 
     // Make sure Bitcoin Core copyright is not removed by accident
     if (copyright_devs.find("Bitcoin Core") == std::string::npos) {
@@ -91,7 +89,7 @@ std::string CopyrightHolders(const std::string& strPrefix)
 
 std::string LicenseInfo()
 {
-    const std::string URL_SOURCE_CODE = "<https://github.com/bitcoin/bitcoin>";
+    const std::string URL_SOURCE_CODE = "<https://github.com/Groestlcoin/groestlcoin>";
 
     return CopyrightHolders(strprintf(_("Copyright (C) %i-%i").translated, 2009, COPYRIGHT_YEAR) + " ") + "\n" +
            "\n" +

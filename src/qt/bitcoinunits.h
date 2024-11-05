@@ -40,10 +40,10 @@ public:
       @note Source: https://en.bitcoin.it/wiki/Units . Please add only sensible ones
      */
     enum class Unit {
-        BTC,
-        mBTC,
-        uBTC,
-        SAT
+        GRS,
+        mGRS,
+        uGRS,
+        GRO
     };
     Q_ENUM(Unit)
 

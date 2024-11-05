@@ -7,14 +7,15 @@
 
 #include <util/chaintype.h>
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
 class ArgsManager;
 
 /**
- * CBaseChainParams defines the base parameters (shared between bitcoin-cli and bitcoind)
- * of a given instance of the Bitcoin system.
+ * CBaseChainParams defines the base parameters (shared between groestlcoin-cli and groestlcoind)
+ * of a given instance of the Groestlcoin system.
  */
 class CBaseChainParams
 {
@@ -51,5 +52,8 @@ const CBaseChainParams& BaseParams();
 
 /** Sets the params returned by Params() to those for the given chain. */
 void SelectBaseParams(const ChainType chain);
+
+/** List of possible chain / network names  */
+#define LIST_CHAIN_NAMES "main, test, testnet4, signet, regtest"
 
 #endif // BITCOIN_CHAINPARAMSBASE_H

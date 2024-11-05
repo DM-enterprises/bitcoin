@@ -1,9 +1,9 @@
 WINDOWS BUILD NOTES
 ====================
 
-Below are some notes on how to build Bitcoin Core for Windows.
+Below are some notes on how to build Groestlcoin Core for Windows.
 
-The options known to work for building Bitcoin Core on Windows are:
+The options known to work for building Groestlcoin Core on Windows are:
 
 * On Linux, using the [Mingw-w64](https://www.mingw-w64.org/) cross compiler tool chain.
 * On Windows, using [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/about) and Mingw-w64.
@@ -12,6 +12,9 @@ The options known to work for building Bitcoin Core on Windows are:
 Other options which may work, but which have not been extensively tested are (please contribute instructions):
 
 * On Windows, using a POSIX compatibility layer application such as [cygwin](https://www.cygwin.com/) or [msys2](https://www.msys2.org/).
+
+The instructions below work on Ubuntu and Debian. Make sure the distribution's `g++-mingw-w64-x86-64-posix`
+package meets the minimum required `g++` version specified in [dependencies.md](dependencies.md).
 
 Installing Windows Subsystem for Linux
 ---------------------------------------
@@ -29,7 +32,7 @@ First, install the general dependencies:
 
     sudo apt update
     sudo apt upgrade
-    sudo apt install build-essential libtool autotools-dev automake pkg-config bsdmainutils curl git
+    sudo apt install build-essential libtool autotools-dev automake pkg-config bsdmainutils cmake curl git
 
 A host toolchain (`build-essential`) is necessary because some dependency
 packages need to build host utilities that are used in the build process.
@@ -42,8 +45,8 @@ If you want to build the windows installer with `make deploy` you need [NSIS](ht
 
 Acquire the source in the usual way:
 
-    git clone https://github.com/bitcoin/bitcoin.git
-    cd bitcoin
+    git clone https://github.com/groestlcoin/groestlcoin.git
+    cd groestlcoin
 
 ## Building for 64-bit Windows
 
@@ -55,9 +58,9 @@ sudo apt install g++-mingw-w64-x86-64-posix
 
 Once the toolchain is installed the build steps are common:
 
-Note that for WSL the Bitcoin Core source path MUST be somewhere in the default mount file system, for
-example /usr/src/bitcoin, AND not under /mnt/d/. If this is not the case the dependency autoconf scripts will fail.
-This means you cannot use a directory that is located directly on the host Windows file system to perform the build.
+Note that for WSL the Groestlcoin Core source path MUST be somewhere in the default mount file system, for
+example /usr/src/groestlcoin, AND not under /mnt/d/. If this is not the case the dependency autoconf scripts will fail.
+This means you cannot use a directory that located directly on the host Windows file system to perform the build.
 
 Additional WSL Note: WSL support for [launching Win32 applications](https://learn.microsoft.com/en-us/archive/blogs/wsl/windows-and-ubuntu-interoperability#launching-win32-applications-from-within-wsl)
 results in `Autoconf` configure scripts being able to execute Windows Portable Executable files. This can cause
@@ -66,7 +69,6 @@ is to temporarily disable WSL support for Win32 applications.
 
 Build using:
 
-    PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g') # strip out problematic Windows %PATH% imported var
     sudo bash -c "echo 0 > /proc/sys/fs/binfmt_misc/status" # Disable WSL support for Win32 applications.
     cd depends
     make HOST=x86_64-w64-mingw32
@@ -86,9 +88,9 @@ Installation
 After building using the Windows subsystem it can be useful to copy the compiled
 executables to a directory on the Windows drive in the same directory structure
 as they appear in the release `.zip` archive. This can be done in the following
-way. This will install to `c:\workspace\bitcoin`, for example:
+way. This will install to `c:\workspace\groestlcoin`, for example:
 
-    make install DESTDIR=/mnt/c/workspace/bitcoin
+    make install DESTDIR=/mnt/c/workspace/groestlcoin
 
 You can also create an installer using:
 

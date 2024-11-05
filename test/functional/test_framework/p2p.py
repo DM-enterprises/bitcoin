@@ -223,12 +223,12 @@ class P2PConnection(asyncio.Protocol):
         # send the initial handshake immediately
         if self.supports_v2_p2p and self.v2_state.initiating and not self.v2_state.tried_v2_handshake:
             send_handshake_bytes = self.v2_state.initiate_v2_handshake()
+            logger.debug(f"sending {len(self.v2_state.sent_garbage)} bytes of garbage data")
             self.send_raw_message(send_handshake_bytes)
-        # if v2 connection, send `on_connection_send_msg` after initial v2 handshake.
-        # if reconnection situation, send `on_connection_send_msg` after version message is received in `on_version()`.
-        if self.on_connection_send_msg and not self.supports_v2_p2p and not self.reconnect:
-            self.send_message(self.on_connection_send_msg)
-            self.on_connection_send_msg = None  # Never used again
+        # for v1 outbound connections, send version message immediately after opening
+        # (for v2 outbound connections, send it after the initial v2 handshake)
+        if self.p2p_connected_to_node and not self.supports_v2_p2p:
+            self.send_version()
         self.on_open()
 
     def connection_lost(self, exc):
@@ -243,7 +243,7 @@ class P2PConnection(asyncio.Protocol):
         self.on_close()
 
     # v2 handshake method
-    def v2_handshake(self):
+    def _on_data_v2_handshake(self):
         """v2 handshake performed before P2P messages are exchanged (see BIP324). P2PConnection is the initiator
         (in inbound connections to TestNode) and the responder (in outbound connections from TestNode).
         Performed by:
@@ -263,6 +263,7 @@ class P2PConnection(asyncio.Protocol):
                     self.v2_state = None
                     return
                 elif send_handshake_bytes:
+                    logger.debug(f"sending {len(self.v2_state.sent_garbage)} bytes of garbage data")
                     self.send_raw_message(send_handshake_bytes)
                 elif send_handshake_bytes == b"":
                     return  # only after send_handshake_bytes are sent can `complete_handshake()` be done
@@ -284,9 +285,13 @@ class P2PConnection(asyncio.Protocol):
         if not is_mac_auth:
             raise ValueError("invalid v2 mac tag in handshake authentication")
         self.recvbuf = self.recvbuf[length:]
-        if self.v2_state.tried_v2_handshake and self.on_connection_send_msg:
-            self.send_message(self.on_connection_send_msg)
-            self.on_connection_send_msg = None
+        if self.v2_state.tried_v2_handshake:
+            # for v2 outbound connections, send version message immediately after v2 handshake
+            if self.p2p_connected_to_node:
+                self.send_version()
+            # process post-v2-handshake data immediately, if available
+            if len(self.recvbuf) > 0:
+                self._on_data()
 
     # Socket read methods
 
@@ -295,7 +300,7 @@ class P2PConnection(asyncio.Protocol):
         if len(t) > 0:
             self.recvbuf += t
             if self.supports_v2_p2p and not self.v2_state.tried_v2_handshake:
-                self.v2_handshake()
+                self._on_data_v2_handshake()
             else:
                 self._on_data()
 
@@ -408,7 +413,7 @@ class P2PConnection(asyncio.Protocol):
             tmsg = self.magic_bytes
             tmsg += msgtype
             tmsg += b"\x00" * (12 - len(msgtype))
-            tmsg += struct.pack("<I", len(data))
+            tmsg += len(data).to_bytes(4, "little")
             th = sha256(data)
             h = sha256(th)
             tmsg += h[:4]
@@ -557,11 +562,10 @@ class P2PInterface(P2PConnection):
 
     def on_version(self, message):
         assert message.nVersion >= MIN_P2P_VERSION_SUPPORTED, "Version {} received. Test framework only supports versions greater than {}".format(message.nVersion, MIN_P2P_VERSION_SUPPORTED)
-        # reconnection using v1 P2P has happened since version message can be processed, previously unsent version message is sent using v1 P2P here
-        if self.reconnect:
-            if self.on_connection_send_msg:
-                self.send_message(self.on_connection_send_msg)
-                self.on_connection_send_msg = None
+        # for inbound connections, reply to version with own version message
+        # (could be due to v1 reconnect after a failed v2 handshake)
+        if not self.p2p_connected_to_node:
+            self.send_version()
             self.reconnect = False
         if message.nVersion >= 70016 and self.wtxidrelay:
             self.send_message(msg_wtxidrelay())
@@ -583,24 +587,22 @@ class P2PInterface(P2PConnection):
 
         wait_until_helper_internal(test_function, timeout=timeout, lock=p2p_lock, timeout_factor=self.timeout_factor)
 
-    def wait_for_connect(self, timeout=60):
+    def wait_for_connect(self, *, timeout=60):
         test_function = lambda: self.is_connected
         self.wait_until(test_function, timeout=timeout, check_connected=False)
 
-    def wait_for_disconnect(self, timeout=60):
+    def wait_for_disconnect(self, *, timeout=60):
         test_function = lambda: not self.is_connected
         self.wait_until(test_function, timeout=timeout, check_connected=False)
 
-    def wait_for_reconnect(self, timeout=60):
+    def wait_for_reconnect(self, *, timeout=60):
         def test_function():
-            if not (self.is_connected and self.last_message.get('version') and self.v2_state is None):
-                return False
-            return True
+            return self.is_connected and self.last_message.get('version') and not self.supports_v2_p2p
         self.wait_until(test_function, timeout=timeout, check_connected=False)
 
     # Message receiving helper methods
 
-    def wait_for_tx(self, txid, timeout=60):
+    def wait_for_tx(self, txid, *, timeout=60):
         def test_function():
             if not self.last_message.get('tx'):
                 return False
@@ -608,13 +610,13 @@ class P2PInterface(P2PConnection):
 
         self.wait_until(test_function, timeout=timeout)
 
-    def wait_for_block(self, blockhash, timeout=60):
+    def wait_for_block(self, blockhash, *, timeout=60):
         def test_function():
             return self.last_message.get("block") and self.last_message["block"].block.rehash() == blockhash
 
         self.wait_until(test_function, timeout=timeout)
 
-    def wait_for_header(self, blockhash, timeout=60):
+    def wait_for_header(self, blockhash, *, timeout=60):
         def test_function():
             last_headers = self.last_message.get('headers')
             if not last_headers:
@@ -623,7 +625,7 @@ class P2PInterface(P2PConnection):
 
         self.wait_until(test_function, timeout=timeout)
 
-    def wait_for_merkleblock(self, blockhash, timeout=60):
+    def wait_for_merkleblock(self, blockhash, *, timeout=60):
         def test_function():
             last_filtered_block = self.last_message.get('merkleblock')
             if not last_filtered_block:
@@ -632,7 +634,7 @@ class P2PInterface(P2PConnection):
 
         self.wait_until(test_function, timeout=timeout)
 
-    def wait_for_getdata(self, hash_list, timeout=60):
+    def wait_for_getdata(self, hash_list, *, timeout=60):
         """Waits for a getdata message.
 
         The object hashes in the inventory vector must match the provided hash_list."""
@@ -644,19 +646,21 @@ class P2PInterface(P2PConnection):
 
         self.wait_until(test_function, timeout=timeout)
 
-    def wait_for_getheaders(self, timeout=60):
-        """Waits for a getheaders message.
+    def wait_for_getheaders(self, block_hash=None, *, timeout=60):
+        """Waits for a getheaders message containing a specific block hash.
 
-        Receiving any getheaders message will satisfy the predicate. the last_message["getheaders"]
-        value must be explicitly cleared before calling this method, or this will return
-        immediately with success. TODO: change this method to take a hash value and only
-        return true if the correct block header has been requested."""
+        If no block hash is provided, checks whether any getheaders message has been received by the node."""
         def test_function():
-            return self.last_message.get("getheaders")
+            last_getheaders = self.last_message.pop("getheaders", None)
+            if block_hash is None:
+                 return last_getheaders
+            if last_getheaders is None:
+                return False
+            return block_hash == last_getheaders.locator.vHave[0]
 
         self.wait_until(test_function, timeout=timeout)
 
-    def wait_for_inv(self, expected_inv, timeout=60):
+    def wait_for_inv(self, expected_inv, *, timeout=60):
         """Waits for an INV message and checks that the first inv object in the message was as expected."""
         if len(expected_inv) > 1:
             raise NotImplementedError("wait_for_inv() will only verify the first inv object")
@@ -668,7 +672,7 @@ class P2PInterface(P2PConnection):
 
         self.wait_until(test_function, timeout=timeout)
 
-    def wait_for_verack(self, timeout=60):
+    def wait_for_verack(self, *, timeout=60):
         def test_function():
             return "verack" in self.last_message
 
@@ -676,11 +680,16 @@ class P2PInterface(P2PConnection):
 
     # Message sending helper functions
 
-    def send_and_ping(self, message, timeout=60):
+    def send_version(self):
+        if self.on_connection_send_msg:
+            self.send_message(self.on_connection_send_msg)
+            self.on_connection_send_msg = None  # Never used again
+
+    def send_and_ping(self, message, *, timeout=60):
         self.send_message(message)
         self.sync_with_ping(timeout=timeout)
 
-    def sync_with_ping(self, timeout=60):
+    def sync_with_ping(self, *, timeout=60):
         """Ensure ProcessMessages and SendMessages is called on this connection"""
         # Sending two pings back-to-back, requires that the node calls
         # `ProcessMessage` twice, and thus ensures `SendMessages` must have
@@ -721,7 +730,7 @@ class NetworkThread(threading.Thread):
         """Start the network thread."""
         self.network_event_loop.run_forever()
 
-    def close(self, timeout=10):
+    def close(self, *, timeout=10):
         """Close the connections and network event loop."""
         self.network_event_loop.call_soon_threadsafe(self.network_event_loop.stop)
         wait_until_helper_internal(lambda: not self.network_event_loop.is_running(), timeout=timeout)
@@ -928,7 +937,7 @@ class P2PTxInvStore(P2PInterface):
         with p2p_lock:
             return list(self.tx_invs_received.keys())
 
-    def wait_for_broadcast(self, txns, timeout=60):
+    def wait_for_broadcast(self, txns, *, timeout=60):
         """Waits for the txns (list of txids) to complete initial broadcast.
         The mempool should mark unbroadcast=False for these transactions.
         """

@@ -2,9 +2,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#if defined(HAVE_CONFIG_H)
-#include <config/bitcoin-config.h>
-#endif
+#include <config/bitcoin-config.h> // IWYU pragma: keep
 
 #include <qt/bitcoin.h>
 
@@ -62,7 +60,7 @@
 #include <QTranslator>
 #include <QWindow>
 
-#if defined(QT_STATICPLUGIN)
+#if defined(QT_STATIC)
 #include <QtPlugin>
 #if defined(QT_QPA_PLATFORM_XCB)
 Q_IMPORT_PLUGIN(QXcbIntegrationPlugin);
@@ -77,6 +75,81 @@ Q_IMPORT_PLUGIN(QAndroidPlatformIntegrationPlugin)
 #endif
 #endif
 
+
+struct TranslationTable {
+	const wchar_t *From, *To;
+};
+
+static std::vector<TranslationTable> g_translationTable = {
+  {    L"Bitcoin"   , L"Groestlcoin"
+  }, { L"bitcoin"   , L"groestlcoin"
+  }, { L"169900"    , L"216300"
+  }, { L"satoshi"   , L"gro"
+  }, { L"sat"       , L"gro"
+  }, { L"BITCOIN"   , L"GROESTLCOIN"
+  }, { L"BITCOINS"  , L"GROESTLCOINS"
+  }, { L"БИТКОИНЫ"  , L"ГРЁСТЛКОИНЫ" // ru
+  }, { L"биткоины"  , L"грёстлкоины" // ru
+  }, { L"біткойни"  , L"гростлкойни" // ua
+  }, { L"БІТКОІНИ"  , L"ГРОСТЛКОІНИ" // ua
+  }, { L"Биткоин"   , L"Грoстлкоин" // bg
+  }, { L"Биткойн"   , L"Грoстлкоин" // bg
+  }, { L"биткойн"   , L"грoстлкоин" // bg
+  }, { L"ビットコイン"    , L"グロストルコイン" // jp
+  }, { L"비트코인"      , L"그로스톨코인" // ko
+  }, { L"הביטקוין"  , L"גרוסטלקוין" // he
+  }, { L"比特币"       , L"格羅斯币" // cn
+  }, { L"比特幣"       , L"格羅斯幣" // cn
+  }, { L"بيتكوين"   , L"غرسلكوين" // ar
+  }, { L"بتكوين"    , L"غرسلكوين" // ar
+  }, { L"بیت‌کوین"  , L"غرسلكوين" // ar
+  }, { L"ساتوشي"    , L"غرو" // ar
+  }
+};
+
+static class GroestlcoinTranslatorInit {
+public:
+	struct QTranslationTable {
+		QString From, To;
+	};
+
+	std::vector<QTranslationTable> m_translationTable;
+
+	GroestlcoinTranslatorInit()
+	{
+		for (const auto& t : g_translationTable) {
+			QTranslationTable x = { QString::fromWCharArray(t.From), QString::fromWCharArray(t.To) };
+			m_translationTable.push_back(x);
+		}
+	}
+} g_GroestlcoinTranslatorInit;
+
+class GroestlcoinTranslator : public QTranslator
+{
+    bool m_isBase;
+public:
+	QString translate(const char *context, const char *sourceText, const char *disambiguation = Q_NULLPTR, int n = -1) const override
+	{
+		auto s = QTranslator::translate(context, sourceText, disambiguation, n);
+        if (strstr(sourceText, "coin")
+            || strstr(sourceText, "COIN")
+            || strstr(sourceText, "sat"))
+        {
+            if (m_isBase && s.isNull())
+                s = QString::fromUtf8(sourceText);
+            for (const auto& t : g_GroestlcoinTranslatorInit.m_translationTable)
+                s.replace(t.From, t.To);
+        }
+		return s;
+	}
+
+    GroestlcoinTranslator(bool isBase)
+        : m_isBase(isBase)
+    {
+    }
+};
+
+
 // Declare meta types used for QMetaObject::invokeMethod
 Q_DECLARE_METATYPE(bool*)
 Q_DECLARE_METATYPE(CAmount)
@@ -86,6 +159,8 @@ Q_DECLARE_METATYPE(uint256)
 #ifdef ENABLE_WALLET
 Q_DECLARE_METATYPE(wallet::AddressPurpose)
 #endif // ENABLE_WALLET
+
+using util::MakeUnorderedList;
 
 static void RegisterMetaTypes()
 {
@@ -219,7 +294,7 @@ void DebugMessageHandler(QtMsgType type, const QMessageLogContext& context, cons
 }
 
 static int qt_argc = 1;
-static const char* qt_argv = "bitcoin-qt";
+static const char* qt_argv = "groestlcoin-qt";
 
 BitcoinApplication::BitcoinApplication()
     : QApplication(qt_argc, const_cast<char**>(&qt_argv))
@@ -240,6 +315,10 @@ void BitcoinApplication::setupPlatformStyle()
     if (!platformStyle) // Fall back to "other" if specified name not found
         platformStyle = PlatformStyle::instantiate("other");
     assert(platformStyle);
+
+    auto pal = palette();
+    pal.setColor(QPalette::Window, Qt::white);
+    setPalette(pal);
 }
 
 BitcoinApplication::~BitcoinApplication()
@@ -372,6 +451,11 @@ void BitcoinApplication::requestShutdown()
     // Request node shutdown, which can interrupt long operations, like
     // rescanning a wallet.
     node().startShutdown();
+    // Prior to unsetting the client model, stop listening backend signals
+    if (clientModel) {
+        clientModel->stop();
+    }
+
     // Unsetting the client model can cause the current thread to wait for node
     // to complete an operation, like wait for a RPC execution to complete.
     window->setClientModel(nullptr);
@@ -432,7 +516,7 @@ void BitcoinApplication::initializeResult(bool success, interfaces::BlockAndHead
 
 #ifdef ENABLE_WALLET
         // Now that initialization/startup is done, process any command-line
-        // bitcoin: URIs or payment requests:
+        // groestlcoin: URIs or payment requests:
         if (paymentServer) {
             connect(paymentServer, &PaymentServer::receivedPaymentRequest, window, &BitcoinGUI::handlePaymentRequest);
             connect(window, &BitcoinGUI::receivedURI, paymentServer, &PaymentServer::handleURIOrFile);
@@ -587,7 +671,7 @@ int GuiMain(int argc, char* argv[])
 
     /// 4. Initialization of translations, so that intro dialog is in user's language
     // Now that QSettings are accessible, initialize translations
-    QTranslator qtTranslatorBase, qtTranslator, translatorBase, translator;
+    GroestlcoinTranslator qtTranslatorBase(true), qtTranslator(false), translatorBase(true), translator(false);
     initTranslations(qtTranslatorBase, qtTranslator, translatorBase, translator);
 
     // Show help message immediately after parsing command-line options (for "-lang") and setting locale,
@@ -608,7 +692,7 @@ int GuiMain(int argc, char* argv[])
     // Gracefully exit if the user cancels
     if (!Intro::showIfNeeded(did_show_intro, prune_MiB)) return EXIT_SUCCESS;
 
-    /// 6-7. Parse bitcoin.conf, determine network, switch to network specific
+    /// 6-7. Parse groestlcoin.conf, determine network, switch to network specific
     /// options, and create datadir and settings.json.
     // - Do not call gArgs.GetDataDirNet() before this step finishes
     // - Do not call Params() before this step
@@ -650,7 +734,7 @@ int GuiMain(int argc, char* argv[])
         exit(EXIT_SUCCESS);
 
     // Start up the payment server early, too, so impatient users that click on
-    // bitcoin: links repeatedly have their payment requests routed to this process:
+    // groestlcoin: links repeatedly have their payment requests routed to this process:
     if (WalletModel::isWalletEnabled()) {
         app.createPaymentServer();
     }

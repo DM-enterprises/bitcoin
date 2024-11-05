@@ -1,78 +1,112 @@
-Bitcoin Core integration/staging tree
-=====================================
+Groestlcoin integration/staging tree
+=================================
+Forked from Bitcoin reference wallet 0.8.6 on March 2014
 
-https://bitcoincore.org
+Updated to Bitcoin reference wallet 0.11.0 on August 2015
 
-For an immediately usable, binary version of the Bitcoin Core software, see
-https://bitcoincore.org/en/download/.
+Updated to Bitcoin reference wallet 0.13.3 on January 2017
 
-What is Bitcoin Core?
----------------------
+Updated to Bitcoin reference wallet 0.16.0 on June 2018
 
-Bitcoin Core connects to the Bitcoin peer-to-peer network to download and fully
+Updated to Bitcoin reference wallet 0.16.3 on September 2018
+
+Updated to Bitcoin reference wallet 0.17.2 on March 2019
+
+Updated to Bitcoin reference wallet 0.18.2 on March 2020
+
+Updated to Bitcoin reference wallet 0.19.1 on June 2020
+
+Updated to Bitcoin reference wallet 0.20.1 on September 2020
+
+Updated to Bitcoin reference wallet 0.21.0 on December 2020
+
+Updated to Bitcoin reference wallet 0.21.1 on June 2021
+
+Updated to Bitcoin reference wallet 22.0.0 on September 2021
+
+Updated to Bitcoin reference wallet 23.0.0 on June 2022
+
+Updated to Bitcoin reference wallet 24.0.0 on November 2022
+
+Updated to Bitcoin reference wallet 24.0.1 on December 2022
+
+Updated to Bitcoin reference wallet 25.0.0 on June 2023
+
+Updated to Bitcoin reference wallet 26.0.0 on December 2023
+
+Updated to Bitcoin reference wallet 27.0.0 on April 2024
+
+Updated to Bitcoin reference wallet 28.0.0 on September 2024
+
+Groestlcoin Core Wallet
+
+https://www.groestlcoin.org
+
+The algorithm was written as a candidate for sha3
+
+https://bitcointalk.org/index.php?topic=525926.0
+
+What is Groestlcoin Core?
+-----------------
+
+Groestlcoin Core connects to the Groestlcoin peer-to-peer network to download and fully
 validate blocks and transactions. It also includes a wallet and graphical user
 interface, which can be optionally built.
 
-Further information about Bitcoin Core is available in the [doc folder](/doc).
+Further information about Groestlcoin Core is available in the [doc folder](/doc).
 
 License
 -------
 
-Bitcoin Core is released under the terms of the MIT license. See [COPYING](COPYING) for more
-information or see https://opensource.org/licenses/MIT.
+Groestlcoin Core is released under the terms of the MIT license. See [COPYING](COPYING) for more
+information or see http://opensource.org/licenses/MIT.
 
 Development Process
 -------------------
 
-The `master` branch is regularly built (see `doc/build-*.md` for instructions) and tested, but it is not guaranteed to be
-completely stable. [Tags](https://github.com/bitcoin/bitcoin/tags) are created
-regularly from release branches to indicate new official, stable release versions of Bitcoin Core.
+Developers work in their own trees, then submit pull requests when they think
+their feature or bug fix is ready.
 
-The https://github.com/bitcoin-core/gui repository is used exclusively for the
-development of the GUI. Its master branch is identical in all monotree
-repositories. Release branches and tags do not exist, so please do not fork
-that repository unless it is for development reasons.
+If it is a simple/trivial/non-controversial change, then one of the Groestlcoin
+development team members simply pulls it.
 
-The contribution workflow is described in [CONTRIBUTING.md](CONTRIBUTING.md)
-and useful hints for developers can be found in [doc/developer-notes.md](doc/developer-notes.md).
+If it is a *more complicated or potentially controversial* change, then the patch
+submitter will be asked to start a discussion
 
-Testing
--------
+The patch will be accepted if there is broad consensus that it is a good thing.
+Developers should expect to rework and resubmit patches if the code doesn't
+match the project's coding conventions or are controversial.
 
-Testing and code review is the bottleneck for development; we get more pull
-requests than we can review and test on short notice. Please be patient and help out by testing
-other people's pull requests, and remember this is a security-critical project where any mistake might cost people
-lots of money.
+The `master` branch is regularly built (see `doc/build-*.md` for instructions) and tested, but is not guaranteed to be
+completely stable. [Tags](https://github.com/groestlcoin/groestlcoin/tags) are created
+regularly from release branches to indicate new official, stable release versions of Groestlcoin Core.
 
-### Automated Testing
+Development tips and tricks
+---------------------------
 
-Developers are strongly encouraged to write [unit tests](src/test/README.md) for new code, and to
-submit new unit tests for old code. Unit tests can be compiled and run
-(assuming they weren't disabled in configure) with: `make check`. Further details on running
-and extending unit tests can be found in [/src/test/README.md](/src/test/README.md).
+**compiling for debugging**
 
-There are also [regression and integration tests](/test), written
-in Python.
-These tests can be run (if the [test dependencies](/test) are installed) with: `test/functional/test_runner.py`
+Run configure with the --enable-debug option, then make. Or run configure with
+CXXFLAGS="-g -ggdb -O0" or whatever debug flags you need.
 
-The CI (Continuous Integration) systems make sure that every pull request is built for Windows, Linux, and macOS,
-and that unit/sanity tests are run automatically.
 
-### Manual Quality Assurance (QA) Testing
+The -debug=... command-line option controls debugging; running with just -debug will turn
+on all categories (and give you a very large debug.log file).
 
-Changes should be tested by somebody other than the developer who wrote the
-code. This is especially important for large or high-risk changes. It is useful
-to add a test plan to the pull request description if testing the changes is
-not straightforward.
+The Qt code routes qDebug() output to debug.log under category "qt": run with -debug=qt
+to see it.
+
+**testnet and regtest modes**
+
+Run with the -testnet option to run with "play groestlcoins" on the test network, if you
+are testing multi-machine code that needs to operate across the internet.
+
+If you are testing something that can run on one machine, run with the -regtest option.
 
 Translations
 ------------
 
-Changes to translations as well as new translations can be submitted to
-[Bitcoin Core's Transifex page](https://www.transifex.com/bitcoin/bitcoin/).
-
-Translations are periodically pulled from Transifex and merged into the git repository. See the
-[translation process](doc/translation_process.md) for details on how this works.
+Translations are periodically pulled from Transifex and merged into the git repository.
 
 **Important**: We do not accept translation changes as GitHub pull requests because the next
 pull from Transifex would automatically overwrite them again.

@@ -10,9 +10,9 @@ import subprocess
 import sys
 import xml.etree.ElementTree
 
-DEFAULT_GLOBAL_FAUCET = 'https://signetfaucet.com/claim'
-DEFAULT_GLOBAL_CAPTCHA = 'https://signetfaucet.com/captcha'
-GLOBAL_FIRST_BLOCK_HASH = '00000086d6b2636cb2a392d45edc4ec544a10024d30141c9adf4bfd9de533b53'
+DEFAULT_GLOBAL_FAUCET = 'https://signetfaucet.groestlcoin.org/claim'
+DEFAULT_GLOBAL_CAPTCHA = 'https://signetfaucet.groestlcoin.org/captcha'
+GLOBAL_FIRST_BLOCK_HASH = '000000eb8848ae1ec123d4b017f1a62d315d944374b67991526442c02f865a38'
 
 # braille unicode block
 BASE = 0x2800
@@ -68,15 +68,15 @@ def print_image(img, threshold=128):
             line.append(chr(ch))
         print(''.join(line))
 
-parser = argparse.ArgumentParser(description='Script to get coins from a faucet.', epilog='You may need to start with double-dash (--) when providing bitcoin-cli arguments.')
-parser.add_argument('-c', '--cmd', dest='cmd', default='bitcoin-cli', help='bitcoin-cli command to use')
+parser = argparse.ArgumentParser(description='Script to get coins from a faucet.', epilog='You may need to start with double-dash (--) when providing groestlcoin-cli arguments.')
+parser.add_argument('-c', '--cmd', dest='cmd', default='groestlcoin-cli', help='groestlcoin-cli command to use')
 parser.add_argument('-f', '--faucet', dest='faucet', default=DEFAULT_GLOBAL_FAUCET, help='URL of the faucet')
 parser.add_argument('-g', '--captcha', dest='captcha', default=DEFAULT_GLOBAL_CAPTCHA, help='URL of the faucet captcha, or empty if no captcha is needed')
-parser.add_argument('-a', '--addr', dest='addr', default='', help='Bitcoin address to which the faucet should send')
+parser.add_argument('-a', '--addr', dest='addr', default='', help='Groestlcoin address to which the faucet should send')
 parser.add_argument('-p', '--password', dest='password', default='', help='Faucet password, if any')
 parser.add_argument('-n', '--amount', dest='amount', default='0.001', help='Amount to request (0.001-0.1, default is 0.001)')
 parser.add_argument('-i', '--imagemagick', dest='imagemagick', default=CONVERT, help='Path to imagemagick convert utility')
-parser.add_argument('bitcoin_cli_args', nargs='*', help='Arguments to pass on to bitcoin-cli (default: -signet)')
+parser.add_argument('bitcoin_cli_args', nargs='*', help='Arguments to pass on to groestlcoin-cli (default: -signet)')
 
 args = parser.parse_args()
 

@@ -1,4 +1,4 @@
-This is a system of building and caching dependencies necessary for building Bitcoin.
+This is a system of building and caching dependencies necessary for building Groestlcoin.
 There are several features that make it different from most similar systems:
 
 ### It is designed to be builder and host agnostic
@@ -11,7 +11,7 @@ on new hosts.
 ### No reliance on timestamps
 
 File presence is used to determine what needs to be built. This makes the
-results distributable and easily digestable by automated builders.
+results distributable and easily digestible by automated builders.
 
 ### Each build only has its specified dependencies available at build-time.
 

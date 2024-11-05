@@ -18,10 +18,10 @@ static const struct {
     /** Extra padding/spacing in transactionview */
     const bool useExtraSpacing;
 } platform_styles[] = {
-    {"macosx", false, true, true},
+    {"macosx", false, false, true}, // GRS - fix blue icons
     {"windows", true, false, false},
     /* Other: linux, unix, ... */
-    {"other", true, true, false}
+    {"other", true, false, false} // GRS - fix blue icons
 };
 
 namespace {
@@ -118,6 +118,8 @@ QIcon PlatformStyle::SingleColorIcon(const QIcon& icon) const
 
 QIcon PlatformStyle::TextColorIcon(const QIcon& icon) const
 {
+    if (!colorizeIcons)
+        return icon;
     return ColorizeIcon(icon, TextColor());
 }
 
@@ -134,4 +136,3 @@ const PlatformStyle *PlatformStyle::instantiate(const QString &platformId)
     }
     return nullptr;
 }
-

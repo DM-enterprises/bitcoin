@@ -2,11 +2,10 @@
 # Copyright (c) 2020-2021 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
-"""Script for verifying Bitcoin Core release binaries.
+"""Script for verifying Groestlcoin Core release binaries.
 
 This script attempts to download the sum file SHA256SUMS and corresponding
-signature file SHA256SUMS.asc from bitcoincore.org and bitcoin.org and
-compares them.
+signature file SHA256SUMS.asc from github.com and compares them.
 
 The sum-signature file is signed by a number of builder keys. This script
 ensures that there is a minimum threshold of signatures from pubkeys that
@@ -15,7 +14,7 @@ here, but by default is based upon local GPG trust settings.
 
 The builder keys are available in the guix.sigs repo:
 
-    https://github.com/bitcoin-core/guix.sigs/tree/main/builder-keys
+    https://github.com/Groestlcoin/guix.sigs/tree/main/builder-keys
 
 If a minimum good, trusted signature threshold is met on the sum file, we then
 download the files specified in SHA256SUMS, and check if the hashes of these
@@ -46,9 +45,9 @@ from hashlib import sha256
 from pathlib import PurePath, Path
 
 # The primary host; this will fail if we can't retrieve files from here.
-HOST1 = "https://bitcoincore.org"
-HOST2 = "https://bitcoin.org"
-VERSIONPREFIX = "bitcoin-core-"
+HOST1 = "https://github.com/Groestlcoin/groestlcoin"
+HOST2 = "https://github.com/Groestlcoin/groestlcoin"
+VERSIONPREFIX = "v"
 SUMS_FILENAME = 'SHA256SUMS'
 SIGNATUREFILENAME = f"{SUMS_FILENAME}.asc"
 
@@ -97,23 +96,17 @@ def bool_from_env(key, default=False) -> bool:
 
 
 VERSION_FORMAT = "<major>.<minor>[.<patch>][-rc[0-9]][-platform]"
-VERSION_EXAMPLE = "22.0-x86_64 or 23.1-rc1-darwin"
+VERSION_EXAMPLE = "22.0 or 23.1-rc1-darwin.dmg or 27.0-x86_64-linux-gnu"
 
 def parse_version_string(version_str):
-    parts = version_str.split('-')
-    version_base = parts[0]
-    version_rc = ""
-    version_os = ""
-    if len(parts) == 2:  # "<version>-rcN" or "version-platform"
-        if "rc" in parts[1]:
-            version_rc = parts[1]
-        else:
-            version_os = parts[1]
-    elif len(parts) == 3:  # "<version>-rcN-platform"
-        version_rc = parts[1]
-        version_os = parts[2]
+    # "<version>[-rcN][-platform]"
+    version_base, _, platform = version_str.partition('-')
+    rc = ""
+    if platform.startswith("rc"): # "<version>-rcN[-platform]"
+        rc, _, platform = platform.partition('-')
+    # else "<version>" or "<version>-platform"
 
-    return version_base, version_rc, version_os
+    return version_base, rc, platform
 
 
 def download_with_wget(remote_file, local_file):
@@ -384,7 +377,7 @@ def verify_shasums_signature(
 
     # Decide which keys we trust, though not "trust" in the GPG sense, but rather
     # which pubkeys convince us that this sums file is legitimate. In other words,
-    # which pubkeys within the Bitcoin community do we trust for the purposes of
+    # which pubkeys within the Groestlcoin community do we trust for the purposes of
     # binary verification?
     trusted_keys = set()
     if args.trusted_keys:
@@ -459,7 +452,7 @@ def verify_binary_hashes(hashes_to_verify: list[list[str]]) -> tuple[ReturnCode,
 
 
 def verify_published_handler(args: argparse.Namespace) -> ReturnCode:
-    WORKINGDIR = Path(tempfile.gettempdir()) / f"bitcoin_verify_binaries.{args.version}"
+    WORKINGDIR = Path(tempfile.gettempdir()) / f"groestlcoin_verify_binaries.{args.version}"
 
     def cleanup():
         log.info("cleaning up files")
@@ -476,7 +469,7 @@ def verify_published_handler(args: argparse.Namespace) -> ReturnCode:
         log.error(f"  e.g. {VERSION_EXAMPLE}")
         return ReturnCode.BAD_VERSION
 
-    remote_dir = f"/bin/{VERSIONPREFIX}{version_base}/"
+    remote_dir = f"/releases/download/{VERSIONPREFIX}{version_base}/"
     if version_rc:
         remote_dir += f"test.{version_rc}/"
     remote_sigs_path = remote_dir + SIGNATUREFILENAME
@@ -514,10 +507,12 @@ def verify_published_handler(args: argparse.Namespace) -> ReturnCode:
     # Extract hashes and filenames
     hashes_to_verify = parse_sums_file(SUMS_FILENAME, [os_filter])
     if not hashes_to_verify:
-        log.error("no files matched the platform specified")
+        available_versions = ["-".join(line[1].split("-")[2:]) for line in parse_sums_file(SUMS_FILENAME, [])]
+        closest_match = difflib.get_close_matches(os_filter, available_versions, cutoff=0, n=1)[0]
+        log.error(f"No files matched the platform specified. Did you mean: {closest_match}")
         return ReturnCode.NO_BINARIES_MATCH
 
-    # remove binaries that are known not to be hosted by bitcoincore.org
+    # remove binaries that are known not to be hosted by groestlcoin.org
     fragments_to_remove = ['-unsigned', '-debug', '-codesignatures']
     for fragment in fragments_to_remove:
         nobinaries = [i for i in hashes_to_verify if fragment in i[1]]
@@ -677,7 +672,7 @@ def main():
     pub_parser.set_defaults(func=verify_published_handler)
     pub_parser.add_argument(
         'version', type=str, help=(
-            f'version of the bitcoin release to download; of the format '
+            f'version of the groestlcoin release to download; of the format '
             f'{VERSION_FORMAT}. Example: {VERSION_EXAMPLE}')
     )
     pub_parser.add_argument(
@@ -690,7 +685,7 @@ def main():
         default=bool_from_env('BINVERIFY_REQUIRE_ALL_HOSTS'),
         help=(
             f'If set, require all hosts ({HOST1}, {HOST2}) to provide signatures. '
-            '(Sometimes bitcoin.org lags behind bitcoincore.org.)')
+            '(Sometimes github.com lags behind github.com.)')
     )
 
     bin_parser = subparsers.add_parser("bin", help="Verify local binaries.")

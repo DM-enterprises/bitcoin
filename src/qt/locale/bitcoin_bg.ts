@@ -58,14 +58,6 @@
         <translation type="unfinished">Избери</translation>
     </message>
     <message>
-        <source>Sending addresses</source>
-        <translation type="unfinished">Адреси за изпращане</translation>
-    </message>
-    <message>
-        <source>Receiving addresses</source>
-        <translation type="unfinished">Адреси за получаване</translation>
-    </message>
-    <message>
         <source>These are your Bitcoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
         <translation type="unfinished">Тези са вашите Биткойн адреси за изпращане на плащания. Винаги проверявайте количеството и получаващите адреси преди изпращане на монети. </translation>
     </message>
@@ -99,6 +91,14 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <source>There was an error trying to save the address list to %1. Please try again.</source>
         <extracomment>An error message. %1 is a stand-in argument for the name of the file we attempted to save to.</extracomment>
         <translation type="unfinished">Получи се грешка при запазването на листа с адреси към %1. Моля опитайте пак.</translation>
+    </message>
+    <message>
+        <source>Sending addresses - %1</source>
+        <translation type="unfinished">Изпращащ адрес - %1</translation>
+    </message>
+    <message>
+        <source>Receiving addresses - %1</source>
+        <translation type="unfinished">Получаващ адрес - %1</translation>
     </message>
     <message>
         <source>Exporting Failed</source>
@@ -181,6 +181,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <message>
         <source>Enter the old passphrase and new passphrase for the wallet.</source>
         <translation type="unfinished">Въведете старата и новата паролна фраза за портфейла.</translation>
+    </message>
+    <message>
+        <source>Continue</source>
+        <translation type="unfinished">Продължи</translation>
     </message>
     <message>
         <source>Remember that encrypting your wallet cannot fully protect your bitcoins from being stolen by malware infecting your computer.</source>
@@ -397,6 +401,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <source>%1 GB</source>
         <translation type="unfinished">%1 Гигабайт</translation>
     </message>
+    <message>
+        <source>default wallet</source>
+        <translation type="unfinished">Портфейл по подразбиране</translation>
+    </message>
 </context>
 <context>
     <name>BitcoinGUI</name>
@@ -491,7 +499,7 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     </message>
     <message>
         <source>&amp;Encrypt Wallet…</source>
-        <translation type="unfinished">Шифровай портфейла</translation>
+        <translation type="unfinished">&amp;Крипритай уолет..</translation>
     </message>
     <message>
         <source>Encrypt the private keys that belong to your wallet</source>
@@ -642,7 +650,7 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     </message>
     <message>
         <source>Load PSBT from &amp;clipboard…</source>
-        <translation type="unfinished">Заредете PSBT от &amp;клипборд...</translation>
+        <translation type="unfinished">Заредете PSBT (частично подписана Bitcoin трансакция) от &amp;клипборд...</translation>
     </message>
     <message>
         <source>Load Partially Signed Bitcoin Transaction from clipboard</source>
@@ -695,6 +703,14 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation type="unfinished">Затвори всички портфейли</translation>
     </message>
     <message>
+        <source>Migrate Wallet</source>
+        <translation type="unfinished">Мигрирайте портфейла</translation>
+    </message>
+    <message>
+        <source>Migrate a wallet</source>
+        <translation type="unfinished">Мигрирайте портфейл</translation>
+    </message>
+    <message>
         <source>Show the %1 help message to get a list with possible Bitcoin command-line options</source>
         <translation type="unfinished">Покажи %1 помощно съобщение за да получиш лист с възможни Биткойн команди</translation>
     </message>
@@ -705,10 +721,6 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <message>
         <source>Mask the values in the Overview tab</source>
         <translation type="unfinished">Маскирай стойностите в раздела Преглед</translation>
-    </message>
-    <message>
-        <source>default wallet</source>
-        <translation type="unfinished">Портфейл по подразбиране</translation>
     </message>
     <message>
         <source>No wallets available</source>
@@ -789,6 +801,14 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <source>Enable network activity</source>
         <extracomment>A context menu item. The network activity was disabled previously.</extracomment>
         <translation type="unfinished">Разреши мрежова активност</translation>
+    </message>
+    <message>
+        <source>Pre-syncing Headers (%1%)…</source>
+        <translation type="unfinished">Предварителна синхронизация на хедъри (%1%)…</translation>
+    </message>
+    <message>
+        <source>Error creating wallet</source>
+        <translation type="unfinished">Грешка при създаването на портфейл</translation>
     </message>
     <message>
         <source>Error: %1</source>
@@ -897,10 +917,6 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation type="unfinished">Такса:</translation>
     </message>
     <message>
-        <source>Dust:</source>
-        <translation type="unfinished">прах:</translation>
-    </message>
-    <message>
         <source>After Fee:</source>
         <translation type="unfinished">След такса:</translation>
     </message>
@@ -989,28 +1005,12 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation type="unfinished">Копиране на байтовете</translation>
     </message>
     <message>
-        <source>Copy dust</source>
-        <translation type="unfinished">Копирай прахта:</translation>
-    </message>
-    <message>
         <source>Copy change</source>
         <translation type="unfinished">Промяна на копирането</translation>
     </message>
     <message>
         <source>(%1 locked)</source>
         <translation type="unfinished">(%1 заключен)</translation>
-    </message>
-    <message>
-        <source>yes</source>
-        <translation type="unfinished">да</translation>
-    </message>
-    <message>
-        <source>no</source>
-        <translation type="unfinished">не</translation>
-    </message>
-    <message>
-        <source>This label turns red if any recipient receives an amount smaller than the current dust threshold.</source>
-        <translation type="unfinished">Този етикет става червен ако някой получател получи количество, по-малко от текущия праг на прах</translation>
     </message>
     <message>
         <source>Can vary +/- %1 satoshi(s) per input.</source>
@@ -1072,6 +1072,37 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     </message>
 </context>
 <context>
+    <name>MigrateWalletActivity</name>
+    <message>
+        <source>Migrate wallet</source>
+        <translation type="unfinished">Мигрирайте портфейла</translation>
+    </message>
+    <message>
+        <source>Are you sure you wish to migrate the wallet &lt;i&gt;%1&lt;/i&gt;?</source>
+        <translation type="unfinished">Сигурни ли сте, че желаете да мигрирате портфейла &lt;i&gt;%1&lt;/i&gt;?</translation>
+    </message>
+    <message>
+        <source>Migrate Wallet</source>
+        <translation type="unfinished">Мигрирайте портфейла</translation>
+    </message>
+    <message>
+        <source>Migrating Wallet &lt;b&gt;%1&lt;/b&gt;…</source>
+        <translation type="unfinished">Миграция на портфейла &lt;b&gt;%1&lt;/b&gt;…</translation>
+    </message>
+    <message>
+        <source>The wallet '%1' was migrated successfully.</source>
+        <translation type="unfinished">Портфейлът "%1" беше мигриран успешно.</translation>
+    </message>
+    <message>
+        <source>Migration failed</source>
+        <translation type="unfinished">Грешка при миграцията</translation>
+    </message>
+    <message>
+        <source>Migration Successful</source>
+        <translation type="unfinished">Миграцията е успешна</translation>
+    </message>
+</context>
+<context>
     <name>OpenWalletActivity</name>
     <message>
         <source>Open wallet failed</source>
@@ -1080,10 +1111,6 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <message>
         <source>Open wallet warning</source>
         <translation type="unfinished">Внимание, отворен портфейл</translation>
-    </message>
-    <message>
-        <source>default wallet</source>
-        <translation type="unfinished">Портфейл по подразбиране</translation>
     </message>
     <message>
         <source>Open Wallet</source>
@@ -1154,6 +1181,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation type="unfinished">Създайте портфейл</translation>
     </message>
     <message>
+        <source>You are one step away from creating your new wallet!</source>
+        <translation type="unfinished">Вие сте само на крачка от създаването на вашия нов портфейл!</translation>
+    </message>
+    <message>
         <source>Wallet Name</source>
         <translation type="unfinished">Име на портфейл</translation>
     </message>
@@ -1190,14 +1221,6 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation type="unfinished">Създайте празен портфейл</translation>
     </message>
     <message>
-        <source>Use descriptors for scriptPubKey management</source>
-        <translation type="unfinished">Използвайте декодери за управление на scriptPubKey</translation>
-    </message>
-    <message>
-        <source>Descriptor Wallet</source>
-        <translation type="unfinished">Декодер за портфейл</translation>
-    </message>
-    <message>
         <source>Use an external signing device such as a hardware wallet. Configure the external signer script in wallet preferences first.</source>
         <translation type="unfinished">Използвайте външно устройство за подписване, като хардуерен портфейл. Конфигурирайте първо външния скрипт на подписа в предпочитания портфейл.</translation>
     </message>
@@ -1208,10 +1231,6 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <message>
         <source>Create</source>
         <translation type="unfinished">Създай</translation>
-    </message>
-    <message>
-        <source>Compiled without sqlite support (required for descriptor wallets)</source>
-        <translation type="unfinished">Компилиран без поддръжка на sqlite (изисква се за декодер на портфейли)</translation>
     </message>
     <message>
         <source>Compiled without external signing support (required for external signing)</source>
@@ -1481,7 +1500,11 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <source>Unknown. Syncing Headers (%1, %2%)…</source>
         <translation type="unfinished">Неизвестно. Синхронизиране на Глави (%1, %2%)...</translation>
     </message>
-    </context>
+    <message>
+        <source>Unknown. Pre-syncing Headers (%1, %2%)…</source>
+        <translation type="unfinished">Неизвестно. Предварителна синхронизация на хедъри (%1, %2%)…</translation>
+    </message>
+</context>
 <context>
     <name>OpenURIDialog</name>
     <message>
@@ -1717,10 +1740,6 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation type="unfinished">Дали да покаже възможностите за контрол на монетите или не.</translation>
     </message>
     <message>
-        <source>Monospaced font in the Overview tab:</source>
-        <translation type="unfinished">Моноширинен шрифт в раздела Общ преглед:</translation>
-    </message>
-    <message>
         <source>&amp;OK</source>
         <translation type="unfinished">ОК</translation>
     </message>
@@ -1850,6 +1869,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <message>
         <source>Close</source>
         <translation type="unfinished">Затвори</translation>
+    </message>
+    <message>
+        <source>own address</source>
+        <translation type="unfinished">собствен адрес</translation>
     </message>
     <message>
         <source>Total Amount</source>
@@ -2114,6 +2137,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation type="unfinished">&amp;Копирай адрес</translation>
     </message>
     <message>
+        <source>None</source>
+        <translation type="unfinished">нито един</translation>
+    </message>
+    <message>
         <source>Executing command without any wallet</source>
         <translation type="unfinished">Извършване на команда без портфейл</translation>
     </message>
@@ -2342,10 +2369,6 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation type="unfinished">Изчисти всички полета от формуляра.</translation>
     </message>
     <message>
-        <source>Dust:</source>
-        <translation type="unfinished">прах:</translation>
-    </message>
-    <message>
         <source>Clear &amp;All</source>
         <translation type="unfinished">&amp;Изчисти</translation>
     </message>
@@ -2380,10 +2403,6 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <message>
         <source>Copy bytes</source>
         <translation type="unfinished">Копиране на байтовете</translation>
-    </message>
-    <message>
-        <source>Copy dust</source>
-        <translation type="unfinished">Копирай прахта:</translation>
     </message>
     <message>
         <source>Copy change</source>
@@ -2541,10 +2560,6 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <message>
         <source>Please check the address and try again.</source>
         <translation type="unfinished">Моля проверете адреса и опитайте отново.</translation>
-    </message>
-    <message>
-        <source>The entered address does not refer to a key.</source>
-        <translation type="unfinished">Въведеният адрес не може да се съпостави с валиден ключ.</translation>
     </message>
     <message>
         <source>Wallet unlock was cancelled.</source>
@@ -2761,10 +2776,6 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation type="unfinished">Изпратени на</translation>
     </message>
     <message>
-        <source>Payment to yourself</source>
-        <translation type="unfinished">Плащане към себе си</translation>
-    </message>
-    <message>
         <source>Mined</source>
         <translation type="unfinished">Емитирани</translation>
     </message>
@@ -2826,10 +2837,6 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <message>
         <source>Sent to</source>
         <translation type="unfinished">Изпратени на</translation>
-    </message>
-    <message>
-        <source>To yourself</source>
-        <translation type="unfinished">Собствени</translation>
     </message>
     <message>
         <source>Mined</source>
@@ -2934,11 +2941,7 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <source>Send Coins</source>
         <translation type="unfinished">Изпращане</translation>
     </message>
-    <message>
-        <source>default wallet</source>
-        <translation type="unfinished">Портфейл по подразбиране</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>WalletView</name>
     <message>

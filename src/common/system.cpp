@@ -3,6 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include <config/bitcoin-config.h> // IWYU pragma: keep
+
 #include <common/system.h>
 
 #include <logging.h>
@@ -25,6 +27,8 @@
 #include <stdexcept>
 #include <string>
 #include <thread>
+
+using util::ReplaceAll;
 
 // Application startup time (used for uptime calculation)
 const int64_t nStartupTime = GetTime();
