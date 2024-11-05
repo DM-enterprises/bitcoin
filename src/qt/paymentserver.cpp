@@ -2,6 +2,10 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#if defined(HAVE_CONFIG_H)
+#include <config/bitcoin-config.h>
+#endif
+
 #include <qt/paymentserver.h>
 
 #include <qt/bitcoinunits.h>
@@ -33,7 +37,7 @@
 #include <QUrlQuery>
 
 const int BITCOIN_IPC_CONNECT_TIMEOUT = 1000; // milliseconds
-const QString BITCOIN_IPC_PREFIX("groestlcoin:");
+const QString BITCOIN_IPC_PREFIX("bitcoin:");
 
 //
 // Create a name that is unique for:
@@ -42,7 +46,7 @@ const QString BITCOIN_IPC_PREFIX("groestlcoin:");
 //
 static QString ipcServerName()
 {
-    QString name("GroestlcoinQt");
+    QString name("BitcoinQt");
 
     // Append a simple hash of the datadir
     // Note that gArgs.GetDataDirNet() returns a different path
@@ -189,12 +193,12 @@ void PaymentServer::handleURIOrFile(const QString& s)
         return;
     }
 
-    if (s.startsWith("groestlcoin://", Qt::CaseInsensitive))
+    if (s.startsWith("bitcoin://", Qt::CaseInsensitive))
     {
-        Q_EMIT message(tr("URI handling"), tr("'groestlcoin://' is not a valid URI. Use 'groestlcoin:' instead."),
+        Q_EMIT message(tr("URI handling"), tr("'bitcoin://' is not a valid URI. Use 'bitcoin:' instead."),
             CClientUIInterface::MSG_ERROR);
     }
-    else if (s.startsWith(BITCOIN_IPC_PREFIX, Qt::CaseInsensitive)) // groestlcoin: URI
+    else if (s.startsWith(BITCOIN_IPC_PREFIX, Qt::CaseInsensitive)) // bitcoin: URI
     {
         QUrlQuery uri((QUrl(s)));
         // normal URI

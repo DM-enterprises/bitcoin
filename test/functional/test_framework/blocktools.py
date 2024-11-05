@@ -28,7 +28,6 @@ from .messages import (
     ser_uint256,
     tx_from_hex,
     uint256_from_str,
-    WITNESS_SCALE_FACTOR,
 )
 from .script import (
     CScript,
@@ -46,9 +45,9 @@ from .script_util import (
 )
 from .util import assert_equal
 
+WITNESS_SCALE_FACTOR = 4
 MAX_BLOCK_SIGOPS = 20000
 MAX_BLOCK_SIGOPS_WEIGHT = MAX_BLOCK_SIGOPS * WITNESS_SCALE_FACTOR
-MAX_STANDARD_TX_WEIGHT = 400000
 
 # Genesis block time (regtest)
 TIME_GENESIS_BLOCK = 1296688602
@@ -154,18 +153,16 @@ def create_coinbase(height, pubkey=None, *, script_pubkey=None, extra_output_scr
     coinbase.calc_sha256()
     return coinbase
 
-def create_tx_with_script(prevtx, n, script_sig=b"", *, amount, output_script=None):
+def create_tx_with_script(prevtx, n, script_sig=b"", *, amount, script_pub_key=CScript()):
     """Return one-input, one-output transaction object
        spending the prevtx's n-th output with the given amount.
 
        Can optionally pass scriptPubKey and scriptSig, default is anyone-can-spend output.
     """
-    if output_script is None:
-        output_script = CScript()
     tx = CTransaction()
     assert n < len(prevtx.vout)
     tx.vin.append(CTxIn(COutPoint(prevtx.sha256, n), script_sig, SEQUENCE_FINAL))
-    tx.vout.append(CTxOut(amount, output_script))
+    tx.vout.append(CTxOut(amount, script_pub_key))
     tx.calc_sha256()
     return tx
 

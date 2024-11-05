@@ -10,7 +10,6 @@
 #include <uint256.h>
 #include <univalue.h>
 #include <util/strencodings.h>
-#include <util/transaction_identifier.h>
 
 #include <cassert>
 #include <cstdint>
@@ -28,11 +27,8 @@ FUZZ_TARGET(hex)
         assert(ToLower(random_hex_string) == hex_data);
     }
     (void)IsHexNumber(random_hex_string);
-    if (uint256::FromHex(random_hex_string)) {
-        assert(random_hex_string.length() == 64);
-        assert(Txid::FromHex(random_hex_string));
-        assert(Wtxid::FromHex(random_hex_string));
-    }
+    uint256 result;
+    (void)ParseHashStr(random_hex_string, result);
     (void)uint256S(random_hex_string);
     try {
         (void)HexToPubKey(random_hex_string);

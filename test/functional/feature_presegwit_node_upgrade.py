@@ -54,4 +54,4 @@ class SegwitUpgradeTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    SegwitUpgradeTest(__file__).main()
+    SegwitUpgradeTest().main()

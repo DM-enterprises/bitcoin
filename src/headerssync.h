@@ -100,7 +100,7 @@ struct CompressedHeader {
 
 class HeadersSyncState {
 public:
-    ~HeadersSyncState() = default;
+    ~HeadersSyncState() {}
 
     enum class State {
         /** PRESYNC means the peer has not yet demonstrated their chain has

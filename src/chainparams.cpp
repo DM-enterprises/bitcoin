@@ -15,15 +15,11 @@
 #include <util/strencodings.h>
 #include <util/string.h>
 
-#include <memory>
-
 #include <cassert>
 #include <cstdint>
 #include <limits>
 #include <stdexcept>
 #include <vector>
-
-using util::SplitString;
 
 void ReadSigNetArgs(const ArgsManager& args, CChainParams::SigNetOptions& options)
 {
@@ -117,8 +113,6 @@ std::unique_ptr<const CChainParams> CreateChainParams(const ArgsManager& args, c
         return CChainParams::Main();
     case ChainType::TESTNET:
         return CChainParams::TestNet();
-    case ChainType::TESTNET4:
-        return CChainParams::TestNet4();
     case ChainType::SIGNET: {
         auto opts = CChainParams::SigNetOptions{};
         ReadSigNetArgs(args, opts);

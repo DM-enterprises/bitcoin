@@ -235,11 +235,11 @@ BOOST_FIXTURE_TEST_CASE(importmulti_rescan, TestChain100Setup)
         key.pushKV("scriptPubKey", HexStr(GetScriptForRawPubKey(futureKey.GetPubKey())));
         key.pushKV("timestamp", newTip->GetBlockTimeMax() + TIMESTAMP_WINDOW + 1);
         key.pushKV("internal", UniValue(true));
-        keys.push_back(std::move(key));
+        keys.push_back(key);
         JSONRPCRequest request;
         request.context = &context;
         request.params.setArray();
-        request.params.push_back(std::move(keys));
+        request.params.push_back(keys);
 
         UniValue response = importmulti().HandleRequest(request);
         BOOST_CHECK_EQUAL(response.write(),
@@ -247,7 +247,7 @@ BOOST_FIXTURE_TEST_CASE(importmulti_rescan, TestChain100Setup)
                       "timestamp %d. There was an error reading a block from time %d, which is after or within %d "
                       "seconds of key creation, and could contain transactions pertaining to the key. As a result, "
                       "transactions and coins using this key may not appear in the wallet. This error could be caused "
-                      "by pruning or data corruption (see groestlcoind log for details) and could be dealt with by "
+                      "by pruning or data corruption (see bitcoind log for details) and could be dealt with by "
                       "downloading and rescanning the relevant blocks (see -reindex option and rescanblockchain "
                       "RPC).\"}},{\"success\":true}]",
                               0, oldTip->GetBlockTimeMax(), TIMESTAMP_WINDOW));
@@ -327,40 +327,6 @@ BOOST_FIXTURE_TEST_CASE(importwallet_rescan, TestChain100Setup)
             BOOST_CHECK_EQUAL(found, expected);
         }
     }
-}
-
-// This test verifies that wallet settings can be added and removed
-// concurrently, ensuring no race conditions occur during either process.
-BOOST_FIXTURE_TEST_CASE(write_wallet_settings_concurrently, TestingSetup)
-{
-    WalletContext context;
-    context.chain = m_node.chain.get();
-    const auto NUM_WALLETS{5};
-
-    // Since we're counting the number of wallets, ensure we start without any.
-    BOOST_REQUIRE(context.chain->getRwSetting("wallet").isNull());
-
-    const auto& check_concurrent_wallet = [&](const auto& settings_function, int num_expected_wallets) {
-        std::vector<std::thread> threads;
-        threads.reserve(NUM_WALLETS);
-        for (auto i{0}; i < NUM_WALLETS; ++i) threads.emplace_back(settings_function, i);
-        for (auto& t : threads) t.join();
-
-        auto wallets = context.chain->getRwSetting("wallet");
-        BOOST_CHECK_EQUAL(wallets.getValues().size(), num_expected_wallets);
-    };
-
-    // Add NUM_WALLETS wallets concurrently, ensure we end up with NUM_WALLETS stored.
-    check_concurrent_wallet([&context](int i) {
-        Assert(AddWalletSetting(*context.chain, strprintf("wallet_%d", i)));
-    },
-                            /*num_expected_wallets=*/NUM_WALLETS);
-
-    // Remove NUM_WALLETS wallets concurrently, ensure we end up with 0 wallets.
-    check_concurrent_wallet([&context](int i) {
-        Assert(RemoveWalletSetting(*context.chain, strprintf("wallet_%d", i)));
-    },
-                            /*num_expected_wallets=*/0);
 }
 
 // Check that GetImmatureCredit() returns a newly calculated value instead of
@@ -479,11 +445,9 @@ BOOST_FIXTURE_TEST_CASE(LoadReceiveRequests, TestingSetup)
             auto requests = wallet->GetAddressReceiveRequests();
             auto erequests = {"val_rr11", "val_rr20"};
             BOOST_CHECK_EQUAL_COLLECTIONS(requests.begin(), requests.end(), std::begin(erequests), std::end(erequests));
-            RunWithinTxn(wallet->GetDatabase(), /*process_desc*/"test", [](WalletBatch& batch){
-                BOOST_CHECK(batch.WriteAddressPreviouslySpent(PKHash(), false));
-                BOOST_CHECK(batch.EraseAddressData(ScriptHash()));
-                return true;
-            });
+            WalletBatch batch{wallet->GetDatabase()};
+            BOOST_CHECK(batch.WriteAddressPreviouslySpent(PKHash(), false));
+            BOOST_CHECK(batch.EraseAddressData(ScriptHash()));
         });
         TestLoadWallet(name, format, [](std::shared_ptr<CWallet> wallet) EXCLUSIVE_LOCKS_REQUIRED(wallet->cs_wallet) {
             BOOST_CHECK(!wallet->IsAddressPreviouslySpent(PKHash()));
@@ -533,10 +497,8 @@ static void TestWatchOnlyPubKey(LegacyScriptPubKeyMan* spk_man, const CPubKey& a
 // Cryptographically invalidate a PubKey whilst keeping length and first byte
 static void PollutePubKey(CPubKey& pubkey)
 {
-    assert(pubkey.size() >= 1);
-    std::vector<unsigned char> pubkey_raw;
-    pubkey_raw.push_back(pubkey[0]);
-    pubkey_raw.insert(pubkey_raw.end(), pubkey.size() - 1, 0);
+    std::vector<unsigned char> pubkey_raw(pubkey.begin(), pubkey.end());
+    std::fill(pubkey_raw.begin()+1, pubkey_raw.end(), 0);
     pubkey = CPubKey(pubkey_raw);
     assert(!pubkey.IsFullyValid());
     assert(pubkey.IsValid());
@@ -850,7 +812,7 @@ BOOST_FIXTURE_TEST_CASE(CreateWallet, TestChain100Setup)
     // transactionAddedToMempool notifications, and create block and mempool
     // transactions paying to the wallet
     std::promise<void> promise;
-    m_node.validation_signals->CallFunctionInValidationInterfaceQueue([&promise] {
+    CallFunctionInValidationInterfaceQueue([&promise] {
         promise.get_future().wait();
     });
     std::string error;
@@ -878,7 +840,7 @@ BOOST_FIXTURE_TEST_CASE(CreateWallet, TestChain100Setup)
     // Unblock notification queue and make sure stale blockConnected and
     // transactionAddedToMempool events are processed
     promise.set_value();
-    m_node.validation_signals->SyncWithValidationInterfaceQueue();
+    SyncWithValidationInterfaceQueue();
     // AddToWallet events for block_tx and mempool_tx events are counted a
     // second time as the notification queue is processed
     BOOST_CHECK_EQUAL(addtx_count, 5);
@@ -901,7 +863,7 @@ BOOST_FIXTURE_TEST_CASE(CreateWallet, TestChain100Setup)
             m_coinbase_txns.push_back(CreateAndProcessBlock({block_tx}, GetScriptForRawPubKey(coinbaseKey.GetPubKey())).vtx[0]);
             mempool_tx = TestSimpleSpend(*m_coinbase_txns[3], 0, coinbaseKey, GetScriptForRawPubKey(key.GetPubKey()));
             BOOST_CHECK(m_node.chain->broadcastTransaction(MakeTransactionRef(mempool_tx), DEFAULT_TRANSACTION_MAXFEE, false, error));
-            m_node.validation_signals->SyncWithValidationInterfaceQueue();
+            SyncWithValidationInterfaceQueue();
         });
     wallet = TestLoadWallet(context);
     // Since mempool transactions are requested at the end of loading, there will
@@ -923,10 +885,10 @@ BOOST_FIXTURE_TEST_CASE(CreateWalletWithoutChain, BasicTestingSetup)
     context.args = &m_args;
     auto wallet = TestLoadWallet(context);
     BOOST_CHECK(wallet);
-    WaitForDeleteWallet(std::move(wallet));
+    UnloadWallet(std::move(wallet));
 }
 
-BOOST_FIXTURE_TEST_CASE(RemoveTxs, TestChain100Setup)
+BOOST_FIXTURE_TEST_CASE(ZapSelectTx, TestChain100Setup)
 {
     m_args.ForceSetArg("-unsafesqlitesync", "1");
     WalletContext context;
@@ -941,7 +903,7 @@ BOOST_FIXTURE_TEST_CASE(RemoveTxs, TestChain100Setup)
     auto block_tx = TestSimpleSpend(*m_coinbase_txns[0], 0, coinbaseKey, GetScriptForRawPubKey(key.GetPubKey()));
     CreateAndProcessBlock({block_tx}, GetScriptForRawPubKey(coinbaseKey.GetPubKey()));
 
-    m_node.validation_signals->SyncWithValidationInterfaceQueue();
+    SyncWithValidationInterfaceQueue();
 
     {
         auto block_hash = block_tx.GetHash();
@@ -951,8 +913,8 @@ BOOST_FIXTURE_TEST_CASE(RemoveTxs, TestChain100Setup)
         BOOST_CHECK(wallet->HasWalletSpend(prev_tx));
         BOOST_CHECK_EQUAL(wallet->mapWallet.count(block_hash), 1u);
 
-        std::vector<uint256> vHashIn{ block_hash };
-        BOOST_CHECK(wallet->RemoveTxs(vHashIn));
+        std::vector<uint256> vHashIn{ block_hash }, vHashOut;
+        BOOST_CHECK_EQUAL(wallet->ZapSelectTx(vHashIn, vHashOut), DBErrors::LOAD_OK);
 
         BOOST_CHECK(!wallet->HasWalletSpend(prev_tx));
         BOOST_CHECK_EQUAL(wallet->mapWallet.count(block_hash), 0u);

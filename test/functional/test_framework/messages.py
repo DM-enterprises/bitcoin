@@ -30,7 +30,6 @@ import unittest
 
 from test_framework.crypto.siphash import siphash256
 from test_framework.util import assert_equal
-import groestlcoin_hash
 
 MAX_LOCATOR_SZ = 101
 MAX_BLOCK_WEIGHT = 4000000
@@ -47,7 +46,6 @@ MAX_PROTOCOL_MESSAGE_LENGTH = 4000000  # Maximum length of incoming protocol mes
 MAX_HEADERS_RESULTS = 2000  # Number of headers sent in one getheaders result
 MAX_INV_SIZE = 50000  # Maximum number of entries in an 'inv' protocol message
 
-NODE_NONE = 0
 NODE_NETWORK = (1 << 0)
 NODE_BLOOM = (1 << 2)
 NODE_WITNESS = (1 << 3)
@@ -77,7 +75,7 @@ MAX_OP_RETURN_RELAY = 83
 DEFAULT_MEMPOOL_EXPIRY_HOURS = 336  # hours
 
 MAGIC_BYTES = {
-    "mainnet": b"\xf9\xbe\xb4\xd4",   # mainnet
+    "mainnet": b"\xf9\xbe\xb4\xd9",   # mainnet
     "testnet3": b"\x0b\x11\x09\x07",  # testnet3
     "regtest": b"\xfa\xbf\xb5\xda",   # regtest
     "signet": b"\x0a\x03\xcf\x40",    # signet
@@ -94,8 +92,6 @@ def sha3(s):
 def hash256(s):
     return sha256(sha256(s))
 
-def groestl_hash(s):
-    return groestlcoin_hash.getHash(s, len(s))
 
 def ser_compact_size(l):
     r = b""
@@ -563,12 +559,12 @@ class CTxWitness:
 
 
 class CTransaction:
-    __slots__ = ("hash", "nLockTime", "version", "sha256", "vin", "vout",
+    __slots__ = ("hash", "nLockTime", "nVersion", "sha256", "vin", "vout",
                  "wit")
 
     def __init__(self, tx=None):
         if tx is None:
-            self.version = 2
+            self.nVersion = 2
             self.vin = []
             self.vout = []
             self.wit = CTxWitness()
@@ -576,7 +572,7 @@ class CTransaction:
             self.sha256 = None
             self.hash = None
         else:
-            self.version = tx.version
+            self.nVersion = tx.nVersion
             self.vin = copy.deepcopy(tx.vin)
             self.vout = copy.deepcopy(tx.vout)
             self.nLockTime = tx.nLockTime
@@ -585,7 +581,7 @@ class CTransaction:
             self.wit = copy.deepcopy(tx.wit)
 
     def deserialize(self, f):
-        self.version = int.from_bytes(f.read(4), "little")
+        self.nVersion = int.from_bytes(f.read(4), "little", signed=True)
         self.vin = deser_vector(f, CTxIn)
         flags = 0
         if len(self.vin) == 0:
@@ -608,7 +604,7 @@ class CTransaction:
 
     def serialize_without_witness(self):
         r = b""
-        r += self.version.to_bytes(4, "little")
+        r += self.nVersion.to_bytes(4, "little", signed=True)
         r += ser_vector(self.vin)
         r += ser_vector(self.vout)
         r += self.nLockTime.to_bytes(4, "little")
@@ -620,7 +616,7 @@ class CTransaction:
         if not self.wit.is_null():
             flags |= 1
         r = b""
-        r += self.version.to_bytes(4, "little")
+        r += self.nVersion.to_bytes(4, "little", signed=True)
         if flags:
             dummy = []
             r += ser_vector(dummy)
@@ -656,11 +652,11 @@ class CTransaction:
     def calc_sha256(self, with_witness=False):
         if with_witness:
             # Don't cache the result, just return it
-            return uint256_from_str(sha256(self.serialize_with_witness()))
+            return uint256_from_str(hash256(self.serialize_with_witness()))
 
         if self.sha256 is None:
-            self.sha256 = uint256_from_str(sha256(self.serialize_without_witness()))
-        self.hash = sha256(self.serialize_without_witness())[::-1].hex()
+            self.sha256 = uint256_from_str(hash256(self.serialize_without_witness()))
+        self.hash = hash256(self.serialize_without_witness())[::-1].hex()
 
     def is_valid(self):
         self.calc_sha256()
@@ -680,8 +676,8 @@ class CTransaction:
         return math.ceil(self.get_weight() / WITNESS_SCALE_FACTOR)
 
     def __repr__(self):
-        return "CTransaction(version=%i vin=%s vout=%s wit=%s nLockTime=%i)" \
-            % (self.version, repr(self.vin), repr(self.vout), repr(self.wit), self.nLockTime)
+        return "CTransaction(nVersion=%i vin=%s vout=%s wit=%s nLockTime=%i)" \
+            % (self.nVersion, repr(self.vin), repr(self.vout), repr(self.wit), self.nLockTime)
 
 
 class CBlockHeader:
@@ -741,8 +737,8 @@ class CBlockHeader:
             r += self.nTime.to_bytes(4, "little")
             r += self.nBits.to_bytes(4, "little")
             r += self.nNonce.to_bytes(4, "little")
-            self.sha256 = uint256_from_str(groestl_hash(r))
-            self.hash = groestl_hash(r)[::-1].hex()
+            self.sha256 = uint256_from_str(hash256(r))
+            self.hash = hash256(r)[::-1].hex()
 
     def rehash(self):
         self.sha256 = None
@@ -1067,7 +1063,7 @@ class CPartialMerkleTree:
         self.vBits = []
 
     def deserialize(self, f):
-        self.nTransactions = int.from_bytes(f.read(4), "little")
+        self.nTransactions = int.from_bytes(f.read(4), "little", signed=True)
         self.vHash = deser_uint256_vector(f)
         vBytes = deser_string(f)
         self.vBits = []
@@ -1076,7 +1072,7 @@ class CPartialMerkleTree:
 
     def serialize(self):
         r = b""
-        r += self.nTransactions.to_bytes(4, "little")
+        r += self.nTransactions.to_bytes(4, "little", signed=True)
         r += ser_uint256_vector(self.vHash)
         vBytesArray = bytearray([0x00] * ((len(self.vBits) + 7)//8))
         for i in range(len(self.vBits)):
@@ -1297,11 +1293,8 @@ class msg_tx:
     __slots__ = ("tx",)
     msgtype = b"tx"
 
-    def __init__(self, tx=None):
-        if tx is None:
-            self.tx = CTransaction()
-        else:
-            self.tx = tx
+    def __init__(self, tx=CTransaction()):
+        self.tx = tx
 
     def deserialize(self, f):
         self.tx.deserialize(f)

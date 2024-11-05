@@ -8,7 +8,6 @@
 #include <attributes.h>
 #include <sync.h>
 #include <threadsafety.h>
-#include <util/task_runner.h>
 
 #include <chrono>
 #include <condition_variable>
@@ -121,16 +120,12 @@ private:
  * B() will be able to observe all of the effects of callback A() which executed
  * before it.
  */
-class SerialTaskRunner : public util::TaskRunnerInterface
+class SingleThreadedSchedulerClient
 {
 private:
     CScheduler& m_scheduler;
 
     Mutex m_callbacks_mutex;
-
-    // We are not allowed to assume the scheduler only runs in one thread,
-    // but must ensure all callbacks happen in-order, so we end up creating
-    // our own queue here :(
     std::list<std::function<void()>> m_callbacks_pending GUARDED_BY(m_callbacks_mutex);
     bool m_are_callbacks_running GUARDED_BY(m_callbacks_mutex) = false;
 
@@ -138,7 +133,7 @@ private:
     void ProcessQueue() EXCLUSIVE_LOCKS_REQUIRED(!m_callbacks_mutex);
 
 public:
-    explicit SerialTaskRunner(CScheduler& scheduler LIFETIMEBOUND) : m_scheduler{scheduler} {}
+    explicit SingleThreadedSchedulerClient(CScheduler& scheduler LIFETIMEBOUND) : m_scheduler{scheduler} {}
 
     /**
      * Add a callback to be executed. Callbacks are executed serially
@@ -146,15 +141,15 @@ public:
      * Practically, this means that callbacks can behave as if they are executed
      * in order by a single thread.
      */
-    void insert(std::function<void()> func) override EXCLUSIVE_LOCKS_REQUIRED(!m_callbacks_mutex);
+    void AddToProcessQueue(std::function<void()> func) EXCLUSIVE_LOCKS_REQUIRED(!m_callbacks_mutex);
 
     /**
      * Processes all remaining queue members on the calling thread, blocking until queue is empty
      * Must be called after the CScheduler has no remaining processing threads!
      */
-    void flush() override EXCLUSIVE_LOCKS_REQUIRED(!m_callbacks_mutex);
+    void EmptyQueue() EXCLUSIVE_LOCKS_REQUIRED(!m_callbacks_mutex);
 
-    size_t size() override EXCLUSIVE_LOCKS_REQUIRED(!m_callbacks_mutex);
+    size_t CallbacksPending() EXCLUSIVE_LOCKS_REQUIRED(!m_callbacks_mutex);
 };
 
 #endif // BITCOIN_SCHEDULER_H

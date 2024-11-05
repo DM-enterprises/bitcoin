@@ -19,7 +19,6 @@ static const struct {
 } network_styles[] = {
     {ChainType::MAIN, QAPP_APP_NAME_DEFAULT, 0, 0},
     {ChainType::TESTNET, QAPP_APP_NAME_TESTNET, 70, 30},
-    {ChainType::TESTNET4, QAPP_APP_NAME_TESTNET4, 70, 30},
     {ChainType::SIGNET, QAPP_APP_NAME_SIGNET, 35, 15},
     {ChainType::REGTEST, QAPP_APP_NAME_REGTEST, 160, 30},
 };
@@ -30,7 +29,7 @@ NetworkStyle::NetworkStyle(const QString &_appName, const int iconColorHueShift,
     titleAddText(qApp->translate("SplashScreen", _titleAddText))
 {
     // load pixmap
-    QPixmap pixmap(":/icons/groestlcoin");
+    QPixmap pixmap(":/icons/bitcoin");
 
     if(iconColorHueShift != 0 && iconColorSaturationReduction != 0)
     {

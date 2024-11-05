@@ -72,4 +72,4 @@ class DiscoverTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    DiscoverTest(__file__).main()
+    DiscoverTest().main()

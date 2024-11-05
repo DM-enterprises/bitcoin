@@ -39,11 +39,11 @@
     </message>
     <message>
         <source>&amp;Export</source>
-        <translation type="unfinished">&amp;Izvezite</translation>
+        <translation type="unfinished">&amp;Izvozi</translation>
     </message>
     <message>
         <source>&amp;Delete</source>
-        <translation type="unfinished">&amp;Izbrišite</translation>
+        <translation type="unfinished">Iz&amp;brišite</translation>
     </message>
     <message>
         <source>Choose the address to send coins to</source>
@@ -56,6 +56,14 @@
     <message>
         <source>C&amp;hoose</source>
         <translation type="unfinished">&amp;Odaberite</translation>
+    </message>
+    <message>
+        <source>Sending addresses</source>
+        <translation type="unfinished">Adrese pošiljatelja</translation>
+    </message>
+    <message>
+        <source>Receiving addresses</source>
+        <translation type="unfinished">Adrese primatelja</translation>
     </message>
     <message>
         <source>These are your Bitcoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
@@ -174,10 +182,6 @@ Potpisivanje je moguće samo sa 'legacy' adresama. </translation>
     <message>
         <source>Enter the old passphrase and new passphrase for the wallet.</source>
         <translation type="unfinished">Unesite staru i novu lozinku za novčanik.</translation>
-    </message>
-    <message>
-        <source>Continue</source>
-        <translation type="unfinished">Nastavi</translation>
     </message>
     <message>
         <source>Remember that encrypting your wallet cannot fully protect your bitcoins from being stolen by malware infecting your computer.</source>
@@ -397,11 +401,7 @@ Potpisivanje je moguće samo sa 'legacy' adresama. </translation>
             <numerusform>%n godina</numerusform>
         </translation>
     </message>
-    <message>
-        <source>default wallet</source>
-        <translation type="unfinished">uobičajeni novčanik</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>BitcoinGUI</name>
     <message>
@@ -491,7 +491,7 @@ Potpisivanje je moguće samo sa 'legacy' adresama. </translation>
     </message>
     <message>
         <source>&amp;Options…</source>
-        <translation type="unfinished">&amp;Opcije</translation>
+        <translation type="unfinished">&amp;Postavke</translation>
     </message>
     <message>
         <source>&amp;Encrypt Wallet…</source>
@@ -527,7 +527,7 @@ Potpisivanje je moguće samo sa 'legacy' adresama. </translation>
     </message>
     <message>
         <source>&amp;Load PSBT from file…</source>
-        <translation type="unfinished">&amp;Učitaj PSBT iz datoteke...</translation>
+        <translation type="unfinished">&amp;Učitaj PSBT iz datoteke</translation>
     </message>
     <message>
         <source>Open &amp;URI…</source>
@@ -696,6 +696,10 @@ Potpisivanje je moguće samo sa 'legacy' adresama. </translation>
     <message>
         <source>Mask the values in the Overview tab</source>
         <translation type="unfinished">Sakrij vrijednost u tabu Pregled </translation>
+    </message>
+    <message>
+        <source>default wallet</source>
+        <translation type="unfinished">uobičajeni novčanik</translation>
     </message>
     <message>
         <source>No wallets available</source>
@@ -871,6 +875,10 @@ Potpisivanje je moguće samo sa 'legacy' adresama. </translation>
         <translation type="unfinished">Naknada:</translation>
     </message>
     <message>
+        <source>Dust:</source>
+        <translation type="unfinished">Prah:</translation>
+    </message>
+    <message>
         <source>After Fee:</source>
         <translation type="unfinished">Nakon naknade:</translation>
     </message>
@@ -959,12 +967,28 @@ Potpisivanje je moguće samo sa 'legacy' adresama. </translation>
         <translation type="unfinished">Kopirajte količinu bajtova</translation>
     </message>
     <message>
+        <source>Copy dust</source>
+        <translation type="unfinished">Kopirajte sićušne iznose ("prašinu")</translation>
+    </message>
+    <message>
         <source>Copy change</source>
         <translation type="unfinished">Kopirajte ostatak</translation>
     </message>
     <message>
         <source>(%1 locked)</source>
         <translation type="unfinished">(%1 zaključen)</translation>
+    </message>
+    <message>
+        <source>yes</source>
+        <translation type="unfinished">da</translation>
+    </message>
+    <message>
+        <source>no</source>
+        <translation type="unfinished">ne</translation>
+    </message>
+    <message>
+        <source>This label turns red if any recipient receives an amount smaller than the current dust threshold.</source>
+        <translation type="unfinished">Oznaka postane crvene boje ako bilo koji primatelj dobije iznos manji od trenutnog praga "prašine" (sićušnog iznosa).</translation>
     </message>
     <message>
         <source>Can vary +/- %1 satoshi(s) per input.</source>
@@ -1030,6 +1054,10 @@ Potpisivanje je moguće samo sa 'legacy' adresama. </translation>
     <message>
         <source>Open wallet warning</source>
         <translation type="unfinished">Upozorenje kod otvaranja novčanika</translation>
+    </message>
+    <message>
+        <source>default wallet</source>
+        <translation type="unfinished">uobičajeni novčanik</translation>
     </message>
     <message>
         <source>Open Wallet</source>
@@ -1108,6 +1136,14 @@ Potpisivanje je moguće samo sa 'legacy' adresama. </translation>
         <translation type="unfinished">Stvorite prazni novčanik</translation>
     </message>
     <message>
+        <source>Use descriptors for scriptPubKey management</source>
+        <translation type="unfinished">Koristi deskriptore za upravljanje scriptPubKey-a</translation>
+    </message>
+    <message>
+        <source>Descriptor Wallet</source>
+        <translation type="unfinished">Deskriptor novčanik</translation>
+    </message>
+    <message>
         <source>Use an external signing device such as a hardware wallet. Configure the external signer script in wallet preferences first.</source>
         <translation type="unfinished">Koristi vanjski potpisni uređaj kao što je hardverski novčanik.  Prije korištenja konfiguriraj vanjski potpisni skript u postavkama novčanika.</translation>
     </message>
@@ -1118,6 +1154,10 @@ Potpisivanje je moguće samo sa 'legacy' adresama. </translation>
     <message>
         <source>Create</source>
         <translation type="unfinished">Stvorite</translation>
+    </message>
+    <message>
+        <source>Compiled without sqlite support (required for descriptor wallets)</source>
+        <translation type="unfinished">Kompajlirano bez sqlite mogućnosti (potrebno za deskriptor novčanike)</translation>
     </message>
     <message>
         <source>Compiled without external signing support (required for external signing)</source>
@@ -1651,6 +1691,18 @@ Potpisivanje je moguće samo sa 'legacy' adresama. </translation>
         <translation type="unfinished">Koristite zaseban SOCKS&amp;5 proxy kako biste dohvatili klijente preko Tora:</translation>
     </message>
     <message>
+        <source>Monospaced font in the Overview tab:</source>
+        <translation type="unfinished">Font fiksne širine u tabu Pregled:</translation>
+    </message>
+    <message>
+        <source>embedded "%1"</source>
+        <translation type="unfinished">ugrađen "%1"</translation>
+    </message>
+    <message>
+        <source>closest matching "%1"</source>
+        <translation type="unfinished">najbliže poklapanje "%1"</translation>
+    </message>
+    <message>
         <source>&amp;OK</source>
         <translation type="unfinished">&amp;U redu</translation>
     </message>
@@ -1876,8 +1928,8 @@ Potpisivanje je moguće samo sa 'legacy' adresama. </translation>
         <translation type="unfinished">PBST spremljen na disk.</translation>
     </message>
     <message>
-        <source>own address</source>
-        <translation type="unfinished">vlastita adresa</translation>
+        <source> * Sends %1 to %2</source>
+        <translation type="unfinished">* Šalje %1 %2</translation>
     </message>
     <message>
         <source>Unable to calculate transaction fee or total transaction amount.</source>
@@ -2395,10 +2447,6 @@ Ako imate ovu grešku, od trgovca zatražite URI koji je kompatibilan sa BIP21.<
         <translation type="unfinished">Mrežna aktivnost isključena</translation>
     </message>
     <message>
-        <source>None</source>
-        <translation type="unfinished">Ništa</translation>
-    </message>
-    <message>
         <source>Executing command without any wallet</source>
         <translation type="unfinished">Izvršava se naredba bez bilo kakvog novčanika</translation>
     </message>
@@ -2741,12 +2789,17 @@ Za više informacija o korištenju ove konzile, utipkajte %6.
         <translation type="unfinished">Inputi...</translation>
     </message>
     <message>
+        <source>Dust:</source>
+        <translation type="unfinished">Prah:</translation>
+    </message>
+    <message>
         <source>Choose…</source>
         <translation type="unfinished">Odaberi...</translation>
     </message>
     <message>
         <source>Hide transaction fee settings</source>
-        <translation type="unfinished">Sakrijte postavke za transakcijske provizije</translation>
+        <translation type="unfinished">Sakrijte postavke za transakcijske provizije
+</translation>
     </message>
     <message>
         <source>Specify a custom fee per kB (1,000 bytes) of the transaction's virtual size.
@@ -2817,6 +2870,10 @@ Napomena: Budući da se naknada računa po bajtu, naknada od "100 satošija po k
         <translation type="unfinished">Kopirajte količinu bajtova</translation>
     </message>
     <message>
+        <source>Copy dust</source>
+        <translation type="unfinished">Kopirajte sićušne iznose ("prašinu")</translation>
+    </message>
+    <message>
         <source>Copy change</source>
         <translation type="unfinished">Kopirajte ostatak</translation>
     </message>
@@ -2845,6 +2902,10 @@ Napomena: Budući da se naknada računa po bajtu, naknada od "100 satošija po k
     <message>
         <source>Creates a Partially Signed Bitcoin Transaction (PSBT) for use with e.g. an offline %1 wallet, or a PSBT-compatible hardware wallet.</source>
         <translation type="unfinished">Stvara djelomično potpisanu Bitcoin transakciju (Partially Signed Bitcoin Transaction - PSBT) za upotrebu sa npr. novčanikom %1 koji nije povezan s mrežom ili sa PSBT kompatibilnim hardverskim novčanikom.</translation>
+    </message>
+    <message>
+        <source> from wallet '%1'</source>
+        <translation type="unfinished">iz novčanika '%1'</translation>
     </message>
     <message>
         <source>%1 to '%2'</source>
@@ -3076,6 +3137,10 @@ Napomena: Budući da se naknada računa po bajtu, naknada od "100 satošija po k
         <translation type="unfinished">&amp;Potpišite poruku</translation>
     </message>
     <message>
+        <source>You can sign messages/agreements with your addresses to prove you can receive bitcoins sent to them. Be careful not to sign anything vague or random, as phishing attacks may try to trick you into signing your identity over to them. Only sign fully-detailed statements you agree to.</source>
+        <translation type="unfinished">Možete potpisati poruke/dogovore svojim adresama kako biste dokazali da možete pristupiti bitcoinima poslanim na te adrese. Budite oprezni da ne potpisujte ništa nejasno ili nasumično, jer napadi phishingom vas mogu prevariti da prepišite svoj identitet njima. Potpisujte samo detaljno objašnjene izjave s kojima se slažete.</translation>
+    </message>
+    <message>
         <source>The Bitcoin address to sign the message with</source>
         <translation type="unfinished">Bitcoin adresa pomoću koje ćete potpisati poruku</translation>
     </message>
@@ -3158,6 +3223,10 @@ Napomena: Budući da se naknada računa po bajtu, naknada od "100 satošija po k
     <message>
         <source>Please check the address and try again.</source>
         <translation type="unfinished">Molim provjerite adresu i pokušajte ponovo.</translation>
+    </message>
+    <message>
+        <source>The entered address does not refer to a key.</source>
+        <translation type="unfinished">Unesena adresa ne odnosi se na ključ.</translation>
     </message>
     <message>
         <source>Wallet unlock was cancelled.</source>
@@ -3330,6 +3399,10 @@ Napomena: Budući da se naknada računa po bajtu, naknada od "100 satošija po k
         <translation type="unfinished">Indeks outputa</translation>
     </message>
     <message>
+        <source> (Certificate was not verified)</source>
+        <translation type="unfinished">(Certifikat nije bio ovjeren)</translation>
+    </message>
+    <message>
         <source>Merchant</source>
         <translation type="unfinished">Trgovac</translation>
     </message>
@@ -3428,6 +3501,10 @@ Napomena: Budući da se naknada računa po bajtu, naknada od "100 satošija po k
         <translation type="unfinished">Poslano za</translation>
     </message>
     <message>
+        <source>Payment to yourself</source>
+        <translation type="unfinished">Plaćanje samom sebi</translation>
+    </message>
+    <message>
         <source>Mined</source>
         <translation type="unfinished">Rudareno</translation>
     </message>
@@ -3501,6 +3578,10 @@ Napomena: Budući da se naknada računa po bajtu, naknada od "100 satošija po k
     <message>
         <source>Sent to</source>
         <translation type="unfinished">Poslano za</translation>
+    </message>
+    <message>
+        <source>To yourself</source>
+        <translation type="unfinished">Samom sebi</translation>
     </message>
     <message>
         <source>Mined</source>
@@ -3723,6 +3804,10 @@ Idi na Datoteka &gt;  Otvori novčanik za učitanje novčanika.
         <source>Can't display address</source>
         <translation type="unfinished">Ne mogu prikazati adresu</translation>
     </message>
+    <message>
+        <source>default wallet</source>
+        <translation type="unfinished">uobičajeni novčanik</translation>
+    </message>
 </context>
 <context>
     <name>WalletView</name>
@@ -3791,6 +3876,10 @@ Idi na Datoteka &gt;  Otvori novčanik za učitanje novčanika.
         <translation type="unfinished">Distribuirano pod MIT licencom softvera. Vidite pripadajuću datoteku %s ili %s.</translation>
     </message>
     <message>
+        <source>Error reading %s! All keys read correctly, but transaction data or address book entries might be missing or incorrect.</source>
+        <translation type="unfinished">Greška kod iščitanja %s! Svi ključevi su ispravno učitani, ali transakcijski podaci ili zapisi u adresaru mogu biti nepotpuni ili netočni.</translation>
+    </message>
+    <message>
         <source>Error reading %s! Transaction data may be missing or incorrect. Rescanning wallet.</source>
         <translation type="unfinished">Greška u čitanju %s! Transakcijski podaci nedostaju ili su netočni. Ponovno skeniranje novčanika.</translation>
     </message>
@@ -3835,6 +3924,10 @@ Idi na Datoteka &gt;  Otvori novčanik za učitanje novčanika.
         <translation type="unfinished">Format datoteke novčanika nije dostupan. Kako biste koristili reatefromdump, -format=&lt;format&gt; mora biti osiguran.</translation>
     </message>
     <message>
+        <source>Please check that your computer's date and time are correct! If your clock is wrong, %s will not work properly.</source>
+        <translation type="unfinished">Molimo provjerite jesu li datum i vrijeme na vašem računalu točni. Ako je vaš sat krivo namješten, %s neće raditi ispravno.</translation>
+    </message>
+    <message>
         <source>Please contribute if you find %s useful. Visit %s for further information about the software.</source>
         <translation type="unfinished">Molimo vas da doprinijete programu %s ako ga smatrate korisnim. Posjetite %s za više informacija.</translation>
     </message>
@@ -3853,6 +3946,10 @@ Idi na Datoteka &gt;  Otvori novčanik za učitanje novčanika.
     <message>
         <source>The block database contains a block which appears to be from the future. This may be due to your computer's date and time being set incorrectly. Only rebuild the block database if you are sure that your computer's date and time are correct</source>
         <translation type="unfinished">Baza blokova sadrži blok koji je naizgled iz budućnosti. Može to biti posljedica krivo namještenog datuma i vremena na vašem računalu. Obnovite bazu blokova samo ako ste sigurni da su točni datum i vrijeme na vašem računalu.</translation>
+    </message>
+    <message>
+        <source>The block index db contains a legacy 'txindex'. To clear the occupied disk space, run a full -reindex, otherwise ignore this error. This error message will not be displayed again.</source>
+        <translation type="unfinished">Index bloka db sadrži legacy 'txindex'. Kako biste očistili zauzeti prostor na disku, pokrenite puni -reindex ili ignorirajte ovu grešku. Ova greška neće biti ponovno prikazana.</translation>
     </message>
     <message>
         <source>The transaction amount is too small to send after the fee has been deducted</source>
@@ -3919,6 +4016,10 @@ Idi na Datoteka &gt;  Otvori novčanik za učitanje novčanika.
         <translation type="unfinished">-maxmempool mora biti barem %d MB</translation>
     </message>
     <message>
+        <source>A fatal internal error occurred, see debug.log for details</source>
+        <translation type="unfinished">Dogodila se kobna greška, vidi detalje u debug.log.</translation>
+    </message>
+    <message>
         <source>Cannot resolve -%s address: '%s'</source>
         <translation type="unfinished">Ne može se razriješiti adresa -%s: '%s'</translation>
     </message>
@@ -3933,6 +4034,10 @@ Idi na Datoteka &gt;  Otvori novčanik za učitanje novčanika.
     <message>
         <source>Cannot write to data directory '%s'; check permissions.</source>
         <translation type="unfinished">Nije moguće pisati u podatkovnu mapu '%s'; provjerite dozvole.</translation>
+    </message>
+    <message>
+        <source>The -txindex upgrade started by a previous version cannot be completed. Restart with the previous version or run a full -reindex.</source>
+        <translation type="unfinished">Unaprijeđenje  -txindex koje za započela prijašnja verzija nije moguće završiti. Ponovno pokrenite s prethodnom verzijom ili pokrenite potpuni -reindex.</translation>
     </message>
     <message>
         <source>Cannot provide specific connections and have addrman find outgoing connections at the same time.</source>
@@ -4269,6 +4374,10 @@ Idi na Datoteka &gt;  Otvori novčanik za učitanje novčanika.
     <message>
         <source>Transaction change output index out of range</source>
         <translation type="unfinished">Indeks change outputa transakcije je izvan dometa</translation>
+    </message>
+    <message>
+        <source>Transaction has too long of a mempool chain</source>
+        <translation type="unfinished">Transakcija ima prevelik lanac memorijskog bazena</translation>
     </message>
     <message>
         <source>Transaction must have at least one recipient</source>

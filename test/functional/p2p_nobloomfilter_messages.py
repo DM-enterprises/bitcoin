@@ -45,4 +45,4 @@ class P2PNoBloomFilterMessages(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    P2PNoBloomFilterMessages(__file__).main()
+    P2PNoBloomFilterMessages().main()

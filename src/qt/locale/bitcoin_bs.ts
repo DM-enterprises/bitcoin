@@ -58,6 +58,14 @@
         <translation type="unfinished">&amp;Izaberite</translation>
     </message>
     <message>
+        <source>Sending addresses</source>
+        <translation type="unfinished">Adrese pošiljalaca</translation>
+    </message>
+    <message>
+        <source>Receiving addresses</source>
+        <translation type="unfinished">Adrese primalaca</translation>
+    </message>
+    <message>
         <source>These are your Bitcoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
         <translation type="unfinished">Ovo su vaše Bitcoin adrese za slanje novca. Uvijek provjerite iznos i adresu primaoca prije slanja novca.</translation>
     </message>
@@ -329,11 +337,7 @@ Signing is only possible with addresses of the type 'legacy'.</source>
             <numerusform />
         </translation>
     </message>
-    <message>
-        <source>default wallet</source>
-        <translation type="unfinished">zadani novčanik</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>BitcoinGUI</name>
     <message>
@@ -602,6 +606,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation type="unfinished">Maskirajte vrijednosti na kartici Pregled</translation>
     </message>
     <message>
+        <source>default wallet</source>
+        <translation type="unfinished">zadani novčanik</translation>
+    </message>
+    <message>
         <source>No wallets available</source>
         <translation type="unfinished">Nema dostupnih novčanika</translation>
     </message>
@@ -744,6 +752,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation type="unfinished">Naknada:</translation>
     </message>
     <message>
+        <source>Dust:</source>
+        <translation type="unfinished">Prašina:</translation>
+    </message>
+    <message>
         <source>After Fee:</source>
         <translation type="unfinished">Poslije Naknade:</translation>
     </message>
@@ -808,12 +820,28 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation type="unfinished">Kopiraj bajte</translation>
     </message>
     <message>
+        <source>Copy dust</source>
+        <translation type="unfinished">Kopiraj prašinu</translation>
+    </message>
+    <message>
         <source>Copy change</source>
         <translation type="unfinished">Kopiraj promjenu</translation>
     </message>
     <message>
         <source>(%1 locked)</source>
         <translation type="unfinished">(%1 zaključano)</translation>
+    </message>
+    <message>
+        <source>yes</source>
+        <translation type="unfinished">da</translation>
+    </message>
+    <message>
+        <source>no</source>
+        <translation type="unfinished">ne</translation>
+    </message>
+    <message>
+        <source>This label turns red if any recipient receives an amount smaller than the current dust threshold.</source>
+        <translation type="unfinished">Ova naljepnica postaje crvena ako bilo koji primatelj primi količinu manju od trenutnog praga prašine.</translation>
     </message>
     <message>
         <source>Can vary +/- %1 satoshi(s) per input.</source>
@@ -850,6 +878,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     </context>
 <context>
     <name>OpenWalletActivity</name>
+    <message>
+        <source>default wallet</source>
+        <translation type="unfinished">zadani novčanik</translation>
+    </message>
     <message>
         <source>Open Wallet</source>
         <extracomment>Title of window indicating the progress of opening of a wallet.</extracomment>
@@ -910,8 +942,20 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation type="unfinished">Napravi Prazan Novčanik</translation>
     </message>
     <message>
+        <source>Use descriptors for scriptPubKey management</source>
+        <translation type="unfinished">Koristite deskriptore za upravljanje scriptPubKey</translation>
+    </message>
+    <message>
+        <source>Descriptor Wallet</source>
+        <translation type="unfinished">Deskriptor Novčanik</translation>
+    </message>
+    <message>
         <source>Create</source>
         <translation type="unfinished">Napravi</translation>
+    </message>
+    <message>
+        <source>Compiled without sqlite support (required for descriptor wallets)</source>
+        <translation type="unfinished">Sastavljeno bez podrške za sqlite (potrebno za deskriptorske novčanike)</translation>
     </message>
     </context>
 <context>
@@ -1377,6 +1421,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation type="unfinished">Sakrij</translation>
     </message>
     <message>
+        <source>Dust:</source>
+        <translation type="unfinished">Prašina:</translation>
+    </message>
+    <message>
         <source>Copy quantity</source>
         <translation type="unfinished">Kopiraj količinu</translation>
     </message>
@@ -1395,6 +1443,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <message>
         <source>Copy bytes</source>
         <translation type="unfinished">Kopiraj bajte</translation>
+    </message>
+    <message>
+        <source>Copy dust</source>
+        <translation type="unfinished">Kopiraj prašinu</translation>
     </message>
     <message>
         <source>Copy change</source>
@@ -1511,6 +1563,13 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     </message>
     </context>
 <context>
+    <name>WalletModel</name>
+    <message>
+        <source>default wallet</source>
+        <translation type="unfinished">zadani novčanik</translation>
+    </message>
+</context>
+<context>
     <name>WalletView</name>
     <message>
         <source>&amp;Export</source>
@@ -1610,6 +1669,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <message>
         <source>Transaction amounts must not be negative</source>
         <translation type="unfinished">Iznosi transakcija ne smiju biti negativni</translation>
+    </message>
+    <message>
+        <source>Transaction has too long of a mempool chain</source>
+        <translation type="unfinished">Transakcija ima predugačak mempool lanac </translation>
     </message>
     <message>
         <source>Transaction must have at least one recipient</source>

@@ -16,8 +16,6 @@
 
 #include <boost/test/unit_test.hpp>
 
-using util::SplitString;
-
 BOOST_FIXTURE_TEST_SUITE(getarg_tests, BasicTestingSetup)
 
 void ResetArgs(ArgsManager& local_args, const std::string& strArg)

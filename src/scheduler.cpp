@@ -129,7 +129,7 @@ bool CScheduler::AreThreadsServicingQueue() const
 }
 
 
-void SerialTaskRunner::MaybeScheduleProcessQueue()
+void SingleThreadedSchedulerClient::MaybeScheduleProcessQueue()
 {
     {
         LOCK(m_callbacks_mutex);
@@ -142,7 +142,7 @@ void SerialTaskRunner::MaybeScheduleProcessQueue()
     m_scheduler.schedule([this] { this->ProcessQueue(); }, std::chrono::steady_clock::now());
 }
 
-void SerialTaskRunner::ProcessQueue()
+void SingleThreadedSchedulerClient::ProcessQueue()
 {
     std::function<void()> callback;
     {
@@ -158,8 +158,8 @@ void SerialTaskRunner::ProcessQueue()
     // RAII the setting of fCallbacksRunning and calling MaybeScheduleProcessQueue
     // to ensure both happen safely even if callback() throws.
     struct RAIICallbacksRunning {
-        SerialTaskRunner* instance;
-        explicit RAIICallbacksRunning(SerialTaskRunner* _instance) : instance(_instance) {}
+        SingleThreadedSchedulerClient* instance;
+        explicit RAIICallbacksRunning(SingleThreadedSchedulerClient* _instance) : instance(_instance) {}
         ~RAIICallbacksRunning()
         {
             {
@@ -173,7 +173,7 @@ void SerialTaskRunner::ProcessQueue()
     callback();
 }
 
-void SerialTaskRunner::insert(std::function<void()> func)
+void SingleThreadedSchedulerClient::AddToProcessQueue(std::function<void()> func)
 {
     {
         LOCK(m_callbacks_mutex);
@@ -182,7 +182,7 @@ void SerialTaskRunner::insert(std::function<void()> func)
     MaybeScheduleProcessQueue();
 }
 
-void SerialTaskRunner::flush()
+void SingleThreadedSchedulerClient::EmptyQueue()
 {
     assert(!m_scheduler.AreThreadsServicingQueue());
     bool should_continue = true;
@@ -193,7 +193,7 @@ void SerialTaskRunner::flush()
     }
 }
 
-size_t SerialTaskRunner::size()
+size_t SingleThreadedSchedulerClient::CallbacksPending()
 {
     LOCK(m_callbacks_mutex);
     return m_callbacks_pending.size();

@@ -9,7 +9,6 @@
 #include <net_processing.h>
 #include <node/blockstorage.h>
 #include <node/context.h>
-#include <node/types.h>
 #include <txmempool.h>
 #include <validation.h>
 #include <validationinterface.h>
@@ -55,7 +54,7 @@ TransactionError BroadcastTransaction(NodeContext& node, const CTransactionRef t
             const Coin& existingCoin = view.AccessCoin(COutPoint(txid, o));
             // IsSpent doesn't mean the coin is spent, it means the output doesn't exist.
             // So if the output does exist, then this transaction exists in the chain.
-            if (!existingCoin.IsSpent()) return TransactionError::ALREADY_IN_UTXO_SET;
+            if (!existingCoin.IsSpent()) return TransactionError::ALREADY_IN_CHAIN;
         }
 
         if (auto mempool_tx = node.mempool->get(txid); mempool_tx) {
@@ -93,7 +92,7 @@ TransactionError BroadcastTransaction(NodeContext& node, const CTransactionRef t
                 node.mempool->AddUnbroadcastTx(txid);
             }
 
-            if (wait_callback && node.validation_signals) {
+            if (wait_callback) {
                 // For transactions broadcast from outside the wallet, make sure
                 // that the wallet has been notified of the transaction before
                 // continuing.
@@ -102,7 +101,7 @@ TransactionError BroadcastTransaction(NodeContext& node, const CTransactionRef t
                 // with a transaction to/from their wallet, immediately call some
                 // wallet RPC, and get a stale result because callbacks have not
                 // yet been processed.
-                node.validation_signals->CallFunctionInValidationInterfaceQueue([&promise] {
+                CallFunctionInValidationInterfaceQueue([&promise] {
                     promise.set_value();
                 });
                 callback_set = true;

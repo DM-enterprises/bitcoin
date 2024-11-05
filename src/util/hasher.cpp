@@ -7,18 +7,14 @@
 #include <span.h>
 #include <util/hasher.h>
 
-SaltedTxidHasher::SaltedTxidHasher() :
-    k0{FastRandomContext().rand64()},
-    k1{FastRandomContext().rand64()} {}
+SaltedTxidHasher::SaltedTxidHasher() : k0(GetRand<uint64_t>()), k1(GetRand<uint64_t>()) {}
 
 SaltedOutpointHasher::SaltedOutpointHasher(bool deterministic) :
-    k0{deterministic ? 0x8e819f2607a18de6 : FastRandomContext().rand64()},
-    k1{deterministic ? 0xf4020d2e3983b0eb : FastRandomContext().rand64()}
+    k0(deterministic ? 0x8e819f2607a18de6 : GetRand<uint64_t>()),
+    k1(deterministic ? 0xf4020d2e3983b0eb : GetRand<uint64_t>())
 {}
 
-SaltedSipHasher::SaltedSipHasher() :
-    m_k0{FastRandomContext().rand64()},
-    m_k1{FastRandomContext().rand64()} {}
+SaltedSipHasher::SaltedSipHasher() : m_k0(GetRand<uint64_t>()), m_k1(GetRand<uint64_t>()) {}
 
 size_t SaltedSipHasher::operator()(const Span<const unsigned char>& script) const
 {

@@ -283,7 +283,7 @@ private:
     {
         unsigned int blockHeight{0};
         unsigned int bucketIndex{0};
-        TxStatsInfo() = default;
+        TxStatsInfo() {}
     };
 
     // map of txids to information about that transaction

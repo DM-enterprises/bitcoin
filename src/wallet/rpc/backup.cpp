@@ -2,8 +2,6 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <config/bitcoin-config.h> // IWYU pragma: keep
-
 #include <chain.h>
 #include <clientversion.h>
 #include <core_io.h>
@@ -34,7 +32,6 @@
 
 
 using interfaces::FoundBlock;
-using util::SplitString;
 
 namespace wallet {
 std::string static EncodeDumpString(const std::string &str) {
@@ -231,7 +228,7 @@ RPCHelpMan importaddress()
             "Note: Use \"getwalletinfo\" to query the scanning progress.\n"
             "Note: This command is only compatible with legacy wallets. Use \"importdescriptors\" for descriptor wallets.\n",
                 {
-                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The Groestlcoin address (or hex-encoded script)"},
+                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The Bitcoin address (or hex-encoded script)"},
                     {"label", RPCArg::Type::STR, RPCArg::Default{""}, "An optional label"},
                     {"rescan", RPCArg::Type::BOOL, RPCArg::Default{true}, "Scan the chain and mempool for wallet transactions."},
                     {"p2sh", RPCArg::Type::BOOL, RPCArg::Default{false}, "Add the P2SH version of the script as well"},
@@ -304,7 +301,7 @@ RPCHelpMan importaddress()
 
             pwallet->ImportScriptPubKeys(strLabel, scripts, /*have_solving_data=*/false, /*apply_label=*/true, /*timestamp=*/1);
         } else {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid groestlcoin address or script");
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address or script");
         }
     }
     if (fRescan)
@@ -397,8 +394,14 @@ RPCHelpMan removeprunedfunds()
     uint256 hash(ParseHashV(request.params[0], "txid"));
     std::vector<uint256> vHash;
     vHash.push_back(hash);
-    if (auto res = pwallet->RemoveTxs(vHash); !res) {
-        throw JSONRPCError(RPC_WALLET_ERROR, util::ErrorString(res).original);
+    std::vector<uint256> vHashOut;
+
+    if (pwallet->ZapSelectTx(vHash, vHashOut) != DBErrors::LOAD_OK) {
+        throw JSONRPCError(RPC_WALLET_ERROR, "Could not properly delete the transaction.");
+    }
+
+    if(vHashOut.empty()) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Transaction does not exist in wallet.");
     }
 
     return UniValue::VNULL;
@@ -457,7 +460,12 @@ RPCHelpMan importpubkey()
         throw JSONRPCError(RPC_WALLET_ERROR, "Wallet is currently rescanning. Abort existing rescan or wait.");
     }
 
-    CPubKey pubKey = HexToPubKey(request.params[0].get_str());
+    if (!IsHex(request.params[0].get_str()))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Pubkey must be a hex string");
+    std::vector<unsigned char> data(ParseHex(request.params[0].get_str()));
+    CPubKey pubKey(data);
+    if (!pubKey.IsFullyValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Pubkey is not a valid public key");
 
     {
         LOCK(pwallet->cs_wallet);
@@ -640,7 +648,7 @@ RPCHelpMan dumpprivkey()
                 "Then the importprivkey can be used with this output\n"
                 "Note: This command is only compatible with legacy wallets.\n",
                 {
-                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The groestlcoin address for the private key"},
+                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The bitcoin address for the private key"},
                 },
                 RPCResult{
                     RPCResult::Type::STR, "key", "The private key"
@@ -664,7 +672,7 @@ RPCHelpMan dumpprivkey()
     std::string strAddress = request.params[0].get_str();
     CTxDestination dest = DecodeDestination(strAddress);
     if (!IsValidDestination(dest)) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid groestlcoin address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address");
     }
     auto keyid = GetKeyForDestination(spk_man, dest);
     if (keyid.IsNull()) {
@@ -848,7 +856,6 @@ enum class ScriptContext
 
 // Analyse the provided scriptPubKey, determining which keys and which redeem scripts from the ImportData struct are needed to spend it, and mark them as used.
 // Returns an error string, or the empty string for success.
-// NOLINTNEXTLINE(misc-no-recursion)
 static std::string RecurseImportData(const CScript& script, ImportData& import_data, const ScriptContext script_ctx)
 {
     // Use Solver to obtain script type and parsed pubkeys or hashes:
@@ -910,7 +917,6 @@ static std::string RecurseImportData(const CScript& script, ImportData& import_d
     case TxoutType::NONSTANDARD:
     case TxoutType::WITNESS_UNKNOWN:
     case TxoutType::WITNESS_V1_TAPROOT:
-    case TxoutType::ANCHOR:
         return "unrecognized script";
     } // no default case, so the compiler can warn about missing cases
     NONFATAL_UNREACHABLE();
@@ -980,7 +986,15 @@ static UniValue ProcessImportLegacy(ImportData& import_data, std::map<CKeyID, CP
         import_data.witnessscript = std::make_unique<CScript>(parsed_witnessscript.begin(), parsed_witnessscript.end());
     }
     for (size_t i = 0; i < pubKeys.size(); ++i) {
-        CPubKey pubkey = HexToPubKey(pubKeys[i].get_str());
+        const auto& str = pubKeys[i].get_str();
+        if (!IsHex(str)) {
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Pubkey \"" + str + "\" must be a hex string");
+        }
+        auto parsed_pubkey = ParseHex(str);
+        CPubKey pubkey(parsed_pubkey);
+        if (!pubkey.IsFullyValid()) {
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Pubkey \"" + str + "\" is not a valid public key");
+        }
         pubkey_map.emplace(pubkey.GetID(), pubkey);
         ordered_pubkeys.push_back(pubkey.GetID());
     }
@@ -1419,7 +1433,7 @@ RPCHelpMan importmulti()
                                       "block from time %d, which is after or within %d seconds of key creation, and "
                                       "could contain transactions pertaining to the key. As a result, transactions "
                                       "and coins using this key may not appear in the wallet. This error could be "
-                                      "caused by pruning or data corruption (see groestlcoind log for details) and could "
+                                      "caused by pruning or data corruption (see bitcoind log for details) and could "
                                       "be dealt with by downloading and rescanning the relevant blocks (see -reindex "
                                       "option and rescanblockchain RPC).",
                                 GetImportTimestamp(request, now), scannedTime - TIMESTAMP_WINDOW - 1, TIMESTAMP_WINDOW)));
@@ -1717,7 +1731,7 @@ RPCHelpMan importdescriptors()
                                       "block from time %d, which is after or within %d seconds of key creation, and "
                                       "could contain transactions pertaining to the desc. As a result, transactions "
                                       "and coins using this desc may not appear in the wallet. This error could be "
-                                      "caused by pruning or data corruption (see groestlcoind log for details) and could "
+                                      "caused by pruning or data corruption (see bitcoind log for details) and could "
                                       "be dealt with by downloading and rescanning the relevant blocks (see -reindex "
                                       "option and rescanblockchain RPC).",
                                 GetImportTimestamp(request, now), scanned_time - TIMESTAMP_WINDOW - 1, TIMESTAMP_WINDOW)));
@@ -1829,16 +1843,16 @@ RPCHelpMan listdescriptors()
             UniValue range(UniValue::VARR);
             range.push_back(info.range->first);
             range.push_back(info.range->second - 1);
-            spk.pushKV("range", std::move(range));
+            spk.pushKV("range", range);
             spk.pushKV("next", info.next_index);
             spk.pushKV("next_index", info.next_index);
         }
-        descriptors.push_back(std::move(spk));
+        descriptors.push_back(spk);
     }
 
     UniValue response(UniValue::VOBJ);
     response.pushKV("wallet_name", wallet->GetName());
-    response.pushKV("descriptors", std::move(descriptors));
+    response.pushKV("descriptors", descriptors);
 
     return response;
 },

@@ -160,4 +160,4 @@ class WalletBlankTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    WalletBlankTest(__file__).main()
+    WalletBlankTest().main()

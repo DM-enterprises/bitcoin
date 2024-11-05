@@ -6,7 +6,6 @@
 #include <i2p.h>
 #include <logging.h>
 #include <netaddress.h>
-#include <netbase.h>
 #include <test/util/logging.h>
 #include <test/util/net.h>
 #include <test/util/setup_common.h>
@@ -23,8 +22,8 @@ class EnvTestingSetup : public BasicTestingSetup
 {
 public:
     explicit EnvTestingSetup(const ChainType chainType = ChainType::MAIN,
-                             TestOpts opts = {})
-        : BasicTestingSetup{chainType, opts},
+                             const std::vector<const char*>& extra_args = {})
+        : BasicTestingSetup{chainType, extra_args},
           m_prev_log_level{LogInstance().LogLevel()},
           m_create_sock_orig{CreateSock}
     {
@@ -39,21 +38,20 @@ public:
 
 private:
     const BCLog::Level m_prev_log_level;
-    const decltype(CreateSock) m_create_sock_orig;
+    const std::function<std::unique_ptr<Sock>(const CService&)> m_create_sock_orig;
 };
 
 BOOST_FIXTURE_TEST_SUITE(i2p_tests, EnvTestingSetup)
 
 BOOST_AUTO_TEST_CASE(unlimited_recv)
 {
-    CreateSock = [](int, int, int) {
+    // Mock CreateSock() to create MockSock.
+    CreateSock = [](const CService&) {
         return std::make_unique<StaticContentsSock>(std::string(i2p::sam::MAX_MSG_SIZE + 1, 'a'));
     };
 
     CThreadInterrupt interrupt;
-    const std::optional<CService> addr{Lookup("127.0.0.1", 9000, false)};
-    const Proxy sam_proxy(addr.value(), false);
-    i2p::sam::Session session(gArgs.GetDataDirNet() / "test_i2p_private_key", sam_proxy, &interrupt);
+    i2p::sam::Session session(gArgs.GetDataDirNet() / "test_i2p_private_key", CService{}, &interrupt);
 
     {
         ASSERT_DEBUG_LOG("Creating persistent SAM session");
@@ -68,7 +66,7 @@ BOOST_AUTO_TEST_CASE(unlimited_recv)
 BOOST_AUTO_TEST_CASE(listen_ok_accept_fail)
 {
     size_t num_sockets{0};
-    CreateSock = [&num_sockets](int, int, int) {
+    CreateSock = [&num_sockets](const CService&) {
         // clang-format off
         ++num_sockets;
         // First socket is the control socket for creating the session.
@@ -113,10 +111,8 @@ BOOST_AUTO_TEST_CASE(listen_ok_accept_fail)
     };
 
     CThreadInterrupt interrupt;
-    const CService addr{in6_addr(IN6ADDR_LOOPBACK_INIT), /*port=*/7656};
-    const Proxy sam_proxy(addr, false);
     i2p::sam::Session session(gArgs.GetDataDirNet() / "test_i2p_private_key",
-                              sam_proxy,
+                              CService{in6_addr(IN6ADDR_LOOPBACK_INIT), /*port=*/7656},
                               &interrupt);
 
     i2p::Connection conn;
@@ -132,7 +128,9 @@ BOOST_AUTO_TEST_CASE(listen_ok_accept_fail)
 
 BOOST_AUTO_TEST_CASE(damaged_private_key)
 {
-    CreateSock = [](int, int, int) {
+    const auto CreateSockOrig = CreateSock;
+
+    CreateSock = [](const CService&) {
         return std::make_unique<StaticContentsSock>("HELLO REPLY RESULT=OK VERSION=3.1\n"
                                                     "SESSION STATUS RESULT=OK DESTINATION=\n");
     };
@@ -156,9 +154,7 @@ BOOST_AUTO_TEST_CASE(damaged_private_key)
         BOOST_REQUIRE(WriteBinaryFile(i2p_private_key_file, file_contents));
 
         CThreadInterrupt interrupt;
-        const CService addr{in6_addr(IN6ADDR_LOOPBACK_INIT), /*port=*/7656};
-        const Proxy sam_proxy{addr, false};
-        i2p::sam::Session session(i2p_private_key_file, sam_proxy, &interrupt);
+        i2p::sam::Session session(i2p_private_key_file, CService{}, &interrupt);
 
         {
             ASSERT_DEBUG_LOG("Creating persistent SAM session");
@@ -169,6 +165,8 @@ BOOST_AUTO_TEST_CASE(damaged_private_key)
             BOOST_CHECK(!session.Connect(CService{}, conn, proxy_error));
         }
     }
+
+    CreateSock = CreateSockOrig;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

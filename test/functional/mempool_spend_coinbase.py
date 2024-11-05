@@ -57,4 +57,4 @@ class MempoolSpendCoinbaseTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    MempoolSpendCoinbaseTest(__file__).main()
+    MempoolSpendCoinbaseTest().main()

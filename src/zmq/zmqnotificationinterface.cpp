@@ -8,7 +8,6 @@
 #include <kernel/chain.h>
 #include <kernel/mempool_entry.h>
 #include <logging.h>
-#include <netbase.h>
 #include <primitives/block.h>
 #include <primitives/transaction.h>
 #include <validationinterface.h>
@@ -24,7 +23,9 @@
 #include <utility>
 #include <vector>
 
-CZMQNotificationInterface::CZMQNotificationInterface() = default;
+CZMQNotificationInterface::CZMQNotificationInterface()
+{
+}
 
 CZMQNotificationInterface::~CZMQNotificationInterface()
 {
@@ -40,7 +41,7 @@ std::list<const CZMQAbstractNotifier*> CZMQNotificationInterface::GetActiveNotif
     return result;
 }
 
-std::unique_ptr<CZMQNotificationInterface> CZMQNotificationInterface::Create(std::function<bool(std::vector<uint8_t>&, const CBlockIndex&)> get_block_by_index)
+std::unique_ptr<CZMQNotificationInterface> CZMQNotificationInterface::Create(std::function<bool(CBlock&, const CBlockIndex&)> get_block_by_index)
 {
     std::map<std::string, CZMQNotifierFactory> factories;
     factories["pubhashblock"] = CZMQAbstractNotifier::Create<CZMQPublishHashBlockNotifier>;
@@ -56,12 +57,7 @@ std::unique_ptr<CZMQNotificationInterface> CZMQNotificationInterface::Create(std
     {
         std::string arg("-zmq" + entry.first);
         const auto& factory = entry.second;
-        for (std::string& address : gArgs.GetArgs(arg)) {
-            // libzmq uses prefix "ipc://" for UNIX domain sockets
-            if (address.substr(0, ADDR_PREFIX_UNIX.length()) == ADDR_PREFIX_UNIX) {
-                address.replace(0, ADDR_PREFIX_UNIX.length(), ADDR_PREFIX_IPC);
-            }
-
+        for (const std::string& address : gArgs.GetArgs(arg)) {
             std::unique_ptr<CZMQAbstractNotifier> notifier = factory();
             notifier->SetType(entry.first);
             notifier->SetAddress(address);

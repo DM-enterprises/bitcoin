@@ -16,8 +16,6 @@
 #include <util/golombrice.h>
 #include <util/string.h>
 
-using util::Join;
-
 static const std::map<BlockFilterType, std::string> g_filter_types = {
     {BlockFilterType::BASIC, "basic"},
 };

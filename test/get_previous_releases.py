@@ -20,69 +20,84 @@ import sys
 import hashlib
 
 SHA256_SUMS = {
-    "e83406ebf473c7d69da02d2f09539a710cb82b090116ff8f9b63e35a41608577": {"tag": "v2.17.2", "tarball": "groestlcoin-2.17.2-aarch64-linux-gnu.tar.gz"},
-    "5db693a615ce60e817af16cdcae51c4ac03e31f9588ed63447a57c343e1e4c7c": {"tag": "v2.17.2", "tarball": "groestlcoin-2.17.2-arm-linux-gnueabihf.tar.gz"},
-    "b3fe245752a445ce56cac265af7ed63906c7c1c8e2c932891369be72c290307d": {"tag": "v2.17.2", "tarball": "groestlcoin-2.17.2-x86_64-apple-darwin14.tar.gz"},
-    "e90f6ceb56fbc86ae17ee3c5d6d3913c422b7d98aa605226adb669acdf292e9e": {"tag": "v2.17.2", "tarball": "groestlcoin-2.17.2-x86_64-linux-gnu.tar.gz"},
+    "0e2819135366f150d9906e294b61dff58fd1996ebd26c2f8e979d6c0b7a79580": {"tag": "v0.14.3", "tarball": "bitcoin-0.14.3-aarch64-linux-gnu.tar.gz"},
+    "d86fc90824a85c38b25c8488115178d5785dbc975f5ff674f9f5716bc8ad6e65": {"tag": "v0.14.3", "tarball": "bitcoin-0.14.3-arm-linux-gnueabihf.tar.gz"},
+    "1b0a7408c050e3d09a8be8e21e183ef7ee570385dc41216698cc3ab392a484e7": {"tag": "v0.14.3", "tarball": "bitcoin-0.14.3-osx64.tar.gz"},
+    "706e0472dbc933ed2757650d54cbcd780fd3829ebf8f609b32780c7eedebdbc9": {"tag": "v0.14.3", "tarball": "bitcoin-0.14.3-x86_64-linux-gnu.tar.gz"},
     #
-    "99f7a11f9f59c09f44b64f5631b73b7e98cb27a8fc35ba67c85310001b644e43": {"tag": "v2.18.2", "tarball": "groestlcoin-2.18.2-aarch64-linux-gnu.tar.gz"},
-    "93c093b7684623c1cdf864cfacdec653ac6808d01f48ec9d1ffe26479623c6f5": {"tag": "v2.18.2", "tarball": "groestlcoin-2.18.2-arm-linux-gnueabihf.tar.gz"},
-    "fdb722b326433501b179a33ac20e88b5fd587a249878eb94a9981da2097c42a5": {"tag": "v2.18.2", "tarball": "groestlcoin-2.18.2-osx64.tar.gz"},
-    "08472eb96cb12b6ff6bebf18237ed05e0c236376446655bdb5901a42d781f75a": {"tag": "v2.18.2", "tarball": "groestlcoin-2.18.2-riscv64-linux-gnu.tar.gz"},
-    "9ee26e1cd7967d0dc88670dbbdb99f95236ebc218f75977efb23f03ad8b74250": {"tag": "v2.18.2", "tarball": "groestlcoin-2.18.2-x86_64-linux-gnu.tar.gz"},
+    "d40f18b4e43c6e6370ef7db9131f584fbb137276ec2e3dba67a4b267f81cb644": {"tag": "v0.15.2", "tarball": "bitcoin-0.15.2-aarch64-linux-gnu.tar.gz"},
+    "54fb877a148a6ad189a1e1ab1ff8b11181e58ff2aaf430da55b3fd46ae549a6b": {"tag": "v0.15.2", "tarball": "bitcoin-0.15.2-arm-linux-gnueabihf.tar.gz"},
+    "87e9340ff3d382d543b2b69112376077f0c8b4f7450d372e83b68f5a1e22b2df": {"tag": "v0.15.2", "tarball": "bitcoin-0.15.2-osx64.tar.gz"},
+    "566be44190fd76daa01f13d428939dadfb8e3daacefc8fa17f433cad28f73bd5": {"tag": "v0.15.2", "tarball": "bitcoin-0.15.2-x86_64-linux-gnu.tar.gz"},
     #
-    "f151cfada51e981db2cb90e78f50e13ba3c64640339f41d4f212d428df8ca1bf": {"tag": "v2.19.1", "tarball": "groestlcoin-2.19.1-aarch64-linux-gnu.tar.gz"},
-    "218218b18b49d924fc4085545ed71a59a985dbecdc2dab48c401d3ac622f10d4": {"tag": "v2.19.1", "tarball": "groestlcoin-2.19.1-arm-linux-gnueabihf.tar.gz"},
-    "902d38bea03fded2762acd1855cddd4a7b210acac9921ea56d816e622c4244ba": {"tag": "v2.19.1", "tarball": "groestlcoin-2.19.1-osx64.tar.gz"},
-    "624f8d6a442557a87aed8f84c5949bd3b424f87a0f7cccb927ba8ade99768a78": {"tag": "v2.19.1", "tarball": "groestlcoin-2.19.1-riscv64-linux-gnu.tar.gz"},
-    "0646cae023a0be0821f357d33bdbf81fc05fc9a9e3e9d4e5936d5053f1a988d4": {"tag": "v2.19.1", "tarball": "groestlcoin-2.19.1-x86_64-linux-gnu.tar.gz"},
+    "0768c6c15caffbaca6524824c9563b42c24f70633c681c2744649158aa3fd484": {"tag": "v0.16.3", "tarball": "bitcoin-0.16.3-aarch64-linux-gnu.tar.gz"},
+    "fb2818069854a6ad20ea03b28b55dbd35d8b1f7d453e90b83eace5d0098a2a87": {"tag": "v0.16.3", "tarball": "bitcoin-0.16.3-arm-linux-gnueabihf.tar.gz"},
+    "78c3bff3b619a19aed575961ea43cc9e142959218835cf51aede7f0b764fc25d": {"tag": "v0.16.3", "tarball": "bitcoin-0.16.3-osx64.tar.gz"},
+    "5d422a9d544742bc0df12427383f9c2517433ce7b58cf672b9a9b17c2ef51e4f": {"tag": "v0.16.3", "tarball": "bitcoin-0.16.3-x86_64-linux-gnu.tar.gz"},
     #
-    "989a626db8178f9d26181fc4c38ba920b5a27ad236ab9d7035f59d291ad8ed6b": {"tag": "v2.20.1", "tarball": "groestlcoin-2.20.1-aarch64-linux-gnu.tar.gz"},
-    "4c5915aed6e3c7aabc77040c91c133d29bc757a1f9f19477204f5aa75a485444": {"tag": "v2.20.1", "tarball": "groestlcoin-2.20.1-arm-linux-gnueabihf.tar.gz"},
-    "16564cf6df5f4edead0f8a807f285e34e9f20b2770c2f66ab803de5152e38d3b": {"tag": "v2.20.1", "tarball": "groestlcoin-2.20.1-osx64.tar.gz"},
-    "b0e7a1a18d29975b76281450dc744a64461aa4660fa8a09fafa7582e9c7b386b": {"tag": "v2.20.1", "tarball": "groestlcoin-2.20.1-riscv64-linux-gnu.tar.gz"},
-    "0a877be9dac14f4d9aab95d6bfd51547275acbcc3e6553f0cb82c5c9f35f333c": {"tag": "v2.20.1", "tarball": "groestlcoin-2.20.1-x86_64-linux-gnu.tar.gz"},
+    "5a6b35d1a348a402f2d2d6ab5aed653a1a1f13bc63aaaf51605e3501b0733b7a": {"tag": "v0.17.2", "tarball": "bitcoin-0.17.2-aarch64-linux-gnu.tar.gz"},
+    "d1913a5d19c8e8da4a67d1bd5205d03c8614dfd2e02bba2fe3087476643a729e": {"tag": "v0.17.2", "tarball": "bitcoin-0.17.2-arm-linux-gnueabihf.tar.gz"},
+    "a783ba20706dbfd5b47fbedf42165fce70fbbc7d78003305d964f6b3da14887f": {"tag": "v0.17.2", "tarball": "bitcoin-0.17.2-osx64.tar.gz"},
+    "943f9362b9f11130177839116f48f809d83478b4c28591d486ee9a7e35179da6": {"tag": "v0.17.2", "tarball": "bitcoin-0.17.2-x86_64-linux-gnu.tar.gz"},
+    #
+    "88f343af72803b851c7da13874cc5525026b0b55e63e1b5e1298390c4688adc6": {"tag": "v0.18.1", "tarball": "bitcoin-0.18.1-aarch64-linux-gnu.tar.gz"},
+    "cc7d483e4b20c5dabd4dcaf304965214cf4934bcc029ca99cbc9af00d3771a1f": {"tag": "v0.18.1", "tarball": "bitcoin-0.18.1-arm-linux-gnueabihf.tar.gz"},
+    "b7bbcee7a7540f711b171d6981f939ca8482005fde22689bc016596d80548bb1": {"tag": "v0.18.1", "tarball": "bitcoin-0.18.1-osx64.tar.gz"},
+    "425ee5ec631ae8da71ebc1c3f5c0269c627cf459379b9b030f047107a28e3ef8": {"tag": "v0.18.1", "tarball": "bitcoin-0.18.1-riscv64-linux-gnu.tar.gz"},
+    "600d1db5e751fa85903e935a01a74f5cc57e1e7473c15fd3e17ed21e202cfe5a": {"tag": "v0.18.1", "tarball": "bitcoin-0.18.1-x86_64-linux-gnu.tar.gz"},
+    #
+    "3a80431717842672df682bdb619e66523b59541483297772a7969413be3502ff": {"tag": "v0.19.1", "tarball": "bitcoin-0.19.1-aarch64-linux-gnu.tar.gz"},
+    "657f28213823d240dd3324d14829702f9ad6f0710f8bdd1c379cb3c447197f48": {"tag": "v0.19.1", "tarball": "bitcoin-0.19.1-arm-linux-gnueabihf.tar.gz"},
+    "1ae1b87de26487075cd2fd22e0d4ead87d969bd55c44f2f1d873ecdc6147ebb3": {"tag": "v0.19.1", "tarball": "bitcoin-0.19.1-osx64.tar.gz"},
+    "aa7a9563b48aa79252c8e7b6a41c07a5441bd9f14c5e4562cc72720ea6cb0ee5": {"tag": "v0.19.1", "tarball": "bitcoin-0.19.1-riscv64-linux-gnu.tar.gz"},
+    "5fcac9416e486d4960e1a946145566350ca670f9aaba99de6542080851122e4c": {"tag": "v0.19.1", "tarball": "bitcoin-0.19.1-x86_64-linux-gnu.tar.gz"},
+    #
+    "60c93e3462c303eb080be7cf623f1a7684b37fd47a018ad3848bc23e13c84e1c": {"tag": "v0.20.1", "tarball": "bitcoin-0.20.1-aarch64-linux-gnu.tar.gz"},
+    "55b577e0fb306fb429d4be6c9316607753e8543e5946b542d75d876a2f08654c": {"tag": "v0.20.1", "tarball": "bitcoin-0.20.1-arm-linux-gnueabihf.tar.gz"},
+    "b9024dde373ea7dad707363e07ec7e265383204127539ae0c234bff3a61da0d1": {"tag": "v0.20.1", "tarball": "bitcoin-0.20.1-osx64.tar.gz"},
+    "fa71cb52ee5e0459cbf5248cdec72df27995840c796f58b304607a1ed4c165af": {"tag": "v0.20.1", "tarball": "bitcoin-0.20.1-riscv64-linux-gnu.tar.gz"},
+    "376194f06596ecfa40331167c39bc70c355f960280bd2a645fdbf18f66527397": {"tag": "v0.20.1", "tarball": "bitcoin-0.20.1-x86_64-linux-gnu.tar.gz"},
 
-    "aac5246f1be90f34914a82c65308b3981e78e6ce0c7d51f3c8fe6bae7455eef0": {"tag": "v2.21.1", "tarball": "groestlcoin-2.21.1-aarch64-linux-gnu.tar.gz"},
-    "3fd6c2f1cd01d73314bc6e9abc13947f3477446cab5e8665a8cb0919063066f2": {"tag": "v2.21.1", "tarball": "groestlcoin-2.21.1-arm-linux-gnueabihf.tar.gz"},
-    "d3b36a30f2a9a624087414820237df0ec5289a52fc24c3a1a38f67be7698073c": {"tag": "v2.21.1", "tarball": "groestlcoin-2.21.1-osx64.tar.gz"},
-    "d6e200ad3000951a460cee66e6a5d3e2067112b40841a18a0a6dab6b70f531f0": {"tag": "v2.21.1", "tarball": "groestlcoin-2.21.1-riscv64-linux-gnu.tar.gz"},
-    "b03bd4211f9473b39a12f6e57e64fe7bc9f2f54f27491f46f5b1bff5b96db7a5": {"tag": "v2.21.1", "tarball": "groestlcoin-2.21.1-x86_64-linux-gnu.tar.gz"},
+    "43416854330914992bbba2d0e9adf2a6fff4130be9af8ae2ef1186e743d9a3fe": {"tag": "v0.21.0", "tarball": "bitcoin-0.21.0-aarch64-linux-gnu.tar.gz"},
+    "f028af308eda45a3c4c90f9332f96b075bf21e3495c945ebce48597151808176": {"tag": "v0.21.0", "tarball": "bitcoin-0.21.0-arm-linux-gnueabihf.tar.gz"},
+    "695fb624fa6423f5da4f443b60763dd1d77488bfe5ef63760904a7b54e91298d": {"tag": "v0.21.0", "tarball": "bitcoin-0.21.0-osx64.tar.gz"},
+    "f8b2adfeae021a672effbc7bd40d5c48d6b94e53b2dd660f787340bf1a52e4e9": {"tag": "v0.21.0", "tarball": "bitcoin-0.21.0-riscv64-linux-gnu.tar.gz"},
+    "da7766775e3f9c98d7a9145429f2be8297c2672fe5b118fd3dc2411fb48e0032": {"tag": "v0.21.0", "tarball": "bitcoin-0.21.0-x86_64-linux-gnu.tar.gz"},
 
-    "8ab192b779a694701c0e8e990162a59adac7c9694ec6fc982a49a69dc3726706": {"tag": "v22.0", "tarball": "groestlcoin-22.0-aarch64-linux-gnu.tar.gz"},
-    "823520bd8c0b75aee99321ce42109577deaeefb521e469ab2d43f2652640b1ab": {"tag": "v22.0", "tarball": "groestlcoin-22.0-arm-linux-gnueabihf.tar.gz"},
-    "bdcdfac563eb54bc3de185c9b92200a36ccbd10d018aebd665e0bbe65a4480db": {"tag": "v22.0", "tarball": "groestlcoin-22.0-osx64.tar.gz"},
-    "13ee5cb19c5ea99db34976850d9ed035b77329712e564f611be977e642adc14b": {"tag": "v22.0", "tarball": "groestlcoin-22.0-powerpc64-linux-gnu.tar.gz"},
-    "81958ed496fb2141b9adbbabea5de3494278eca54d0f5974494dbc37bcd2e881": {"tag": "v22.0", "tarball": "groestlcoin-22.0-powerpc64le-linux-gnu.tar.gz"},
-    "4e195a69a92075e69923715a9f0e01a2444fefecae7421ab7188fdd7b7a6e212": {"tag": "v22.0", "tarball": "groestlcoin-22.0-riscv64-linux-gnu.tar.gz"},
-    "b30c5353dd3d9cfd7e8b31f29eac125925751165f690bacff57effd76560dddd": {"tag": "v22.0", "tarball": "groestlcoin-22.0-x86_64-linux-gnu.tar.gz"},
+    "ac718fed08570a81b3587587872ad85a25173afa5f9fbbd0c03ba4d1714cfa3e": {"tag": "v22.0", "tarball": "bitcoin-22.0-aarch64-linux-gnu.tar.gz"},
+    "b8713c6c5f03f5258b54e9f436e2ed6d85449aa24c2c9972f91963d413e86311": {"tag": "v22.0", "tarball": "bitcoin-22.0-arm-linux-gnueabihf.tar.gz"},
+    "2744d199c3343b2d94faffdfb2c94d75a630ba27301a70e47b0ad30a7e0155e9": {"tag": "v22.0", "tarball": "bitcoin-22.0-osx64.tar.gz"},
+    "2cca5f99007d060aca9d8c7cbd035dfe2f040dd8200b210ce32cdf858479f70d": {"tag": "v22.0", "tarball": "bitcoin-22.0-powerpc64-linux-gnu.tar.gz"},
+    "91b1e012975c5a363b5b5fcc81b5b7495e86ff703ec8262d4b9afcfec633c30d": {"tag": "v22.0", "tarball": "bitcoin-22.0-powerpc64le-linux-gnu.tar.gz"},
+    "9cc3a62c469fe57e11485fdd32c916f10ce7a2899299855a2e479256ff49ff3c": {"tag": "v22.0", "tarball": "bitcoin-22.0-riscv64-linux-gnu.tar.gz"},
+    "59ebd25dd82a51638b7a6bb914586201e67db67b919b2a1ff08925a7936d1b16": {"tag": "v22.0", "tarball": "bitcoin-22.0-x86_64-linux-gnu.tar.gz"},
 
-    "a8a68643bc05a4f2bbc1898e6c48c666c33ff4558d5eb87e6853eba94c091648": {"tag": "v23.0", "tarball": "groestlcoin-23.0-aarch64-linux-gnu.tar.gz"},
-    "72b22d3cc6a9120d57c8141da6aca2ea445a42b2a5a8ed8864562db43187b1df": {"tag": "v23.0", "tarball": "groestlcoin-23.0-arm-linux-gnueabihf.tar.gz"},
-    "9bf749e3940c57fd0591cfade179795feb97439d936910cb1edfb4cb05605ef4": {"tag": "v23.0", "tarball": "groestlcoin-23.0-arm64-apple-darwin.tar.gz"},
-    "43fefb1678347b4684e2e9efcbd98c865c35ba26e7e4b771a3806c7a471a87af": {"tag": "v23.0", "tarball": "groestlcoin-23.0-powerpc64-linux-gnu.tar.gz"},
-    "dd456872789cd3c17d4cddf15be150c77108a0a68290db44aa17861ceebb655a": {"tag": "v23.0", "tarball": "groestlcoin-23.0-powerpc64le-linux-gnu.tar.gz"},
-    "5dfbd033c31bf974301c0f4cb4bc3bd91783a8233f79ddc9e4e788ddd3de46dd": {"tag": "v23.0", "tarball": "groestlcoin-23.0-riscv64-linux-gnu.tar.gz"},
-    "ff80c843a29c515e052972019915fa302584b0c045ca69ee3a1572013743d385": {"tag": "v23.0", "tarball": "groestlcoin-23.0-x86_64-apple-darwin.tar.gz"},
-    "46ab078422d0d2aaf5b89ac9603cb61a6ebf6c26a73b9440365a4df5f9bce7de": {"tag": "v23.0", "tarball": "groestlcoin-23.0-x86_64-linux-gnu.tar.gz"},
+    "06f4c78271a77752ba5990d60d81b1751507f77efda1e5981b4e92fd4d9969fb": {"tag": "v23.0", "tarball": "bitcoin-23.0-aarch64-linux-gnu.tar.gz"},
+    "952c574366aff76f6d6ad1c9ee45a361d64fa04155e973e926dfe7e26f9703a3": {"tag": "v23.0", "tarball": "bitcoin-23.0-arm-linux-gnueabihf.tar.gz"},
+    "7c8bc63731aa872b7b334a8a7d96e33536ad77d49029bad179b09dca32cd77ac": {"tag": "v23.0", "tarball": "bitcoin-23.0-arm64-apple-darwin.tar.gz"},
+    "2caa5898399e415f61d9af80a366a3008e5856efa15aaff74b88acf429674c99": {"tag": "v23.0", "tarball": "bitcoin-23.0-powerpc64-linux-gnu.tar.gz"},
+    "217dd0469d0f4962d22818c368358575f6a0abcba8804807bb75325eb2f28b19": {"tag": "v23.0", "tarball": "bitcoin-23.0-powerpc64le-linux-gnu.tar.gz"},
+    "078f96b1e92895009c798ab827fb3fde5f6719eee886bd0c0e93acab18ea4865": {"tag": "v23.0", "tarball": "bitcoin-23.0-riscv64-linux-gnu.tar.gz"},
+    "c816780583009a9dad426dc0c183c89be9da98906e1e2c7ebae91041c1aaaaf3": {"tag": "v23.0", "tarball": "bitcoin-23.0-x86_64-apple-darwin.tar.gz"},
+    "2cca490c1f2842884a3c5b0606f179f9f937177da4eadd628e3f7fd7e25d26d0": {"tag": "v23.0", "tarball": "bitcoin-23.0-x86_64-linux-gnu.tar.gz"},
 
-    "ca316c369728348406778c30b2b567bb2ede1ebcc87fb0305c0bed3dacae762b": {"tag": "v24.0.1", "tarball": "groestlcoin-24.0.1-aarch64-linux-gnu.tar.gz"},
-    "28299bc5eccbf715c9b876467da7c12cd8b5261753ed614a7d3a81c9da79dcb8": {"tag": "v24.0.1", "tarball": "groestlcoin-24.0.1-arm-linux-gnueabihf.tar.gz"},
-    "569d3519b5855f7576452c8b666eb26cec175296bfa685f311652e3e718ab49d": {"tag": "v24.0.1", "tarball": "groestlcoin-24.0.1-arm64-apple-darwin.tar.gz"},
-    "6aad23f3b7f1c80a8834f5c36b8e43cc6786cac4cad1e42bdae604a9d90b82ca": {"tag": "v24.0.1", "tarball": "groestlcoin-24.0.1-powerpc64-linux-gnu.tar.gz"},
-    "08b1e015b2719c5bc45a3dd62c335185a428fd0e54b70ba886403e7255a11e35": {"tag": "v24.0.1", "tarball": "groestlcoin-24.0.1-powerpc64le-linux-gnu.tar.gz"},
-    "9372153a559ae034176c7cdd51a231a4d3afa1ab3b5f53b4769d7fa7b1beff96": {"tag": "v24.0.1", "tarball": "groestlcoin-24.0.1-riscv64-linux-gnu.tar.gz"},
-    "8a99765cd01686b81480dc29ee70aa5619d429402685f164e2a4b0b4d592ac10": {"tag": "v24.0.1", "tarball": "groestlcoin-24.0.1-x86_64-apple-darwin.tar.gz"},
-    "4b69743190e2697d7b7772bf6f63cde595d590ff6664abf15a7201dab2a6098b": {"tag": "v24.0.1", "tarball": "groestlcoin-24.0.1-x86_64-linux-gnu.tar.gz"},
+    "0b48b9e69b30037b41a1e6b78fb7cbcc48c7ad627908c99686e81f3802454609": {"tag": "v24.0.1", "tarball": "bitcoin-24.0.1-aarch64-linux-gnu.tar.gz"},
+    "37d7660f0277301744e96426bbb001d2206b8d4505385dfdeedf50c09aaaef60": {"tag": "v24.0.1", "tarball": "bitcoin-24.0.1-arm-linux-gnueabihf.tar.gz"},
+    "90ed59e86bfda1256f4b4cad8cc1dd77ee0efec2492bcb5af61402709288b62c": {"tag": "v24.0.1", "tarball": "bitcoin-24.0.1-arm64-apple-darwin.tar.gz"},
+    "7590645e8676f8b5fda62dc20174474c4ac8fd0defc83a19ed908ebf2e94dc11": {"tag": "v24.0.1", "tarball": "bitcoin-24.0.1-powerpc64-linux-gnu.tar.gz"},
+    "79e89a101f23ff87816675b98769cd1ee91059f95c5277f38f48f21a9f7f8509": {"tag": "v24.0.1", "tarball": "bitcoin-24.0.1-powerpc64le-linux-gnu.tar.gz"},
+    "6b163cef7de4beb07b8cb3347095e0d76a584019b1891135cd1268a1f05b9d88": {"tag": "v24.0.1", "tarball": "bitcoin-24.0.1-riscv64-linux-gnu.tar.gz"},
+    "e2f751512f3c0f00eb68ba946d9c829e6cf99422a61e8f5e0a7c109c318674d0": {"tag": "v24.0.1", "tarball": "bitcoin-24.0.1-x86_64-apple-darwin.tar.gz"},
+    "49df6e444515d457ea0b885d66f521f2a26ca92ccf73d5296082e633544253bf": {"tag": "v24.0.1", "tarball": "bitcoin-24.0.1-x86_64-linux-gnu.tar.gz"},
 
-    "d8776b405113b46d6be6e4921c5a5e62cbfaa5329087abbec14cc24d750f9c94": {"tag": "v24.0.1", "tarball": "groestlcoin-25.0-aarch64-linux-gnu.tar.gz"},
-    "4e984db13cd6e8294e0b868b3937e7d4eb24464eac371d2978a8338f3f80c16f": {"tag": "v24.0.1", "tarball": "groestlcoin-25.0-arm-linux-gnueabihf.tar.gz"},
-    "bd3d71be0d3b76cd9d02b2dda8372a7c483b475eda7a4d15037f434c387309ad": {"tag": "v24.0.1", "tarball": "groestlcoin-25.0-arm64-apple-darwin.tar.gz"},
-    "249726b3b4b2d9011d0866776d97ffa76be9ea5135dc4157b56fc30fc50168f1": {"tag": "v24.0.1", "tarball": "groestlcoin-25.0-powerpc64-linux-gnu.tar.gz"},
-    "0385b840381afdd7f0d4115d1fa9e298a984823a0f4875556029f72a9a38aadd": {"tag": "v24.0.1", "tarball": "groestlcoin-25.0-powerpc64le-linux-gnu.tar.gz"},
-    "6e7562dd44cf052fc14c61090fdcb048e6fcc95f0c1702edf774a76b56a508c3": {"tag": "v24.0.1", "tarball": "groestlcoin-25.0-riscv64-linux-gnu.tar.gz"},
-    "f9ca13def63d0722100417b880cd83b178f0770c2030838482bd5ef420547a11": {"tag": "v24.0.1", "tarball": "groestlcoin-25.0-x86_64-apple-darwin.tar.gz"},
-    "bcca36b5a2f1e83a4fd9888bc0016d3f46f9ef01238dc23a8e03f2f4ac3b9707": {"tag": "v24.0.1", "tarball": "groestlcoin-25.0-x86_64-linux-gnu.tar.gz"},
+    "3a7bdd959a0b426624f63f394f25e5b7769a5a2f96f8126dcc2ea53f3fa5212b": {"tag": "v25.0", "tarball": "bitcoin-25.0-aarch64-linux-gnu.tar.gz"},
+    "e537c8630b05e63242d979c3004f851fd73c2a10b5b4fdbb161788427c7b3c0f": {"tag": "v25.0", "tarball": "bitcoin-25.0-arm-linux-gnueabihf.tar.gz"},
+    "3b35075d6c1209743611c705a13575be2668bc069bc6301ce78a2e1e53ebe7cc": {"tag": "v25.0", "tarball": "bitcoin-25.0-arm64-apple-darwin.tar.gz"},
+    "0c8e135a6fd297270d3b65196042d761453493a022b5ff7fb847fc911e938214": {"tag": "v25.0", "tarball": "bitcoin-25.0-powerpc64-linux-gnu.tar.gz"},
+    "fa8af160782f5adfcea570f72b947073c1663b3e9c3cd0f82b216b609fe47573": {"tag": "v25.0", "tarball": "bitcoin-25.0-powerpc64le-linux-gnu.tar.gz"},
+    "fe6e347a66043946920c72c9c4afca301968101e6b82fb90a63d7885ebcceb32": {"tag": "v25.0", "tarball": "bitcoin-25.0-riscv64-linux-gnu.tar.gz"},
+    "5708fc639cdfc27347cccfd50db9b73b53647b36fb5f3a4a93537cbe8828c27f": {"tag": "v25.0", "tarball": "bitcoin-25.0-x86_64-apple-darwin.tar.gz"},
+    "33930d432593e49d58a9bff4c30078823e9af5d98594d2935862788ce8a20aec": {"tag": "v25.0", "tarball": "bitcoin-25.0-x86_64-linux-gnu.tar.gz"},
 }
 
 
@@ -103,24 +118,35 @@ def download_binary(tag, args) -> int:
             return 0
         shutil.rmtree(tag)
     Path(tag).mkdir()
-    bin_path = 'Groestlcoin/groestlcoin/releases/download/v{}'.format(tag[1:])
+    bin_path = 'bin/bitcoin-core-{}'.format(tag[1:])
     match = re.compile('v(.*)(rc[0-9]+)$').search(tag)
     if match:
-        bin_path = 'Groestlcoin/groestlcoin/releases/download/v{}/test.{}'.format(
+        bin_path = 'bin/bitcoin-core-{}/test.{}'.format(
             match.group(1), match.group(2))
     platform = args.platform
     if tag < "v23" and platform in ["x86_64-apple-darwin", "arm64-apple-darwin"]:
         platform = "osx64"
-    tarball = 'groestlcoin-{tag}-{platform}.tar.gz'.format(
+    tarball = 'bitcoin-{tag}-{platform}.tar.gz'.format(
         tag=tag[1:], platform=platform)
-    tarballUrl = 'https://github.com/{bin_path}/{tarball}'.format(
+    tarballUrl = 'https://bitcoincore.org/{bin_path}/{tarball}'.format(
         bin_path=bin_path, tarball=tarball)
 
     print('Fetching: {tarballUrl}'.format(tarballUrl=tarballUrl))
 
-    ret = subprocess.run(['curl', '-L', '--fail', '--remote-name', tarballUrl]).returncode
-    if ret:
-        return ret
+    header, status = subprocess.Popen(
+        ['curl', '--head', tarballUrl], stdout=subprocess.PIPE).communicate()
+    if re.search("404 Not Found", header.decode("utf-8")):
+        print("Binary tag was not found")
+        return 1
+
+    curlCmds = [
+        ['curl', '--remote-name', tarballUrl]
+    ]
+
+    for cmd in curlCmds:
+        ret = subprocess.run(cmd).returncode
+        if ret:
+            return ret
 
     hasher = hashlib.sha256()
     with open(tarball, "rb") as afile:
@@ -139,7 +165,7 @@ def download_binary(tag, args) -> int:
     # Extract tarball
     ret = subprocess.run(['tar', '-zxf', tarball, '-C', tag,
                           '--strip-components=1',
-                          'groestlcoin-{tag}'.format(tag=tag[1:])]).returncode
+                          'bitcoin-{tag}'.format(tag=tag[1:])]).returncode
     if ret != 0:
         print(f"Failed to extract the {tag} tarball")
         return ret
@@ -177,7 +203,7 @@ def download_binary(tag, args) -> int:
 
 
 def build_release(tag, args) -> int:
-    githubUrl = "https://github.com/groestlcoin/groestlcoin"
+    githubUrl = "https://github.com/bitcoin/bitcoin"
     if args.remove_dir:
         if Path(tag).is_dir():
             shutil.rmtree(tag)
@@ -218,7 +244,7 @@ def build_release(tag, args) -> int:
         # Move binaries, so they're in the same place as in the
         # release download
         Path('bin').mkdir(exist_ok=True)
-        files = ['groestlcoind', 'groestlcoin-cli', 'groestlcoin-tx']
+        files = ['bitcoind', 'bitcoin-cli', 'bitcoin-tx']
         for f in files:
             Path('src/'+f).rename('bin/'+f)
     return 0
@@ -282,7 +308,7 @@ if __name__ == '__main__':
                         help='target directory.', default='releases')
     all_tags = sorted([*set([v['tag'] for v in SHA256_SUMS.values()])])
     parser.add_argument('tags', nargs='*', default=all_tags,
-                        help='release tags. e.g.: v2.18.2 v2.20.1 '
+                        help='release tags. e.g.: v0.18.1 v0.20.0rc2 '
                         '(if not specified, the full list needed for '
                         'backwards compatibility tests will be used)'
                         )

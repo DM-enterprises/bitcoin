@@ -18,14 +18,14 @@ static void Bech32Encode(benchmark::Bench& bench)
     tmp.reserve(1 + 32 * 8 / 5);
     ConvertBits<8, 5, true>([&](unsigned char c) { tmp.push_back(c); }, v.begin(), v.end());
     bench.batch(v.size()).unit("byte").run([&] {
-        bech32::Encode(bech32::Encoding::BECH32, "grs", tmp);
+        bech32::Encode(bech32::Encoding::BECH32, "bc", tmp);
     });
 }
 
 
 static void Bech32Decode(benchmark::Bench& bench)
 {
-    std::string addr = "grs1qkallence7tjawwvy0dwt4twc62qjgaw8f4vlhyd006d99f09"; // GRS
+    std::string addr = "bc1qkallence7tjawwvy0dwt4twc62qjgaw8f4vlhyd006d99f09";
     bench.batch(addr.size()).unit("byte").run([&] {
         bech32::Decode(addr);
     });

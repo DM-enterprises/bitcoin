@@ -79,8 +79,9 @@ class AddressTypeTest(BitcoinTestFramework):
             ["-changetype=p2sh-segwit"],
             [],
         ]
-        # whitelist peers to speed up tx relay / mempool sync
-        self.noban_tx_relay = True
+        # whitelist all peers to speed up tx relay / mempool sync
+        for args in self.extra_args:
+            args.append("-whitelist=noban@127.0.0.1")
         self.supports_cli = False
 
     def skip_test_if_missing_module(self):
@@ -387,4 +388,4 @@ class AddressTypeTest(BitcoinTestFramework):
             assert_raises_rpc_error(-8, "Legacy wallets cannot provide bech32m addresses", self.nodes[0].getrawchangeaddress, "bech32m")
 
 if __name__ == '__main__':
-    AddressTypeTest(__file__).main()
+    AddressTypeTest().main()

@@ -2,8 +2,8 @@ Example scripts for User-space, Statically Defined Tracing (USDT)
 =================================================================
 
 This directory contains scripts showcasing User-space, Statically Defined
-Tracing (USDT) support for Groestlcoin Core on Linux using. For more information on
-USDT support in Groestlcoin Core see the [USDT documentation].
+Tracing (USDT) support for Bitcoin Core on Linux using. For more information on
+USDT support in Bitcoin Core see the [USDT documentation].
 
 [USDT documentation]: ../../doc/tracing.md
 
@@ -30,14 +30,14 @@ information. For development there exist a [bpftrace Reference Guide], a
 
 ## Examples
 
-The bpftrace examples contain a relative path to the `groestlcoind` binary. By
+The bpftrace examples contain a relative path to the `bitcoind` binary. By
 default, the scripts should be run from the repository-root and assume a
-self-compiled `groestlcoind` binary. The paths in the examples can be changed, for
+self-compiled `bitcoind` binary. The paths in the examples can be changed, for
 example, to point to release builds if needed. See the
-[Groestlcoin Core USDT documentation] on how to list available tracepoints in your
-`groestlcoind` binary.
+[Bitcoin Core USDT documentation] on how to list available tracepoints in your
+`bitcoind` binary.
 
-[Groestlcoin Core USDT documentation]: ../../doc/tracing.md#listing-available-tracepoints
+[Bitcoin Core USDT documentation]: ../../doc/tracing.md#listing-available-tracepoints
 
 **WARNING: eBPF programs require root privileges to be loaded into a Linux
 kernel VM. This means the bpftrace and BCC examples must be executed with root
@@ -62,13 +62,13 @@ $ bpftrace contrib/tracing/log_p2p_traffic.bt
 
 Output
 ```
-outbound 'ping' msg to peer 11 (outbound-full-relay, [2a02:b10c:f747:1:ef:fake:ipv6:addr]:1331) with 8 bytes
-inbound 'pong' msg from peer 11 (outbound-full-relay, [2a02:b10c:f747:1:ef:fake:ipv6:addr]:1331) with 8 bytes
-inbound 'inv' msg from peer 16 (outbound-full-relay, XX.XX.XXX.121:1331) with 37 bytes
-outbound 'getdata' msg to peer 16 (outbound-full-relay, XX.XX.XXX.121:1331) with 37 bytes
-inbound 'tx' msg from peer 16 (outbound-full-relay, XX.XX.XXX.121:1331) with 222 bytes
-outbound 'inv' msg to peer 9 (outbound-full-relay, faketorv3addressa2ufa6odvoi3s77j4uegey0xb10csyfyve2t33curbyd.onion:1331) with 37 bytes
-outbound 'inv' msg to peer 7 (outbound-full-relay, XX.XX.XXX.242:1331) with 37 bytes
+outbound 'ping' msg to peer 11 (outbound-full-relay, [2a02:b10c:f747:1:ef:fake:ipv6:addr]:8333) with 8 bytes
+inbound 'pong' msg from peer 11 (outbound-full-relay, [2a02:b10c:f747:1:ef:fake:ipv6:addr]:8333) with 8 bytes
+inbound 'inv' msg from peer 16 (outbound-full-relay, XX.XX.XXX.121:8333) with 37 bytes
+outbound 'getdata' msg to peer 16 (outbound-full-relay, XX.XX.XXX.121:8333) with 37 bytes
+inbound 'tx' msg from peer 16 (outbound-full-relay, XX.XX.XXX.121:8333) with 222 bytes
+outbound 'inv' msg to peer 9 (outbound-full-relay, faketorv3addressa2ufa6odvoi3s77j4uegey0xb10csyfyve2t33curbyd.onion:8333) with 37 bytes
+outbound 'inv' msg to peer 7 (outbound-full-relay, XX.XX.XXX.242:8333) with 37 bytes
 …
 ```
 
@@ -82,7 +82,7 @@ about the connection. Peers can be selected individually to view recent P2P
 messages.
 
 ```
-$ python3 contrib/tracing/p2p_monitor.py ./src/groestlcoind
+$ python3 contrib/tracing/p2p_monitor.py ./src/bitcoind
 ```
 
 Lists selectable peers and traffic and connection information.
@@ -91,16 +91,16 @@ Lists selectable peers and traffic and connection information.
  Navigate with UP/DOWN or J/K and select a peer with ENTER or SPACE to see individual P2P messages
 
  PEER  OUTBOUND              INBOUND               TYPE                   ADDR
-    0  46          398 byte  61      1407590 byte  block-relay-only       XX.XX.XXX.196:1331
-   11  1156     253570 byte  3431    2394924 byte  outbound-full-relay    XXX.X.XX.179:1331
+    0  46          398 byte  61      1407590 byte  block-relay-only       XX.XX.XXX.196:8333
+   11  1156     253570 byte  3431    2394924 byte  outbound-full-relay    XXX.X.XX.179:8333
    13  3425    1809620 byte  1236     305458 byte  inbound                XXX.X.X.X:60380
-   16  1046     241633 byte  1589    1199220 byte  outbound-full-relay    4faketorv2pbfu7x.onion:1331
-   19  577      181679 byte  390      148951 byte  outbound-full-relay    kfake4vctorjv2o2.onion:1331
-   20  11         1248 byte  13         1283 byte  block-relay-only       [2600:fake:64d9:b10c:4436:aaaa:fe:bb]:1331
-   21  11         1248 byte  13         1299 byte  block-relay-only       XX.XXX.X.155:1331
-   22  5           103 byte  1           102 byte  feeler                 XX.XX.XXX.173:1331
-   23  11         1248 byte  12         1255 byte  block-relay-only       XX.XXX.XXX.220:1331
-   24  3           103 byte  1           102 byte  feeler                 XXX.XXX.XXX.64:1331
+   16  1046     241633 byte  1589    1199220 byte  outbound-full-relay    4faketorv2pbfu7x.onion:8333
+   19  577      181679 byte  390      148951 byte  outbound-full-relay    kfake4vctorjv2o2.onion:8333
+   20  11         1248 byte  13         1283 byte  block-relay-only       [2600:fake:64d9:b10c:4436:aaaa:fe:bb]:8333
+   21  11         1248 byte  13         1299 byte  block-relay-only       XX.XXX.X.155:8333
+   22  5           103 byte  1           102 byte  feeler                 XX.XX.XXX.173:8333
+   23  11         1248 byte  12         1255 byte  block-relay-only       XX.XXX.XXX.220:8333
+   24  3           103 byte  1           102 byte  feeler                 XXX.XXX.XXX.64:8333
 …
 ```
 
@@ -108,7 +108,7 @@ Showing recent P2P messages between our node and a selected peer.
 
 ```
     ----------------------------------------------------------------------
-    |                PEER 16 (4faketorv2pbfu7x.onion:1331)               |
+    |                PEER 16 (4faketorv2pbfu7x.onion:8333)               |
     | OUR NODE                outbound-full-relay                   PEER |
     |                                           <--- sendcmpct (9 bytes) |
     | inv (37 byte) --->                                                 |
@@ -134,7 +134,7 @@ A BCC Python script showcasing eBPF and USDT limitations when passing data
 larger than about 32kb. Based on the `net:inbound_message` and
 `net:outbound_message` tracepoints.
 
-Groestlcoin P2P messages can be larger than 32kb (e.g. `tx`, `block`, ...). The
+Bitcoin P2P messages can be larger than 32kb (e.g. `tx`, `block`, ...). The
 eBPF VM's stack is limited to 512 bytes, and we can't allocate more than about
 32kb for a P2P message in the eBPF VM. The **message data is cut off** when the
 message is larger than MAX_MSG_DATA_LENGTH (see script). This can be detected
@@ -150,16 +150,16 @@ lost. BCC prints: `Possibly lost 2 samples` on lost messages.
 
 
 ```
-$ python3 contrib/tracing/log_raw_p2p_msgs.py ./src/groestlcoind
+$ python3 contrib/tracing/log_raw_p2p_msgs.py ./src/bitcoind
 ```
 
 ```
 Logging raw P2P messages.
 Messages larger that about 32kb will be cut off!
 Some messages might be lost!
- outbound msg 'inv' from peer 4 (outbound-full-relay, XX.XXX.XX.4:1331) with 253 bytes: 0705000000be2245c8f844c9f763748e1a7…
+ outbound msg 'inv' from peer 4 (outbound-full-relay, XX.XXX.XX.4:8333) with 253 bytes: 0705000000be2245c8f844c9f763748e1a7…
 …
-Warning: incomplete message (only 32568 out of 53552 bytes)! inbound msg 'tx' from peer 32 (outbound-full-relay, XX.XXX.XXX.43:1331) with 53552 bytes: 020000000001fd3c01939c85ad6756ed9fc…
+Warning: incomplete message (only 32568 out of 53552 bytes)! inbound msg 'tx' from peer 32 (outbound-full-relay, XX.XXX.XXX.43:8333) with 53552 bytes: 020000000001fd3c01939c85ad6756ed9fc…
 …
 Possibly lost 2 samples
 ```
@@ -184,11 +184,11 @@ longer than 25ms to connect.
 $ bpftrace contrib/tracing/connectblock_benchmark.bt 20000 38000 25
 ```
 
-In a different terminal, starting Groestlcoin Core in SigNet mode and with
+In a different terminal, starting Bitcoin Core in SigNet mode and with
 re-indexing enabled.
 
 ```
-$ ./src/groestlcoind -signet -reindex
+$ ./src/bitcoind -signet -reindex
 ```
 
 This produces the following output.
@@ -241,7 +241,7 @@ A BCC Python script to log the UTXO cache flushes. Based on the
 `utxocache:flush` tracepoint.
 
 ```bash
-$ python3 contrib/tracing/log_utxocache_flush.py ./src/groestlcoind
+$ python3 contrib/tracing/log_utxocache_flush.py ./src/bitcoind
 ```
 
 ```
@@ -300,7 +300,7 @@ comprising a timestamp along with all event data available via the event's
 tracepoint.
 
 ```console
-$ python3 contrib/tracing/mempool_monitor.py ./src/groestlcoind
+$ python3 contrib/tracing/mempool_monitor.py ./src/bitcoind
 ```
 
 ```
@@ -316,23 +316,23 @@ $ python3 contrib/tracing/mempool_monitor.py ./src/groestlcoind
  └───────────────────────────────────┘  └─────────────────────────────────────┘
 
  ┌─Event log────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
- │ 13:10:30Z added f9064ca5bfc87cdd191faa42bf697217cd920b2b94838c1f1192e4f06c4fd217 with feerate 8.92 gro/vB (981 gro, 110 vbytes)                                              │
- │ 13:10:30Z added 53ffa3afbe57b1bfe423e1755ca2b52c5b6cb4aa91b8b7ee9cb694953f47f234 with feerate 5.00 gro/vB (550 gro, 110 vbytes)                                              │
- │ 13:10:30Z added 4177df5e19465eb5e53c3f8b6830a293f57474921bc6c2ae89375e0986e1f0f9 with feerate 2.98 gro/vB (429 gro, 144 vbytes)                                              │
- │ 13:10:30Z added 931a10d83f0a268768da75dc4b9e199f2f055f12979ae5491cc304ee10f890ea with feerate 3.55 gro/vB (500 gro, 141 vbytes)                                              │
- │ 13:10:30Z added 4cf32b295723cc4ab73f2a2e51d4bb276c0042760a4c00a3eb9595b8ebb24721 with feerate 89.21 gro/vB (12668 gro, 142 vbytes)                                           │
- │ 13:10:31Z replaced d1eecf9d662121322f4f31f0c2267a752d14bb3956e6016ba96e87f47890e1db with feerate 27.12 gro/vB received 23.3 seconds ago (7213 gro, 266 vbytes) with c412db908│
- │ 9b7ed53f3e5e36d2819dd291278b59ccaabaeb17fd37c3d87fdcd57 with feerate 28.12 gro/vB (8351 gro, 297 vbytes)                                                                     │
- │ 13:10:31Z added c412db9089b7ed53f3e5e36d2819dd291278b59ccaabaeb17fd37c3d87fdcd57 with feerate 28.12 gro/vB (8351 gro, 297 vbytes)                                            │
- │ 13:10:31Z added b8388a5bdc421b11460bdf477d5a85a1a39c2784e7dd7bffabe688740424ea57 with feerate 25.21 gro/vB (3554 gro, 141 vbytes)                                            │
- │ 13:10:31Z added 4ddb88bc90a122cd9eae8a664e73bdf5bebe75f3ef901241b4a251245854a98e with feerate 24.15 gro/vB (5072 gro, 210 vbytes)                                            │
- │ 13:10:31Z added 19101e4161bca5271ad5d03e7747f2faec7793b274dc2f3c4cf516b7cef1aac3 with feerate 7.06 gro/vB (1080 gro, 153 vbytes)                                             │
- │ 13:10:31Z removed d1eecf9d662121322f4f31f0c2267a752d14bb3956e6016ba96e87f47890e1db with feerate 27.12 gro/vB (7213 gro, 266 vbytes): replaced                                │
- │ 13:10:31Z added 6c511c60d9b95b9eff81df6ecba5c86780f513fe62ce3ad6be2c5340d957025a with feerate 4.00 gro/vB (440 gro, 110 vbytes)                                              │
- │ 13:10:31Z added 44d66f7f004bd52c46be4dff3067cab700e51c7866a84282bd8aab560a5bfb79 with feerate 3.15 gro/vB (448 gro, 142 vbytes)                                              │
- │ 13:10:31Z added b17b7c9ec5acfbbf12f0eeef8e29826fad3105bb95eef7a47d2f1f22b4784643 with feerate 4.10 gro/vB (1348 gro, 329 vbytes)                                             │
- │ 13:10:31Z added b7a4ad93554e57454e8a8049bfc0bd803fa962bd3f0a08926aa72e7cb23e2276 with feerate 1.01 gro/vB (205 gro, 202 vbytes)                                              │
- │ 13:10:32Z added c78e87be86c828137a6e7e00a177c03b52202ce4c39029b99904c2a094b9da87 with feerate 11.00 gro/vB (1562 gro, 142 vbytes)                                            │
+ │ 13:10:30Z added f9064ca5bfc87cdd191faa42bf697217cd920b2b94838c1f1192e4f06c4fd217 with feerate 8.92 sat/vB (981 sat, 110 vbytes)                                              │
+ │ 13:10:30Z added 53ffa3afbe57b1bfe423e1755ca2b52c5b6cb4aa91b8b7ee9cb694953f47f234 with feerate 5.00 sat/vB (550 sat, 110 vbytes)                                              │
+ │ 13:10:30Z added 4177df5e19465eb5e53c3f8b6830a293f57474921bc6c2ae89375e0986e1f0f9 with feerate 2.98 sat/vB (429 sat, 144 vbytes)                                              │
+ │ 13:10:30Z added 931a10d83f0a268768da75dc4b9e199f2f055f12979ae5491cc304ee10f890ea with feerate 3.55 sat/vB (500 sat, 141 vbytes)                                              │
+ │ 13:10:30Z added 4cf32b295723cc4ab73f2a2e51d4bb276c0042760a4c00a3eb9595b8ebb24721 with feerate 89.21 sat/vB (12668 sat, 142 vbytes)                                           │
+ │ 13:10:31Z replaced d1eecf9d662121322f4f31f0c2267a752d14bb3956e6016ba96e87f47890e1db with feerate 27.12 sat/vB received 23.3 seconds ago (7213 sat, 266 vbytes) with c412db908│
+ │ 9b7ed53f3e5e36d2819dd291278b59ccaabaeb17fd37c3d87fdcd57 with feerate 28.12 sat/vB (8351 sat, 297 vbytes)                                                                     │
+ │ 13:10:31Z added c412db9089b7ed53f3e5e36d2819dd291278b59ccaabaeb17fd37c3d87fdcd57 with feerate 28.12 sat/vB (8351 sat, 297 vbytes)                                            │
+ │ 13:10:31Z added b8388a5bdc421b11460bdf477d5a85a1a39c2784e7dd7bffabe688740424ea57 with feerate 25.21 sat/vB (3554 sat, 141 vbytes)                                            │
+ │ 13:10:31Z added 4ddb88bc90a122cd9eae8a664e73bdf5bebe75f3ef901241b4a251245854a98e with feerate 24.15 sat/vB (5072 sat, 210 vbytes)                                            │
+ │ 13:10:31Z added 19101e4161bca5271ad5d03e7747f2faec7793b274dc2f3c4cf516b7cef1aac3 with feerate 7.06 sat/vB (1080 sat, 153 vbytes)                                             │
+ │ 13:10:31Z removed d1eecf9d662121322f4f31f0c2267a752d14bb3956e6016ba96e87f47890e1db with feerate 27.12 sat/vB (7213 sat, 266 vbytes): replaced                                │
+ │ 13:10:31Z added 6c511c60d9b95b9eff81df6ecba5c86780f513fe62ce3ad6be2c5340d957025a with feerate 4.00 sat/vB (440 sat, 110 vbytes)                                              │
+ │ 13:10:31Z added 44d66f7f004bd52c46be4dff3067cab700e51c7866a84282bd8aab560a5bfb79 with feerate 3.15 sat/vB (448 sat, 142 vbytes)                                              │
+ │ 13:10:31Z added b17b7c9ec5acfbbf12f0eeef8e29826fad3105bb95eef7a47d2f1f22b4784643 with feerate 4.10 sat/vB (1348 sat, 329 vbytes)                                             │
+ │ 13:10:31Z added b7a4ad93554e57454e8a8049bfc0bd803fa962bd3f0a08926aa72e7cb23e2276 with feerate 1.01 sat/vB (205 sat, 202 vbytes)                                              │
+ │ 13:10:32Z added c78e87be86c828137a6e7e00a177c03b52202ce4c39029b99904c2a094b9da87 with feerate 11.00 sat/vB (1562 sat, 142 vbytes)                                            │
  │                                                                                                                                                                              │
  └──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```

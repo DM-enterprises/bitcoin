@@ -14,8 +14,10 @@
 #include <cstring>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
+
 
 /** High-performance cache primitives.
  *
@@ -357,16 +359,17 @@ public:
      * @param bytes the approximate number of bytes to use for this data
      * structure
      * @returns A pair of the maximum number of elements storable (see setup()
-     * documentation for more detail) and the approximate total size of these
-     * elements in bytes.
+     * documentation for more detail) and the approxmiate total size of these
+     * elements in bytes or std::nullopt if the size requested is too large.
      */
-    std::pair<uint32_t, size_t> setup_bytes(size_t bytes)
+    std::optional<std::pair<uint32_t, size_t>> setup_bytes(size_t bytes)
     {
-        uint32_t requested_num_elems(std::min<size_t>(
-            bytes / sizeof(Element),
-            std::numeric_limits<uint32_t>::max()));
+        size_t requested_num_elems = bytes / sizeof(Element);
+        if (std::numeric_limits<uint32_t>::max() < requested_num_elems) {
+            return std::nullopt;
+        }
 
-        auto num_elems = setup(requested_num_elems);
+        auto num_elems = setup(bytes/sizeof(Element));
 
         size_t approx_size_bytes = num_elems * sizeof(Element);
         return std::make_pair(num_elems, approx_size_bytes);

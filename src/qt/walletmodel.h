@@ -5,6 +5,10 @@
 #ifndef BITCOIN_QT_WALLETMODEL_H
 #define BITCOIN_QT_WALLETMODEL_H
 
+#if defined(HAVE_CONFIG_H)
+#include <config/bitcoin-config.h>
+#endif
+
 #include <key.h>
 
 #include <qt/walletmodeltransaction.h>
@@ -130,7 +134,7 @@ public:
     UnlockContext requestUnlock();
 
     bool bumpFee(uint256 hash, uint256& new_hash);
-    void displayAddress(std::string sAddress) const;
+    bool displayAddress(std::string sAddress) const;
 
     static bool isWalletEnabled();
 

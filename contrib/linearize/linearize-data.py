@@ -18,12 +18,10 @@ import time
 import glob
 from collections import namedtuple
 
-import groestlcoin_hash
-
 settings = {}
 
 def calc_hash_str(blk_hdr):
-    blk_hdr_hash = groestlcoin_hash.getHash(blk_hdr, len(blk_hdr))
+    blk_hdr_hash = hashlib.sha256(hashlib.sha256(blk_hdr).digest()).digest()
     return blk_hdr_hash[::-1].hex()
 
 def get_blk_dt(blk_hdr):
@@ -78,16 +76,6 @@ def getFirstBlockFileId(block_dir_path):
     blkId = int(firstBlkFn[3:8])
     return blkId
 
-def read_xor_key(blocks_path):
-    NUM_XOR_BYTES = 8  # From InitBlocksdirXorKey::xor_key.size()
-    try:
-        xor_filename = os.path.join(blocks_path, "xor.dat")
-        with open(xor_filename, "rb") as xor_file:
-            return xor_file.read(NUM_XOR_BYTES)
-    # support also blockdirs created with pre-v28 versions, where no xor key exists yet
-    except FileNotFoundError:
-        return bytes([0] * NUM_XOR_BYTES)
-
 # Block header and extent on disk
 BlockExtent = namedtuple('BlockExtent', ['fn', 'offset', 'inhdr', 'blkhdr', 'size'])
 
@@ -107,7 +95,6 @@ class BlockDataCopier:
         self.outFname = None
         self.blkCountIn = 0
         self.blkCountOut = 0
-        self.xor_key = read_xor_key(self.settings['input'])
 
         self.lastDate = datetime.datetime(2000, 1, 1)
         self.highTS = 1408893517 - 315360000
@@ -125,13 +112,6 @@ class BlockDataCopier:
         self.blockExtents = {}
         self.outOfOrderData = {}
         self.outOfOrderSize = 0 # running total size for items in outOfOrderData
-
-    def read_xored(self, f, size):
-        offset = f.tell()
-        data = bytearray(f.read(size))
-        for i in range(len(data)):
-            data[i] ^= self.xor_key[(i + offset) % len(self.xor_key)]
-        return bytes(data)
 
     def writeBlock(self, inhdr, blk_hdr, rawblock):
         blockSizeOnDisk = len(inhdr) + len(blk_hdr) + len(rawblock)
@@ -185,7 +165,7 @@ class BlockDataCopier:
         '''Fetch block contents from disk given extents'''
         with open(self.inFileName(extent.fn), "rb") as f:
             f.seek(extent.offset)
-            return self.read_xored(f, extent.size)
+            return f.read(extent.size)
 
     def copyOneBlock(self):
         '''Find the next block to be written in the input, and copy it to the output.'''
@@ -210,7 +190,7 @@ class BlockDataCopier:
                     print("Premature end of block data")
                     return
 
-            inhdr = self.read_xored(self.inF, 8)
+            inhdr = self.inF.read(8)
             if (not inhdr or (inhdr[0] == "\0")):
                 self.inF.close()
                 self.inF = None
@@ -227,7 +207,7 @@ class BlockDataCopier:
             inLenLE = inhdr[4:]
             su = struct.unpack("<I", inLenLE)
             inLen = su[0] - 80 # length without header
-            blk_hdr = self.read_xored(self.inF, 80)
+            blk_hdr = self.inF.read(80)
             inExtent = BlockExtent(self.inFn, self.inF.tell(), inhdr, blk_hdr, inLen)
 
             self.hash_str = calc_hash_str(blk_hdr)
@@ -244,7 +224,7 @@ class BlockDataCopier:
 
             if self.blkCountOut == blkHeight:
                 # If in-order block, just copy
-                rawblock = self.read_xored(self.inF, inLen)
+                rawblock = self.inF.read(inLen)
                 self.writeBlock(inhdr, blk_hdr, rawblock)
 
                 # See if we can catch up to prior out-of-order blocks
@@ -257,7 +237,7 @@ class BlockDataCopier:
                     # If there is space in the cache, read the data
                     # Reading the data in file sequence instead of seeking and fetching it later is preferred,
                     # but we don't want to fill up memory
-                    self.outOfOrderData[blkHeight] = self.read_xored(self.inF, inLen)
+                    self.outOfOrderData[blkHeight] = self.inF.read(inLen)
                     self.outOfOrderSize += inLen
                 else: # If no space in cache, seek forward
                     self.inF.seek(inLen, os.SEEK_CUR)
@@ -289,9 +269,9 @@ if __name__ == '__main__':
     settings['rev_hash_bytes'] = settings['rev_hash_bytes'].lower()
 
     if 'netmagic' not in settings:
-        settings['netmagic'] = 'f9beb4d4'
+        settings['netmagic'] = 'f9beb4d9'
     if 'genesis' not in settings:
-        settings['genesis'] = '00000ac5927c594d49cc0bdb81759d0da8297eb614683d3acb62f0703b639023'
+        settings['genesis'] = '000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f'
     if 'input' not in settings:
         settings['input'] = 'input'
     if 'hashlist' not in settings:

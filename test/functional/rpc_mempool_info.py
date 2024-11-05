@@ -96,4 +96,4 @@ class RPCMempoolInfoTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    RPCMempoolInfoTest(__file__).main()
+    RPCMempoolInfoTest().main()

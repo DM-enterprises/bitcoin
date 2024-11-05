@@ -423,4 +423,4 @@ class MultiWalletTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    MultiWalletTest(__file__).main()
+    MultiWalletTest().main()

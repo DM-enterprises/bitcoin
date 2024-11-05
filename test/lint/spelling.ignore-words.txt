@@ -1,5 +1,4 @@
 afile
-amountIn
 asend
 ba
 blockin
@@ -8,10 +7,8 @@ cachable
 clen
 crypted
 debbugs
-deques
 fo
 fpr
-hashIn
 hights
 inflight
 invokable
@@ -20,7 +17,6 @@ lief
 mor
 nd
 nin
-outIn
 requestor
 ser
 siz
@@ -28,6 +24,5 @@ stap
 unparseable
 unser
 useable
-viewIn
 warmup
 wit

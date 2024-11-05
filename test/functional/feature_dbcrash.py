@@ -286,4 +286,4 @@ class ChainstateWriteCrashTest(BitcoinTestFramework):
 
 
 if __name__ == "__main__":
-    ChainstateWriteCrashTest(__file__).main()
+    ChainstateWriteCrashTest().main()

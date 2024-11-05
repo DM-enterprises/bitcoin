@@ -103,4 +103,4 @@ class MempoolUpdateFromBlockTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    MempoolUpdateFromBlockTest(__file__).main()
+    MempoolUpdateFromBlockTest().main()

@@ -39,4 +39,4 @@ class InvalidLocatorTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    InvalidLocatorTest(__file__).main()
+    InvalidLocatorTest().main()

@@ -20,7 +20,7 @@ public:
     State validate(QString &input, int &pos) const override;
 };
 
-/** Groestlcoin address widget validator, checks for a valid groestlcoin address.
+/** Bitcoin address widget validator, checks for a valid bitcoin address.
  */
 class BitcoinAddressCheckValidator : public QValidator
 {

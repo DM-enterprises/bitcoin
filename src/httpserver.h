@@ -7,7 +7,6 @@
 
 #include <functional>
 #include <optional>
-#include <span>
 #include <string>
 
 namespace util {
@@ -124,16 +123,12 @@ public:
     /**
      * Write HTTP reply.
      * nStatus is the HTTP status code to send.
-     * reply is the body of the reply. Keep it empty to send a standard message.
+     * strReply is the body of the reply. Keep it empty to send a standard message.
      *
      * @note Can be called only once. As this will give the request back to the
      * main thread, do not call any other HTTPRequest methods after calling this.
      */
-    void WriteReply(int nStatus, std::string_view reply = "")
-    {
-        WriteReply(nStatus, std::as_bytes(std::span{reply}));
-    }
-    void WriteReply(int nStatus, std::span<const std::byte> reply);
+    void WriteReply(int nStatus, const std::string& strReply = "");
 };
 
 /** Get the query parameter value from request uri for a specified key, or std::nullopt if the key
@@ -156,7 +151,7 @@ class HTTPClosure
 {
 public:
     virtual void operator()() = 0;
-    virtual ~HTTPClosure() = default;
+    virtual ~HTTPClosure() {}
 };
 
 /** Event class. This can be used either as a cross-thread trigger or as a timer.

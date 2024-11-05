@@ -58,6 +58,14 @@
         <translation type="unfinished">&amp;Танлаш</translation>
     </message>
     <message>
+        <source>Sending addresses</source>
+        <translation type="unfinished">Жўнатиладиган манзиллар</translation>
+    </message>
+    <message>
+        <source>Receiving addresses</source>
+        <translation type="unfinished">Қабул қилинадиган манзиллар</translation>
+    </message>
+    <message>
         <source>These are your Bitcoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
         <translation type="unfinished">Улар тўловларни жўнатиш учун сизнинг Bitcoin манзилларингиз. Доимо тангаларни жўнатишдан олдин сумма ва қабул қилувчи манзилни текшириб кўринг. </translation>
     </message>
@@ -370,10 +378,6 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <source>%1 GB</source>
         <translation type="unfinished">%1 ГБ</translation>
     </message>
-    <message>
-        <source>default wallet</source>
-        <translation type="unfinished">standart hamyon</translation>
-    </message>
 </context>
 <context>
     <name>BitcoinGUI</name>
@@ -643,7 +647,7 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     </message>
     <message>
         <source>Open Wallet</source>
-        <translation type="unfinished">Hamyonni ochish</translation>
+        <translation type="unfinished">Ochiq hamyon</translation>
     </message>
     <message>
         <source>Open a wallet</source>
@@ -664,6 +668,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <message>
         <source>Mask the values in the Overview tab</source>
         <translation type="unfinished">Umumiy ko'rinish menyusidagi qiymatlarni maskirovka qilish</translation>
+    </message>
+    <message>
+        <source>default wallet</source>
+        <translation type="unfinished">standart hamyon</translation>
     </message>
     <message>
         <source>No wallets available</source>
@@ -737,8 +745,7 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <message>
         <source>Date: %1
 </source>
-        <translation type="unfinished">Sana: %1
-</translation>
+        <translation type="unfinished">Sana: %1</translation>
     </message>
     <message>
         <source>Amount: %1
@@ -780,7 +787,7 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     </message>
     <message>
         <source>HD key generation is &lt;b&gt;enabled&lt;/b&gt;</source>
-        <translation type="unfinished">HD kalit yaratish &lt;b&gt;yoqilgan&lt;/b&gt;</translation>
+        <translation type="unfinished">HD kalit yaratish &lt;b&gt;imkonsiz&lt;/b&gt;</translation>
     </message>
     <message>
         <source>HD key generation is &lt;b&gt;disabled&lt;/b&gt;</source>
@@ -831,6 +838,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <message>
         <source>Fee:</source>
         <translation type="unfinished">Солиқ:</translation>
+    </message>
+    <message>
+        <source>Dust:</source>
+        <translation type="unfinished">Ахлат қутиси:</translation>
     </message>
     <message>
         <source>After Fee:</source>
@@ -898,7 +909,7 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     </message>
     <message>
         <source>L&amp;ock unspent</source>
-        <translation type="unfinished">Sarflanmagan tranzaksiyalarni q&amp;ulflash</translation>
+        <translation type="unfinished">Sarflanmagan miqdorlarni q&amp;ulflash</translation>
     </message>
     <message>
         <source>&amp;Unlock unspent</source>
@@ -921,12 +932,28 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation type="unfinished">Нусха байти</translation>
     </message>
     <message>
+        <source>Copy dust</source>
+        <translation type="unfinished">Нусха чангги</translation>
+    </message>
+    <message>
         <source>Copy change</source>
         <translation type="unfinished">Нусха қайтими</translation>
     </message>
     <message>
         <source>(%1 locked)</source>
         <translation type="unfinished">(%1 қулфланган)</translation>
+    </message>
+    <message>
+        <source>yes</source>
+        <translation type="unfinished">ҳа</translation>
+    </message>
+    <message>
+        <source>no</source>
+        <translation type="unfinished">йўқ</translation>
+    </message>
+    <message>
+        <source>This label turns red if any recipient receives an amount smaller than the current dust threshold.</source>
+        <translation type="unfinished">Agar qabul qiluvchi joriy 'dust' chegarasidan kichikroq miqdor olsa, bu yorliq qizil rangga aylanadi</translation>
     </message>
     <message>
         <source>Can vary +/- %1 satoshi(s) per input.</source>
@@ -994,9 +1021,13 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation type="unfinished">Hamyonni ochish ogohlantirishi</translation>
     </message>
     <message>
+        <source>default wallet</source>
+        <translation type="unfinished">standart hamyon</translation>
+    </message>
+    <message>
         <source>Open Wallet</source>
         <extracomment>Title of window indicating the progress of opening of a wallet.</extracomment>
-        <translation type="unfinished">Ochiq hamyon</translation>
+        <translation type="unfinished">Hamyonni ochish</translation>
     </message>
     <message>
         <source>Opening Wallet &lt;b&gt;%1&lt;/b&gt;…</source>
@@ -1070,6 +1101,14 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation type="unfinished">Bo'sh hamyon yaratish</translation>
     </message>
     <message>
+        <source>Use descriptors for scriptPubKey management</source>
+        <translation type="unfinished">scriptPubKey yaratishda izohlovchidan foydalanish</translation>
+    </message>
+    <message>
+        <source>Descriptor Wallet</source>
+        <translation type="unfinished">Izohlovchi hamyon</translation>
+    </message>
+    <message>
         <source>Use an external signing device such as a hardware wallet. Configure the external signer script in wallet preferences first.</source>
         <translation type="unfinished">Uskuna hamyoni kabi tashqi signing qurilmasidan foydalaning. Avval hamyon sozlamalarida tashqi signer skriptini sozlang.</translation>
     </message>
@@ -1080,6 +1119,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <message>
         <source>Create</source>
         <translation type="unfinished">Yaratmoq</translation>
+    </message>
+    <message>
+        <source>Compiled without sqlite support (required for descriptor wallets)</source>
+        <translation type="unfinished">Sqlite yordamisiz tuzilgan (deskriptor hamyonlari uchun talab qilinadi)</translation>
     </message>
     <message>
         <source>Compiled without external signing support (required for external signing)</source>
@@ -1642,10 +1685,6 @@ Signing is only possible with addresses of the type 'legacy'.</source>
 <context>
     <name>PSBTOperationsDialog</name>
     <message>
-        <source>own address</source>
-        <translation type="unfinished">ўз манзили</translation>
-    </message>
-    <message>
         <source>or</source>
         <translation type="unfinished">ёки</translation>
     </message>
@@ -1820,10 +1859,6 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <source>&amp;Copy address</source>
         <extracomment>Context menu action to copy the address of a peer.</extracomment>
         <translation type="unfinished">&amp;Manzilni nusxalash</translation>
-    </message>
-    <message>
-        <source>None</source>
-        <translation type="unfinished">Йўқ</translation>
     </message>
     <message>
         <source>via %1</source>
@@ -2046,6 +2081,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation type="unfinished">Шаклнинг барча майдончаларини тозалаш</translation>
     </message>
     <message>
+        <source>Dust:</source>
+        <translation type="unfinished">Ахлат қутиси:</translation>
+    </message>
+    <message>
         <source>Clear &amp;All</source>
         <translation type="unfinished">Барчасини &amp; Тозалаш</translation>
     </message>
@@ -2080,6 +2119,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <message>
         <source>Copy bytes</source>
         <translation type="unfinished">Нусха байти</translation>
+    </message>
+    <message>
+        <source>Copy dust</source>
+        <translation type="unfinished">Нусха чангги</translation>
     </message>
     <message>
         <source>Copy change</source>
@@ -2321,6 +2364,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation type="unfinished">Жўнатиш</translation>
     </message>
     <message>
+        <source>Payment to yourself</source>
+        <translation type="unfinished">Ўзингизга тўлов</translation>
+    </message>
+    <message>
         <source>Mined</source>
         <translation type="unfinished">Фойда</translation>
     </message>
@@ -2382,6 +2429,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <message>
         <source>Sent to</source>
         <translation type="unfinished">Жўнатиш</translation>
+    </message>
+    <message>
+        <source>To yourself</source>
+        <translation type="unfinished">Ўзингизга</translation>
     </message>
     <message>
         <source>Mined</source>
@@ -2474,7 +2525,11 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <source>Send Coins</source>
         <translation type="unfinished">Тангаларни жунат</translation>
     </message>
-    </context>
+    <message>
+        <source>default wallet</source>
+        <translation type="unfinished">standart hamyon</translation>
+    </message>
+</context>
 <context>
     <name>WalletView</name>
     <message>

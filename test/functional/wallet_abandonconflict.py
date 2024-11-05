@@ -28,7 +28,8 @@ class AbandonConflictTest(BitcoinTestFramework):
         self.num_nodes = 2
         self.extra_args = [["-minrelaytxfee=0.00001"], []]
         # whitelist peers to speed up tx relay / mempool sync
-        self.noban_tx_relay = True
+        for args in self.extra_args:
+            args.append("-whitelist=noban@127.0.0.1")
 
     def skip_test_if_missing_module(self):
         self.skip_if_no_wallet()
@@ -231,14 +232,10 @@ class AbandonConflictTest(BitcoinTestFramework):
         balance = newbalance
 
         # Invalidate the block with the double spend. B & C's 10 BTC outputs should no longer be available
-        blk = self.nodes[0].getbestblockhash()
-        # mine 10 blocks so that when the blk is invalidated, the transactions are not
-        # returned to the mempool
-        self.generate(self.nodes[1], 10)
-        self.nodes[0].invalidateblock(blk)
+        self.nodes[0].invalidateblock(self.nodes[0].getbestblockhash())
         assert_equal(alice.gettransaction(txAB1)["confirmations"], 0)
         newbalance = alice.getbalance()
         assert_equal(newbalance, balance - Decimal("20"))
 
 if __name__ == '__main__':
-    AbandonConflictTest(__file__).main()
+    AbandonConflictTest().main()

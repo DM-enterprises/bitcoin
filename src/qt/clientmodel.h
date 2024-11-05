@@ -13,15 +13,12 @@
 #include <sync.h>
 #include <uint256.h>
 
-#include <netaddress.h>
-
 class BanTableModel;
 class CBlockIndex;
 class OptionsModel;
 class PeerTableModel;
 class PeerTableSortProxy;
 enum class SynchronizationState;
-struct LocalServiceInfo;
 
 namespace interfaces {
 class Handler;
@@ -61,8 +58,6 @@ public:
     explicit ClientModel(interfaces::Node& node, OptionsModel *optionsModel, QObject *parent = nullptr);
     ~ClientModel();
 
-    void stop();
-
     interfaces::Node& node() const { return m_node; }
     OptionsModel *getOptionsModel();
     PeerTableModel *getPeerTableModel();
@@ -71,7 +66,6 @@ public:
 
     //! Return number of connections, default is in- and outbound (total)
     int getNumConnections(unsigned int flags = CONNECTIONS_ALL) const;
-    std::map<CNetAddr, LocalServiceInfo> getNetLocalAddresses() const;
     int getNumBlocks() const;
     uint256 getBestBlockHash() EXCLUSIVE_LOCKS_REQUIRED(!m_cached_tip_mutex);
     int getHeaderTipHeight() const;
@@ -101,7 +95,13 @@ public:
 
 private:
     interfaces::Node& m_node;
-    std::vector<std::unique_ptr<interfaces::Handler>> m_event_handlers;
+    std::unique_ptr<interfaces::Handler> m_handler_show_progress;
+    std::unique_ptr<interfaces::Handler> m_handler_notify_num_connections_changed;
+    std::unique_ptr<interfaces::Handler> m_handler_notify_network_active_changed;
+    std::unique_ptr<interfaces::Handler> m_handler_notify_alert_changed;
+    std::unique_ptr<interfaces::Handler> m_handler_banned_list_changed;
+    std::unique_ptr<interfaces::Handler> m_handler_notify_block_tip;
+    std::unique_ptr<interfaces::Handler> m_handler_notify_header_tip;
     OptionsModel *optionsModel;
     PeerTableModel* peerTableModel{nullptr};
     PeerTableSortProxy* m_peer_table_sort_proxy{nullptr};
@@ -117,7 +117,7 @@ private:
 Q_SIGNALS:
     void numConnectionsChanged(int count);
     void numBlocksChanged(int count, const QDateTime& blockDate, double nVerificationProgress, SyncType header, SynchronizationState sync_state);
-    void mempoolSizeChanged(long count, size_t mempoolSizeInBytes, size_t mempoolMaxSizeInBytes);
+    void mempoolSizeChanged(long count, size_t mempoolSizeInBytes);
     void networkActiveChanged(bool networkActive);
     void alertsChanged(const QString &warnings);
     void bytesChanged(quint64 totalBytesIn, quint64 totalBytesOut);

@@ -3,6 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <addresstype.h>
+#include <common/args.h>
 #include <consensus/amount.h>
 #include <interfaces/chain.h>
 #include <kernel/chain.h>
@@ -88,6 +89,8 @@ void ImportDescriptors(CWallet& wallet, const std::string& seed_insecure)
  * Wraps a descriptor wallet for fuzzing.
  */
 struct FuzzedWallet {
+    ArgsManager args;
+    WalletContext context;
     std::shared_ptr<CWallet> wallet;
     FuzzedWallet(const std::string& name, const std::string& seed_insecure)
     {
@@ -106,11 +109,13 @@ struct FuzzedWallet {
     CTxDestination GetDestination(FuzzedDataProvider& fuzzed_data_provider)
     {
         auto type{fuzzed_data_provider.PickValueInArray(OUTPUT_TYPES)};
+        util::Result<CTxDestination> op_dest{util::Error{}};
         if (fuzzed_data_provider.ConsumeBool()) {
-            return *Assert(wallet->GetNewDestination(type, ""));
+            op_dest = wallet->GetNewDestination(type, "");
         } else {
-            return *Assert(wallet->GetNewChangeDestination(type));
+            op_dest = wallet->GetNewChangeDestination(type);
         }
+        return *Assert(op_dest);
     }
     CScript GetScriptPubKey(FuzzedDataProvider& fuzzed_data_provider) { return GetScriptForDestination(GetDestination(fuzzed_data_provider)); }
     void FundTx(FuzzedDataProvider& fuzzed_data_provider, CMutableTransaction tx)

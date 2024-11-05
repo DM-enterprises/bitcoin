@@ -58,6 +58,14 @@
         <translation type="unfinished">&amp;Tanlash</translation>
     </message>
     <message>
+        <source>Sending addresses</source>
+        <translation type="unfinished">Manzillarni yuborish</translation>
+    </message>
+    <message>
+        <source>Receiving addresses</source>
+        <translation type="unfinished">Qabul qiluvchi manzillari</translation>
+    </message>
+    <message>
         <source>These are your Bitcoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
         <translation type="unfinished">Quyida to'lovlarni yuborish uchun Bitcoin manzillaringiz. Coinlarni yuborishdan oldin har doim miqdor va qabul qilish manzilini tekshiring.</translation>
     </message>
@@ -370,10 +378,6 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
         <source>%1 GB</source>
         <translation type="unfinished">%1 ГБ</translation>
     </message>
-    <message>
-        <source>default wallet</source>
-        <translation type="unfinished">standart hamyon</translation>
-    </message>
 </context>
 <context>
     <name>BitcoinGUI</name>
@@ -452,7 +456,7 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
     </message>
     <message>
         <source>Change the passphrase used for wallet encryption</source>
-        <translation type="unfinished">Паролни ўзгартириш ҳамённи кодлашда фойдаланилади</translation>
+        <translation type="unfinished">Hamyon shifrlanishi uchun ishlatilgan maxfiy so'zni almashtirish</translation>
     </message>
     <message>
         <source>&amp;Send</source>
@@ -472,7 +476,7 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
     </message>
     <message>
         <source>Encrypt the private keys that belong to your wallet</source>
-        <translation type="unfinished">Ҳамёнингизга тегишли махфий калитларни кодлаш</translation>
+        <translation type="unfinished">Hamyonga tegishli bo'lgan maxfiy so'zlarni shifrlash</translation>
     </message>
     <message>
         <source>&amp;Backup Wallet…</source>
@@ -488,7 +492,7 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
     </message>
     <message>
         <source>Sign messages with your Bitcoin addresses to prove you own them</source>
-        <translation type="unfinished">Bitcoin манзилидан унинг эгаси эканлигингизни исботлаш учун хабарлар ёзинг</translation>
+        <translation type="unfinished">Bitkoin manzillarga ega ekaningizni tasdiqlash uchun xabarni signlang</translation>
     </message>
     <message>
         <source>&amp;Verify message…</source>
@@ -496,7 +500,7 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
     </message>
     <message>
         <source>Verify messages to ensure they were signed with specified Bitcoin addresses</source>
-        <translation type="unfinished">Хабарларни махсус Bitcoin манзилларингиз билан ёзилганлигига ишонч ҳосил қилиш учун уларни тасдиқланг</translation>
+        <translation type="unfinished">Xabar belgilangan Bitkoin manzillari bilan imzolanganligiga ishonch hosil qilish uchun ularni tasdiqlang</translation>
     </message>
     <message>
         <source>&amp;Load PSBT from file…</source>
@@ -520,19 +524,19 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
     </message>
     <message>
         <source>&amp;File</source>
-        <translation type="unfinished">&amp;Файл</translation>
+        <translation type="unfinished">&amp;Fayl</translation>
     </message>
     <message>
         <source>&amp;Settings</source>
-        <translation type="unfinished">&amp; Созламалар</translation>
+        <translation type="unfinished">&amp;Sozlamalar</translation>
     </message>
     <message>
         <source>&amp;Help</source>
-        <translation type="unfinished">&amp;Ёрдам</translation>
+        <translation type="unfinished">&amp;Yordam</translation>
     </message>
     <message>
         <source>Tabs toolbar</source>
-        <translation type="unfinished">Ички ойналар асбоблар панели</translation>
+        <translation type="unfinished">Yorliqlar menyusi</translation>
     </message>
     <message>
         <source>Syncing Headers (%1%)…</source>
@@ -556,19 +560,19 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
     </message>
     <message>
         <source>Request payments (generates QR codes and bitcoin: URIs)</source>
-        <translation type="unfinished">To'lovlarni so'rash(QR kolar va bitkoin yaratish: URL manzillar)</translation>
+        <translation type="unfinished">Тўловлар (QR кодлари ва bitcoin ёрдамида яратишлар: URI’лар) сўраш</translation>
     </message>
     <message>
         <source>Show the list of used sending addresses and labels</source>
-        <translation type="unfinished">Manzillar va yorliqlar ro'yxatini ko'rsatish</translation>
+        <translation type="unfinished">Фойдаланилган жўнатилган манзиллар ва ёрлиқлар рўйхатини кўрсатиш</translation>
     </message>
     <message>
         <source>Show the list of used receiving addresses and labels</source>
-        <translation type="unfinished">Qabul qilish manzillari va yorliqlar ro'yxatini ko'rsatish</translation>
+        <translation type="unfinished">Фойдаланилган қабул қилинган манзиллар ва ёрлиқлар рўйхатини кўрсатиш</translation>
     </message>
     <message>
         <source>&amp;Command-line options</source>
-        <translation type="unfinished">&amp;Command-line sozlamalari</translation>
+        <translation type="unfinished">&amp;Буйруқлар сатри мосламалари</translation>
     </message>
     <message numerus="yes">
         <source>Processed %n block(s) of transaction history.</source>
@@ -579,7 +583,7 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
     </message>
     <message>
         <source>%1 behind</source>
-        <translation type="unfinished">%1 yonida</translation>
+        <translation type="unfinished">%1 орқада</translation>
     </message>
     <message>
         <source>Catching up…</source>
@@ -587,27 +591,27 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
     </message>
     <message>
         <source>Last received block was generated %1 ago.</source>
-        <translation type="unfinished">%1 oldin oxirgi marta blok qabul qilingan edi.</translation>
+        <translation type="unfinished">Сўнги қабул қилинган блок %1 олдин яратилган.</translation>
     </message>
     <message>
         <source>Transactions after this will not yet be visible.</source>
-        <translation type="unfinished">Shundan keyingi operatsiyalar hali ko'rinmaydi.</translation>
+        <translation type="unfinished">Бундан кейинги пул ўтказмалари кўринмайдиган бўлади.</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished">Xatolik</translation>
+        <translation type="unfinished">Хатолик</translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation type="unfinished">Eslatma</translation>
+        <translation type="unfinished">Диққат</translation>
     </message>
     <message>
         <source>Information</source>
-        <translation type="unfinished">Informatsiya</translation>
+        <translation type="unfinished">Маълумот</translation>
     </message>
     <message>
         <source>Up to date</source>
-        <translation type="unfinished">Hozirgi kunda</translation>
+        <translation type="unfinished">Янгиланган</translation>
     </message>
     <message>
         <source>Load Partially Signed Bitcoin Transaction</source>
@@ -643,7 +647,7 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
     </message>
     <message>
         <source>Open Wallet</source>
-        <translation type="unfinished">Hamyonni ochish</translation>
+        <translation type="unfinished">Ochiq hamyon</translation>
     </message>
     <message>
         <source>Open a wallet</source>
@@ -664,6 +668,10 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
     <message>
         <source>Mask the values in the Overview tab</source>
         <translation type="unfinished">Umumiy ko'rinish menyusidagi qiymatlarni maskirovka qilish</translation>
+    </message>
+    <message>
+        <source>default wallet</source>
+        <translation type="unfinished">standart hamyon</translation>
     </message>
     <message>
         <source>No wallets available</source>
@@ -921,12 +929,28 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
         <translation type="unfinished">Baytlarni nusxalash</translation>
     </message>
     <message>
+        <source>Copy dust</source>
+        <translation type="unfinished">'Dust' larni nusxalash</translation>
+    </message>
+    <message>
         <source>Copy change</source>
         <translation type="unfinished">O'zgarishni nusxalash</translation>
     </message>
     <message>
         <source>(%1 locked)</source>
         <translation type="unfinished">(%1 qulflangan)</translation>
+    </message>
+    <message>
+        <source>yes</source>
+        <translation type="unfinished">ha</translation>
+    </message>
+    <message>
+        <source>no</source>
+        <translation type="unfinished">yo'q</translation>
+    </message>
+    <message>
+        <source>This label turns red if any recipient receives an amount smaller than the current dust threshold.</source>
+        <translation type="unfinished">Agar qabul qiluvchi joriy 'dust' chegarasidan kichikroq miqdor olsa, bu yorliq qizil rangga aylanadi</translation>
     </message>
     <message>
         <source>Can vary +/- %1 satoshi(s) per input.</source>
@@ -992,6 +1016,10 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
     <message>
         <source>Open wallet warning</source>
         <translation type="unfinished">Hamyonni ochish ogohlantirishi</translation>
+    </message>
+    <message>
+        <source>default wallet</source>
+        <translation type="unfinished">standart hamyon</translation>
     </message>
     <message>
         <source>Open Wallet</source>
@@ -1070,6 +1098,14 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
         <translation type="unfinished">Bo'sh hamyon yaratish</translation>
     </message>
     <message>
+        <source>Use descriptors for scriptPubKey management</source>
+        <translation type="unfinished">scriptPubKey yaratishda izohlovchidan foydalanish</translation>
+    </message>
+    <message>
+        <source>Descriptor Wallet</source>
+        <translation type="unfinished">Deskriptor hamyon</translation>
+    </message>
+    <message>
         <source>Use an external signing device such as a hardware wallet. Configure the external signer script in wallet preferences first.</source>
         <translation type="unfinished">Uskuna hamyoni kabi tashqi signing qurilmasidan foydalaning. Avval hamyon sozlamalarida tashqi signer skriptini sozlang.</translation>
     </message>
@@ -1080,6 +1116,10 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
     <message>
         <source>Create</source>
         <translation type="unfinished">Yaratmoq</translation>
+    </message>
+    <message>
+        <source>Compiled without sqlite support (required for descriptor wallets)</source>
+        <translation type="unfinished">Sqlite yordamisiz tuzilgan (deskriptor hamyonlari uchun talab qilinadi)</translation>
     </message>
     <message>
         <source>Compiled without external signing support (required for external signing)</source>
@@ -1557,7 +1597,7 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished">Хатолик</translation>
+        <translation type="unfinished">Xatolik</translation>
     </message>
     <message>
         <source>This change would require a client restart.</source>
@@ -1641,10 +1681,6 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
     </context>
 <context>
     <name>PSBTOperationsDialog</name>
-    <message>
-        <source>own address</source>
-        <translation type="unfinished">ўз манзили</translation>
-    </message>
     <message>
         <source>or</source>
         <translation type="unfinished">ёки</translation>
@@ -1782,7 +1818,7 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
     </message>
     <message>
         <source>Last block time</source>
-        <translation type="unfinished">Сўнгги блок вақти</translation>
+        <translation type="unfinished">Oxirgi bloklash vaqti</translation>
     </message>
     <message>
         <source>&amp;Open</source>
@@ -1820,10 +1856,6 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
         <source>&amp;Copy address</source>
         <extracomment>Context menu action to copy the address of a peer.</extracomment>
         <translation type="unfinished">&amp;Manzilni nusxalash</translation>
-    </message>
-    <message>
-        <source>None</source>
-        <translation type="unfinished">Йўқ</translation>
     </message>
     <message>
         <source>via %1</source>
@@ -1918,7 +1950,7 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
     </message>
     <message>
         <source>Could not unlock wallet.</source>
-        <translation type="unfinished">Ҳамён қулфдан чиқмади.</translation>
+        <translation type="unfinished">Hamyonni ochish imkonsiz.</translation>
     </message>
     </context>
 <context>
@@ -1964,7 +1996,7 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
     </message>
     <message>
         <source>(no label)</source>
-        <translation type="unfinished">(Ёрлиқ мавжуд эмас)</translation>
+        <translation type="unfinished">(Yorliqlar mavjud emas)</translation>
     </message>
     <message>
         <source>(no message)</source>
@@ -2082,6 +2114,10 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
         <translation type="unfinished">Baytlarni nusxalash</translation>
     </message>
     <message>
+        <source>Copy dust</source>
+        <translation type="unfinished">'Dust' larni nusxalash</translation>
+    </message>
+    <message>
         <source>Copy change</source>
         <translation type="unfinished">O'zgarishni nusxalash</translation>
     </message>
@@ -2122,7 +2158,7 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
     </message>
     <message>
         <source>(no label)</source>
-        <translation type="unfinished">(Ёрлиқ мавжуд эмас)</translation>
+        <translation type="unfinished">(Yorliqlar mavjud emas)</translation>
     </message>
 </context>
 <context>
@@ -2321,6 +2357,10 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
         <translation type="unfinished">Жўнатиш</translation>
     </message>
     <message>
+        <source>Payment to yourself</source>
+        <translation type="unfinished">Ўзингизга тўлов</translation>
+    </message>
+    <message>
         <source>Mined</source>
         <translation type="unfinished">Фойда</translation>
     </message>
@@ -2330,7 +2370,7 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
     </message>
     <message>
         <source>(no label)</source>
-        <translation type="unfinished">(Ёрлиқ мавжуд эмас)</translation>
+        <translation type="unfinished">(Yorliqlar mavjud emas)</translation>
     </message>
     <message>
         <source>Transaction status. Hover over this field to show number of confirmations.</source>
@@ -2382,6 +2422,10 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
     <message>
         <source>Sent to</source>
         <translation type="unfinished">Жўнатиш</translation>
+    </message>
+    <message>
+        <source>To yourself</source>
+        <translation type="unfinished">Ўзингизга</translation>
     </message>
     <message>
         <source>Mined</source>
@@ -2465,7 +2509,7 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished">Хатолик</translation>
+        <translation type="unfinished">Xatolik</translation>
     </message>
     </context>
 <context>
@@ -2474,7 +2518,11 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
         <source>Send Coins</source>
         <translation type="unfinished">Тангаларни жунат</translation>
     </message>
-    </context>
+    <message>
+        <source>default wallet</source>
+        <translation type="unfinished">standart hamyon</translation>
+    </message>
+</context>
 <context>
     <name>WalletView</name>
     <message>

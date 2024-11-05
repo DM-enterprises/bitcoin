@@ -3,8 +3,6 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <config/bitcoin-config.h> // IWYU pragma: keep
-
 #include <wallet/walletdb.h>
 
 #include <common/system.h>
@@ -21,7 +19,6 @@
 #ifdef USE_BDB
 #include <wallet/bdb.h>
 #endif
-#include <wallet/migrate.h>
 #ifdef USE_SQLITE
 #include <wallet/sqlite.h>
 #endif
@@ -185,17 +182,6 @@ bool WalletBatch::ReadBestBlock(CBlockLocator& locator)
 {
     if (m_batch->Read(DBKeys::BESTBLOCK, locator) && !locator.vHave.empty()) return true;
     return m_batch->Read(DBKeys::BESTBLOCK_NOMERKLE, locator);
-}
-
-bool WalletBatch::IsEncrypted()
-{
-    DataStream prefix;
-    prefix << DBKeys::MASTER_KEY;
-    if (auto cursor = m_batch->GetNewPrefixCursor(prefix)) {
-        DataStream k, v;
-        if (cursor->Next(k, v) == DatabaseCursor::Status::MORE) return true;
-    }
-    return false;
 }
 
 bool WalletBatch::WriteOrderPosNext(int64_t nOrderPosNext)
@@ -365,9 +351,9 @@ bool LoadKey(CWallet* pwallet, DataStream& ssKey, DataStream& ssValue, std::stri
             strErr = "Error reading wallet database: CPrivKey corrupt";
             return false;
         }
-        if (!pwallet->GetOrCreateLegacyDataSPKM()->LoadKey(key, vchPubKey))
+        if (!pwallet->GetOrCreateLegacyScriptPubKeyMan()->LoadKey(key, vchPubKey))
         {
-            strErr = "Error reading wallet database: LegacyDataSPKM::LoadKey failed";
+            strErr = "Error reading wallet database: LegacyScriptPubKeyMan::LoadKey failed";
             return false;
         }
     } catch (const std::exception& e) {
@@ -404,9 +390,9 @@ bool LoadCryptedKey(CWallet* pwallet, DataStream& ssKey, DataStream& ssValue, st
             }
         }
 
-        if (!pwallet->GetOrCreateLegacyDataSPKM()->LoadCryptedKey(vchPubKey, vchPrivKey, checksum_valid))
+        if (!pwallet->GetOrCreateLegacyScriptPubKeyMan()->LoadCryptedKey(vchPubKey, vchPrivKey, checksum_valid))
         {
-            strErr = "Error reading wallet database: LegacyDataSPKM::LoadCryptedKey failed";
+            strErr = "Error reading wallet database: LegacyScriptPubKeyMan::LoadCryptedKey failed";
             return false;
         }
     } catch (const std::exception& e) {
@@ -451,7 +437,7 @@ bool LoadHDChain(CWallet* pwallet, DataStream& ssValue, std::string& strErr)
     try {
         CHDChain chain;
         ssValue >> chain;
-        pwallet->GetOrCreateLegacyDataSPKM()->LoadHDChain(chain);
+        pwallet->GetOrCreateLegacyScriptPubKeyMan()->LoadHDChain(chain);
     } catch (const std::exception& e) {
         if (strErr.empty()) {
             strErr = e.what();
@@ -595,9 +581,9 @@ static DBErrors LoadLegacyWalletRecords(CWallet* pwallet, DatabaseBatch& batch, 
         key >> hash;
         CScript script;
         value >> script;
-        if (!pwallet->GetOrCreateLegacyDataSPKM()->LoadCScript(script))
+        if (!pwallet->GetOrCreateLegacyScriptPubKeyMan()->LoadCScript(script))
         {
-            strErr = "Error reading wallet database: LegacyDataSPKM::LoadCScript failed";
+            strErr = "Error reading wallet database: LegacyScriptPubKeyMan::LoadCScript failed";
             return DBErrors::NONCRITICAL_ERROR;
         }
         return DBErrors::LOAD_OK;
@@ -618,7 +604,7 @@ static DBErrors LoadLegacyWalletRecords(CWallet* pwallet, DatabaseBatch& batch, 
         key >> vchPubKey;
         CKeyMetadata keyMeta;
         value >> keyMeta;
-        pwallet->GetOrCreateLegacyDataSPKM()->LoadKeyMetadata(vchPubKey.GetID(), keyMeta);
+        pwallet->GetOrCreateLegacyScriptPubKeyMan()->LoadKeyMetadata(vchPubKey.GetID(), keyMeta);
 
         // Extract some CHDChain info from this metadata if it has any
         if (keyMeta.nVersion >= CKeyMetadata::VERSION_WITH_HDDATA && !keyMeta.hd_seed_id.IsNull() && keyMeta.hdKeypath.size() > 0) {
@@ -685,7 +671,7 @@ static DBErrors LoadLegacyWalletRecords(CWallet* pwallet, DatabaseBatch& batch, 
 
     // Set inactive chains
     if (!hd_chains.empty()) {
-        LegacyDataSPKM* legacy_spkm = pwallet->GetLegacyDataSPKM();
+        LegacyScriptPubKeyMan* legacy_spkm = pwallet->GetLegacyScriptPubKeyMan();
         if (legacy_spkm) {
             for (const auto& [hd_seed_id, chain] : hd_chains) {
                 if (hd_seed_id != legacy_spkm->GetHDChain().seed_id) {
@@ -706,7 +692,7 @@ static DBErrors LoadLegacyWalletRecords(CWallet* pwallet, DatabaseBatch& batch, 
         uint8_t fYes;
         value >> fYes;
         if (fYes == '1') {
-            pwallet->GetOrCreateLegacyDataSPKM()->LoadWatchOnly(script);
+            pwallet->GetOrCreateLegacyScriptPubKeyMan()->LoadWatchOnly(script);
         }
         return DBErrors::LOAD_OK;
     });
@@ -719,7 +705,7 @@ static DBErrors LoadLegacyWalletRecords(CWallet* pwallet, DatabaseBatch& batch, 
         key >> script;
         CKeyMetadata keyMeta;
         value >> keyMeta;
-        pwallet->GetOrCreateLegacyDataSPKM()->LoadScriptMetadata(CScriptID(script), keyMeta);
+        pwallet->GetOrCreateLegacyScriptPubKeyMan()->LoadScriptMetadata(CScriptID(script), keyMeta);
         return DBErrors::LOAD_OK;
     });
     result = std::max(result, watch_meta_res.m_result);
@@ -731,7 +717,7 @@ static DBErrors LoadLegacyWalletRecords(CWallet* pwallet, DatabaseBatch& batch, 
         key >> nIndex;
         CKeyPool keypool;
         value >> keypool;
-        pwallet->GetOrCreateLegacyDataSPKM()->LoadKeyPool(nIndex, keypool);
+        pwallet->GetOrCreateLegacyScriptPubKeyMan()->LoadKeyPool(nIndex, keypool);
         return DBErrors::LOAD_OK;
     });
     result = std::max(result, pool_res.m_result);
@@ -774,7 +760,7 @@ static DBErrors LoadLegacyWalletRecords(CWallet* pwallet, DatabaseBatch& batch, 
 
         // nTimeFirstKey is only reliable if all keys have metadata
         if (pwallet->IsLegacy() && (key_res.m_records + ckey_res.m_records + watch_script_res.m_records) != (keymeta_res.m_records + watch_meta_res.m_records)) {
-            auto spk_man = pwallet->GetLegacyScriptPubKeyMan();
+            auto spk_man = pwallet->GetOrCreateLegacyScriptPubKeyMan();
             if (spk_man) {
                 LOCK(spk_man->cs_KeyStore);
                 spk_man->UpdateTimeFirstKey(1);
@@ -818,10 +804,10 @@ static DBErrors LoadDescriptorWalletRecords(CWallet* pwallet, DatabaseBatch& bat
             strErr = strprintf("%s\nDetails: %s", strErr, e.what());
             return DBErrors::UNKNOWN_DESCRIPTOR;
         }
-        DescriptorScriptPubKeyMan& spkm = pwallet->LoadDescriptorScriptPubKeyMan(id, desc);
+        pwallet->LoadDescriptorScriptPubKeyMan(id, desc);
 
         // Prior to doing anything with this spkm, verify ID compatibility
-        if (id != spkm.GetID()) {
+        if (id != pwallet->GetDescriptorScriptPubKeyMan(desc)->GetID()) {
             strErr = "The descriptor ID calculated by the wallet differs from the one in DB";
             return DBErrors::CORRUPT;
         }
@@ -1244,38 +1230,92 @@ DBErrors WalletBatch::LoadWallet(CWallet* pwallet)
     return result;
 }
 
-static bool RunWithinTxn(WalletBatch& batch, std::string_view process_desc, const std::function<bool(WalletBatch&)>& func)
+DBErrors WalletBatch::FindWalletTxHashes(std::vector<uint256>& tx_hashes)
 {
-    if (!batch.TxnBegin()) {
-        LogPrint(BCLog::WALLETDB, "Error: cannot create db txn for %s\n", process_desc);
-        return false;
+    DBErrors result = DBErrors::LOAD_OK;
+
+    try {
+        int nMinVersion = 0;
+        if (m_batch->Read(DBKeys::MINVERSION, nMinVersion)) {
+            if (nMinVersion > FEATURE_LATEST)
+                return DBErrors::TOO_NEW;
+        }
+
+        // Get cursor
+        std::unique_ptr<DatabaseCursor> cursor = m_batch->GetNewCursor();
+        if (!cursor)
+        {
+            LogPrintf("Error getting wallet database cursor\n");
+            return DBErrors::CORRUPT;
+        }
+
+        while (true)
+        {
+            // Read next record
+            DataStream ssKey{};
+            DataStream ssValue{};
+            DatabaseCursor::Status status = cursor->Next(ssKey, ssValue);
+            if (status == DatabaseCursor::Status::DONE) {
+                break;
+            } else if (status == DatabaseCursor::Status::FAIL) {
+                LogPrintf("Error reading next record from wallet database\n");
+                return DBErrors::CORRUPT;
+            }
+
+            std::string strType;
+            ssKey >> strType;
+            if (strType == DBKeys::TX) {
+                uint256 hash;
+                ssKey >> hash;
+                tx_hashes.push_back(hash);
+            }
+        }
+    } catch (...) {
+        result = DBErrors::CORRUPT;
     }
 
-    // Run procedure
-    if (!func(batch)) {
-        LogPrint(BCLog::WALLETDB, "Error: %s failed\n", process_desc);
-        batch.TxnAbort();
-        return false;
-    }
-
-    if (!batch.TxnCommit()) {
-        LogPrint(BCLog::WALLETDB, "Error: cannot commit db txn for %s\n", process_desc);
-        return false;
-    }
-
-    // All good
-    return true;
+    return result;
 }
 
-bool RunWithinTxn(WalletDatabase& database, std::string_view process_desc, const std::function<bool(WalletBatch&)>& func)
+DBErrors WalletBatch::ZapSelectTx(std::vector<uint256>& vTxHashIn, std::vector<uint256>& vTxHashOut)
 {
-    WalletBatch batch(database);
-    return RunWithinTxn(batch, process_desc, func);
+    // build list of wallet TX hashes
+    std::vector<uint256> vTxHash;
+    DBErrors err = FindWalletTxHashes(vTxHash);
+    if (err != DBErrors::LOAD_OK) {
+        return err;
+    }
+
+    std::sort(vTxHash.begin(), vTxHash.end());
+    std::sort(vTxHashIn.begin(), vTxHashIn.end());
+
+    // erase each matching wallet TX
+    bool delerror = false;
+    std::vector<uint256>::iterator it = vTxHashIn.begin();
+    for (const uint256& hash : vTxHash) {
+        while (it < vTxHashIn.end() && (*it) < hash) {
+            it++;
+        }
+        if (it == vTxHashIn.end()) {
+            break;
+        }
+        else if ((*it) == hash) {
+            if(!EraseTx(hash)) {
+                LogPrint(BCLog::WALLETDB, "Transaction was found for deletion but returned database error: %s\n", hash.GetHex());
+                delerror = true;
+            }
+            vTxHashOut.push_back(hash);
+        }
+    }
+
+    if (delerror) {
+        return DBErrors::CORRUPT;
+    }
+    return DBErrors::LOAD_OK;
 }
 
 void MaybeCompactWalletDB(WalletContext& context)
 {
-
     static std::atomic<bool> fOneThread(false);
     if (fOneThread.exchange(true)) {
         return;
@@ -1336,11 +1376,47 @@ bool WalletBatch::WriteWalletFlags(const uint64_t flags)
 
 bool WalletBatch::EraseRecords(const std::unordered_set<std::string>& types)
 {
-    return RunWithinTxn(*this, "erase records", [&types](WalletBatch& self) {
-        return std::all_of(types.begin(), types.end(), [&self](const std::string& type) {
-            return self.m_batch->ErasePrefix(DataStream() << type);
-        });
-    });
+    // Begin db txn
+    if (!m_batch->TxnBegin()) return false;
+
+    // Get cursor
+    std::unique_ptr<DatabaseCursor> cursor = m_batch->GetNewCursor();
+    if (!cursor)
+    {
+        return false;
+    }
+
+    // Iterate the DB and look for any records that have the type prefixes
+    while (true) {
+        // Read next record
+        DataStream key{};
+        DataStream value{};
+        DatabaseCursor::Status status = cursor->Next(key, value);
+        if (status == DatabaseCursor::Status::DONE) {
+            break;
+        } else if (status == DatabaseCursor::Status::FAIL) {
+            cursor.reset(nullptr);
+            m_batch->TxnAbort(); // abort db txn
+            return false;
+        }
+
+        // Make a copy of key to avoid data being deleted by the following read of the type
+        const SerializeData key_data{key.begin(), key.end()};
+
+        std::string type;
+        key >> type;
+
+        if (types.count(type) > 0) {
+            if (!m_batch->Erase(Span{key_data})) {
+                cursor.reset(nullptr);
+                m_batch->TxnAbort();
+                return false; // erase failed
+            }
+        }
+    }
+    // Finish db txn
+    cursor.reset(nullptr);
+    return m_batch->TxnCommit();
 }
 
 bool WalletBatch::TxnBegin()
@@ -1400,11 +1476,6 @@ std::unique_ptr<WalletDatabase> MakeDatabase(const fs::path& path, const Databas
         return nullptr;
     }
 
-    // If BERKELEY was the format, then change the format from BERKELEY to BERKELEY_RO
-    if (format && options.require_format && format == DatabaseFormat::BERKELEY && options.require_format == DatabaseFormat::BERKELEY_RO) {
-        format = DatabaseFormat::BERKELEY_RO;
-    }
-
     // A db already exists so format is set, but options also specifies the format, so make sure they agree
     if (format && options.require_format && format != options.require_format) {
         error = Untranslated(strprintf("Failed to load database path '%s'. Data is not in required format.", fs::PathToString(path)));
@@ -1436,10 +1507,6 @@ std::unique_ptr<WalletDatabase> MakeDatabase(const fs::path& path, const Databas
             status = DatabaseStatus::FAILED_BAD_FORMAT;
             return nullptr;
         }
-    }
-
-    if (format == DatabaseFormat::BERKELEY_RO) {
-        return MakeBerkeleyRODatabase(path, options, status, error);
     }
 
 #ifdef USE_BDB

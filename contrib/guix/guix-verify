@@ -3,7 +3,7 @@ export LC_ALL=C
 set -e -o pipefail
 
 # Source the common prelude, which:
-#   1. Checks if we're at the top directory of the Groestlcoin Core repository
+#   1. Checks if we're at the top directory of the Bitcoin Core repository
 #   2. Defines a few common functions and variables
 #
 # shellcheck source=libexec/prelude.bash
@@ -32,7 +32,7 @@ Synopsis:
 
 Example overriding signer's manifest to use as base
 
-    env GUIX_SIGS_REPO=/home/jackielove4u/guix.sigs SIGNER=jackielove4u ./contrib/guix/guix-verify
+    env GUIX_SIGS_REPO=/home/dongcarl/guix.sigs SIGNER=achow101 ./contrib/guix/guix-verify
 
 EOF
 }

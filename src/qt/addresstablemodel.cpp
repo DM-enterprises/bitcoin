@@ -335,7 +335,7 @@ QModelIndex AddressTableModel::index(int row, int column, const QModelIndex &par
 void AddressTableModel::updateEntry(const QString &address,
         const QString &label, bool isMine, wallet::AddressPurpose purpose, int status)
 {
-    // Update address book model from Groestlcoin core
+    // Update address book model from Bitcoin core
     priv->updateEntry(address, label, isMine, purpose, status);
 }
 
@@ -369,22 +369,21 @@ QString AddressTableModel::addRow(const QString &type, const QString &label, con
     else if(type == Receive)
     {
         // Generate a new address to associate with given label
-        if (auto dest{walletModel->wallet().getNewDestination(address_type, strLabel)}) {
-            strAddress = EncodeDestination(*dest);
-        } else {
+        auto op_dest = walletModel->wallet().getNewDestination(address_type, strLabel);
+        if (!op_dest) {
             WalletModel::UnlockContext ctx(walletModel->requestUnlock());
             if (!ctx.isValid()) {
                 // Unlock wallet failed or was cancelled
                 editStatus = WALLET_UNLOCK_FAILURE;
                 return QString();
             }
-            if (auto dest_retry{walletModel->wallet().getNewDestination(address_type, strLabel)}) {
-                strAddress = EncodeDestination(*dest_retry);
-            } else {
+            op_dest = walletModel->wallet().getNewDestination(address_type, strLabel);
+            if (!op_dest) {
                 editStatus = KEY_GENERATION_FAILURE;
                 return QString();
             }
         }
+        strAddress = EncodeDestination(*op_dest);
     }
     else
     {

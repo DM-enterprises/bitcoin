@@ -65,8 +65,7 @@ std::shared_ptr<CBlock> MinerTestingSetup::Block(const uint256& prev_hash)
     static int i = 0;
     static uint64_t time = Params().GenesisBlock().nTime;
 
-    BlockAssembler::Options options;
-    auto ptemplate = BlockAssembler{m_node.chainman->ActiveChainstate(), m_node.mempool.get(), options}.CreateNewBlock(CScript{} << i++ << OP_TRUE);
+    auto ptemplate = BlockAssembler{m_node.chainman->ActiveChainstate(), m_node.mempool.get()}.CreateNewBlock(CScript{} << i++ << OP_TRUE);
     auto pblock = std::make_shared<CBlock>(ptemplate->block);
     pblock->hashPrevBlock = prev_hash;
     pblock->nTime = ++time;
@@ -128,7 +127,6 @@ std::shared_ptr<const CBlock> MinerTestingSetup::BadBlock(const uint256& prev_ha
     return ret;
 }
 
-// NOLINTNEXTLINE(misc-no-recursion)
 void MinerTestingSetup::BuildChain(const uint256& root, int height, const unsigned int invalid_rate, const unsigned int branch_rate, const unsigned int max_size, std::vector<std::shared_ptr<const CBlock>>& blocks)
 {
     if (height <= 0 || blocks.size() >= max_size) return;
@@ -160,7 +158,7 @@ BOOST_AUTO_TEST_CASE(processnewblock_signals_ordering)
     bool ignored;
     // Connect the genesis block and drain any outstanding events
     BOOST_CHECK(Assert(m_node.chainman)->ProcessNewBlock(std::make_shared<CBlock>(Params().GenesisBlock()), true, true, &ignored));
-    m_node.validation_signals->SyncWithValidationInterfaceQueue();
+    SyncWithValidationInterfaceQueue();
 
     // subscribe to events (this subscriber will validate event ordering)
     const CBlockIndex* initial_tip = nullptr;
@@ -169,7 +167,7 @@ BOOST_AUTO_TEST_CASE(processnewblock_signals_ordering)
         initial_tip = m_node.chainman->ActiveChain().Tip();
     }
     auto sub = std::make_shared<TestSubscriber>(initial_tip->GetBlockHash());
-    m_node.validation_signals->RegisterSharedValidationInterface(sub);
+    RegisterSharedValidationInterface(sub);
 
     // create a bunch of threads that repeatedly process a block generated above at random
     // this will create parallelism and randomness inside validation - the ValidationInterface
@@ -198,9 +196,9 @@ BOOST_AUTO_TEST_CASE(processnewblock_signals_ordering)
     for (auto& t : threads) {
         t.join();
     }
-    m_node.validation_signals->SyncWithValidationInterfaceQueue();
+    SyncWithValidationInterfaceQueue();
 
-    m_node.validation_signals->UnregisterSharedValidationInterface(sub);
+    UnregisterSharedValidationInterface(sub);
 
     LOCK(cs_main);
     BOOST_CHECK_EQUAL(sub->m_expected_tip, m_node.chainman->ActiveChain().Tip()->GetBlockHash());
@@ -330,8 +328,7 @@ BOOST_AUTO_TEST_CASE(witness_commitment_index)
     LOCK(Assert(m_node.chainman)->GetMutex());
     CScript pubKey;
     pubKey << 1 << OP_TRUE;
-    BlockAssembler::Options options;
-    auto ptemplate = BlockAssembler{m_node.chainman->ActiveChainstate(), m_node.mempool.get(), options}.CreateNewBlock(pubKey);
+    auto ptemplate = BlockAssembler{m_node.chainman->ActiveChainstate(), m_node.mempool.get()}.CreateNewBlock(pubKey);
     CBlock pblock = ptemplate->block;
 
     CTxOut witness;

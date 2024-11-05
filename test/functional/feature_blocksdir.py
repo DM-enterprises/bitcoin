@@ -35,4 +35,4 @@ class BlocksdirTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    BlocksdirTest(__file__).main()
+    BlocksdirTest().main()

@@ -223,4 +223,4 @@ class WalletDumpTest(BitcoinTestFramework):
         w3.dumpwallet(self.nodes[0].datadir_path / "w3.dump")
 
 if __name__ == '__main__':
-    WalletDumpTest(__file__).main()
+    WalletDumpTest().main()

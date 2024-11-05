@@ -50,4 +50,4 @@ class WalletLocktimeTest(BitcoinTestFramework):
 
 
 if __name__ == "__main__":
-    WalletLocktimeTest(__file__).main()
+    WalletLocktimeTest().main()

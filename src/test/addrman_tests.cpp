@@ -22,7 +22,6 @@
 
 using namespace std::literals;
 using node::NodeContext;
-using util::ToString;
 
 static NetGroupManager EMPTY_NETGROUPMAN{std::vector<bool>()};
 static const bool DETERMINISTIC{true};

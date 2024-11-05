@@ -29,13 +29,7 @@ BOOST_AUTO_TEST_CASE(xor_file)
         BOOST_CHECK_EXCEPTION(xor_file.ignore(1), std::ios_base::failure, HasReason{"AutoFile::ignore: file handle is nullpt"});
     }
     {
-#ifdef __MINGW64__
-        // Temporary workaround for https://github.com/bitcoin/bitcoin/issues/30210
-        const char* mode = "wb";
-#else
-        const char* mode = "wbx";
-#endif
-        AutoFile xor_file{raw_file(mode), xor_pat};
+        AutoFile xor_file{raw_file("wbx"), xor_pat};
         xor_file << test1 << test2;
     }
     {
@@ -142,8 +136,8 @@ BOOST_AUTO_TEST_CASE(streams_vector_reader)
     BOOST_CHECK_EQUAL(reader.size(), 5U);
     BOOST_CHECK(!reader.empty());
 
-    // Read a single byte as a int8_t.
-    int8_t b;
+    // Read a single byte as a signed char.
+    signed char b;
     reader >> b;
     BOOST_CHECK_EQUAL(b, -1);
     BOOST_CHECK_EQUAL(reader.size(), 4U);
@@ -261,7 +255,7 @@ BOOST_AUTO_TEST_CASE(streams_buffered_file)
     for (uint8_t j = 0; j < 40; ++j) {
         file << j;
     }
-    file.seek(0, SEEK_SET);
+    std::rewind(file.Get());
 
     // The buffer size (second arg) must be greater than the rewind
     // amount (third arg).
@@ -391,7 +385,7 @@ BOOST_AUTO_TEST_CASE(streams_buffered_file_skip)
     for (uint8_t j = 0; j < 40; ++j) {
         file << j;
     }
-    file.seek(0, SEEK_SET);
+    std::rewind(file.Get());
 
     // The buffer is 25 bytes, allow rewinding 10 bytes.
     BufferedFile bf{file, 25, 10};
@@ -435,7 +429,7 @@ BOOST_AUTO_TEST_CASE(streams_buffered_file_skip)
 BOOST_AUTO_TEST_CASE(streams_buffered_file_rand)
 {
     // Make this test deterministic.
-    SeedRandomForTest(SeedRand::ZEROS);
+    SeedInsecureRand(SeedRand::ZEROS);
 
     fs::path streams_test_filename = m_args.GetDataDirBase() / "streams_test_tmp";
     for (int rep = 0; rep < 50; ++rep) {
@@ -444,7 +438,7 @@ BOOST_AUTO_TEST_CASE(streams_buffered_file_rand)
         for (uint8_t i = 0; i < fileSize; ++i) {
             file << i;
         }
-        file.seek(0, SEEK_SET);
+        std::rewind(file.Get());
 
         size_t bufSize = InsecureRandRange(300) + 1;
         size_t rewindSize = InsecureRandRange(bufSize);

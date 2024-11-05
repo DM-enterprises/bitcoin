@@ -39,4 +39,4 @@ class StartupNotifyTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    StartupNotifyTest(__file__).main()
+    StartupNotifyTest().main()

@@ -58,6 +58,14 @@
         <translation type="unfinished">Ô&amp;bier</translation>
     </message>
     <message>
+        <source>Sending addresses</source>
+        <translation type="unfinished">Adresy posyłaniŏ</translation>
+    </message>
+    <message>
+        <source>Receiving addresses</source>
+        <translation type="unfinished">Adresy ôdbiyraniŏ</translation>
+    </message>
+    <message>
         <source>These are your Bitcoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
         <translation type="unfinished">Tukej sōm adresy Bitcoin na kere posyłŏsz płaty. Dycki wybaduj wielość i adresã ôdbiyrŏcza przed posłaniym mōnet.</translation>
     </message>
@@ -260,11 +268,7 @@
             <numerusform />
         </translation>
     </message>
-    <message>
-        <source>default wallet</source>
-        <translation type="unfinished">wychodny portmanyj</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>BitcoinGUI</name>
     <message>
@@ -431,6 +435,10 @@
         <translation type="unfinished">Pokŏż pōmoc %1 coby zobŏczyć wykŏz wszyjskich ôpcyji piski nakŏzań.</translation>
     </message>
     <message>
+        <source>default wallet</source>
+        <translation type="unfinished">wychodny portmanyj</translation>
+    </message>
+    <message>
         <source>&amp;Window</source>
         <translation type="unfinished">Ô&amp;kno</translation>
     </message>
@@ -533,6 +541,10 @@
         <translation type="unfinished">Ôpłŏcka:</translation>
     </message>
     <message>
+        <source>Dust:</source>
+        <translation type="unfinished">Sztaub:</translation>
+    </message>
+    <message>
         <source>After Fee:</source>
         <translation type="unfinished">Po ôpłŏcce:</translation>
     </message>
@@ -597,12 +609,28 @@
         <translation type="unfinished">Kopiyruj wielość bajtōw</translation>
     </message>
     <message>
+        <source>Copy dust</source>
+        <translation type="unfinished">Kopiyruj sztaub</translation>
+    </message>
+    <message>
         <source>Copy change</source>
         <translation type="unfinished">Kopiyruj wydŏwkã</translation>
     </message>
     <message>
         <source>(%1 locked)</source>
         <translation type="unfinished">(%1 zaszperowane)</translation>
+    </message>
+    <message>
+        <source>yes</source>
+        <translation type="unfinished">ja</translation>
+    </message>
+    <message>
+        <source>no</source>
+        <translation type="unfinished">niy</translation>
+    </message>
+    <message>
+        <source>This label turns red if any recipient receives an amount smaller than the current dust threshold.</source>
+        <translation type="unfinished">Ta etyketa stŏwŏ sie czyrwōnŏ jeźli keryś z ôdbiyrŏczy dostŏwŏ kwotã myńszõ aniżeli terŏźny prōg sztaubu.</translation>
     </message>
     <message>
         <source>Can vary +/- %1 satoshi(s) per input.</source>
@@ -621,6 +649,13 @@
         <translation type="unfinished">(wydŏwka)</translation>
     </message>
 </context>
+<context>
+    <name>OpenWalletActivity</name>
+    <message>
+        <source>default wallet</source>
+        <translation type="unfinished">wychodny portmanyj</translation>
+    </message>
+    </context>
 <context>
     <name>CreateWalletDialog</name>
     <message>
@@ -1326,6 +1361,10 @@
         <translation type="unfinished">Włŏsne:</translation>
     </message>
     <message>
+        <source>Dust:</source>
+        <translation type="unfinished">Sztaub:</translation>
+    </message>
+    <message>
         <source>Balance:</source>
         <translation type="unfinished">Saldo:</translation>
     </message>
@@ -1348,6 +1387,10 @@
     <message>
         <source>Copy bytes</source>
         <translation type="unfinished">Kopiyruj wielość bajtōw</translation>
+    </message>
+    <message>
+        <source>Copy dust</source>
+        <translation type="unfinished">Kopiyruj sztaub</translation>
     </message>
     <message>
         <source>Copy change</source>
@@ -1514,6 +1557,10 @@
         <translation type="unfinished">Ôdebrane ôd</translation>
     </message>
     <message>
+        <source>Payment to yourself</source>
+        <translation type="unfinished">Płat do siebie</translation>
+    </message>
+    <message>
         <source>(no label)</source>
         <translation type="unfinished">(chyba etykety)</translation>
     </message>
@@ -1586,7 +1633,11 @@
         <source>New fee:</source>
         <translation type="unfinished">Nowŏ ôpłŏcka:</translation>
     </message>
-    </context>
+    <message>
+        <source>default wallet</source>
+        <translation type="unfinished">wychodny portmanyj</translation>
+    </message>
+</context>
 <context>
     <name>WalletView</name>
     <message>

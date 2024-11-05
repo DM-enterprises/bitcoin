@@ -2,7 +2,9 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <config/bitcoin-config.h> // IWYU pragma: keep
+#if defined(HAVE_CONFIG_H)
+#include <config/bitcoin-config.h>
+#endif
 
 #include <qt/sendcoinsdialog.h>
 #include <qt/forms/ui_sendcoinsdialog.h>
@@ -20,7 +22,6 @@
 #include <interfaces/node.h>
 #include <key_io.h>
 #include <node/interface_ui.h>
-#include <node/types.h>
 #include <policy/fees.h>
 #include <txmempool.h>
 #include <validation.h>
@@ -38,11 +39,10 @@
 #include <QSettings>
 #include <QTextDocument>
 
-using common::PSBTError;
 using wallet::CCoinControl;
 using wallet::DEFAULT_PAY_TX_FEE;
 
-static constexpr std::array confTargets{1, 2, 3, 4, 5, 6, 7, 8, 9};
+static constexpr std::array confTargets{2, 4, 6, 12, 24, 48, 144, 504, 1008};
 int getConfTargetForIndex(int index) {
     if (index+1 > static_cast<int>(confTargets.size())) {
         return confTargets.back();
@@ -406,7 +406,6 @@ void SendCoinsDialog::presentPSBT(PartiallySignedTransaction& psbtx)
     msgBox.setInformativeText(tr("The PSBT has been copied to the clipboard. You can also save it."));
     msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard);
     msgBox.setDefaultButton(QMessageBox::Discard);
-    msgBox.setObjectName("psbt_copied_message");
     switch (msgBox.exec()) {
     case QMessageBox::Save: {
         QString selectedFilter;
@@ -444,26 +443,26 @@ void SendCoinsDialog::presentPSBT(PartiallySignedTransaction& psbtx)
 }
 
 bool SendCoinsDialog::signWithExternalSigner(PartiallySignedTransaction& psbtx, CMutableTransaction& mtx, bool& complete) {
-    std::optional<PSBTError> err;
+    TransactionError err;
     try {
         err = model->wallet().fillPSBT(SIGHASH_ALL, /*sign=*/true, /*bip32derivs=*/true, /*n_signed=*/nullptr, psbtx, complete);
     } catch (const std::runtime_error& e) {
         QMessageBox::critical(nullptr, tr("Sign failed"), e.what());
         return false;
     }
-    if (err == PSBTError::EXTERNAL_SIGNER_NOT_FOUND) {
+    if (err == TransactionError::EXTERNAL_SIGNER_NOT_FOUND) {
         //: "External signer" means using devices such as hardware wallets.
         const QString msg = tr("External signer not found");
         QMessageBox::critical(nullptr, msg, msg);
         return false;
     }
-    if (err == PSBTError::EXTERNAL_SIGNER_FAILED) {
+    if (err == TransactionError::EXTERNAL_SIGNER_FAILED) {
         //: "External signer" means using devices such as hardware wallets.
         const QString msg = tr("External signer failure");
         QMessageBox::critical(nullptr, msg, msg);
         return false;
     }
-    if (err) {
+    if (err != TransactionError::OK) {
         tfm::format(std::cerr, "Failed to sign PSBT");
         processSendCoinsReturn(WalletModel::TransactionCreationFailed);
         return false;
@@ -503,9 +502,9 @@ void SendCoinsDialog::sendButtonClicked([[maybe_unused]] bool checked)
         PartiallySignedTransaction psbtx(mtx);
         bool complete = false;
         // Fill without signing
-        const auto err{model->wallet().fillPSBT(SIGHASH_ALL, /*sign=*/false, /*bip32derivs=*/true, /*n_signed=*/nullptr, psbtx, complete)};
+        TransactionError err = model->wallet().fillPSBT(SIGHASH_ALL, /*sign=*/false, /*bip32derivs=*/true, /*n_signed=*/nullptr, psbtx, complete);
         assert(!complete);
-        assert(!err);
+        assert(err == TransactionError::OK);
 
         // Copy PSBT to clipboard and offer to save
         presentPSBT(psbtx);
@@ -519,9 +518,9 @@ void SendCoinsDialog::sendButtonClicked([[maybe_unused]] bool checked)
             bool complete = false;
             // Always fill without signing first. This prevents an external signer
             // from being called prematurely and is not expensive.
-            const auto err{model->wallet().fillPSBT(SIGHASH_ALL, /*sign=*/false, /*bip32derivs=*/true, /*n_signed=*/nullptr, psbtx, complete)};
+            TransactionError err = model->wallet().fillPSBT(SIGHASH_ALL, /*sign=*/false, /*bip32derivs=*/true, /*n_signed=*/nullptr, psbtx, complete);
             assert(!complete);
-            assert(!err);
+            assert(err == TransactionError::OK);
             send_failure = !signWithExternalSigner(psbtx, mtx, complete);
             // Don't broadcast when user rejects it on the device or there's a failure:
             broadcast = complete && !send_failure;
@@ -975,7 +974,7 @@ void SendCoinsDialog::coinControlChangeEdited(const QString& text)
         }
         else if (!IsValidDestination(dest)) // Invalid address
         {
-            ui->labelCoinControlChangeLabel->setText(tr("Warning: Invalid Groestlcoin address"));
+            ui->labelCoinControlChangeLabel->setText(tr("Warning: Invalid Bitcoin address"));
         }
         else // Valid address
         {

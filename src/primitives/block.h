@@ -71,10 +71,8 @@ public:
     // network and disk
     std::vector<CTransactionRef> vtx;
 
-    // Memory-only flags for caching expensive checks
-    mutable bool fChecked;                            // CheckBlock()
-    mutable bool m_checked_witness_commitment{false}; // CheckWitnessCommitment()
-    mutable bool m_checked_merkle_root{false};        // CheckMerkleRoot()
+    // memory only
+    mutable bool fChecked;
 
     CBlock()
     {
@@ -97,8 +95,6 @@ public:
         CBlockHeader::SetNull();
         vtx.clear();
         fChecked = false;
-        m_checked_witness_commitment = false;
-        m_checked_merkle_root = false;
     }
 
     CBlockHeader GetBlockHeader() const
@@ -133,7 +129,7 @@ struct CBlockLocator
 
     std::vector<uint256> vHave;
 
-    CBlockLocator() = default;
+    CBlockLocator() {}
 
     explicit CBlockLocator(std::vector<uint256>&& have) : vHave(std::move(have)) {}
 

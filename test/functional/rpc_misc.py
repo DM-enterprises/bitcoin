@@ -102,4 +102,4 @@ class RpcMiscTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    RpcMiscTest(__file__).main()
+    RpcMiscTest().main()

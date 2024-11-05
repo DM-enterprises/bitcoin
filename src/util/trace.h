@@ -5,7 +5,9 @@
 #ifndef BITCOIN_UTIL_TRACE_H
 #define BITCOIN_UTIL_TRACE_H
 
-#include <config/bitcoin-config.h> // IWYU pragma: keep
+#if defined(HAVE_CONFIG_H)
+#include <config/bitcoin-config.h>
+#endif
 
 #ifdef ENABLE_TRACING
 

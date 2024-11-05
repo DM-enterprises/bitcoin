@@ -14,11 +14,13 @@ import sys
 
 from subprocess import check_output, CalledProcessError
 
-from lint_ignore_dirs import SHARED_EXCLUDED_SUBTREES
-
 
 EXCLUDED_DIRS = ["contrib/devtools/bitcoin-tidy/",
-                ] + SHARED_EXCLUDED_SUBTREES
+                 "src/leveldb/",
+                 "src/crc32c/",
+                 "src/secp256k1/",
+                 "src/minisketch/",
+                ]
 
 EXPECTED_BOOST_INCLUDES = ["boost/date_time/posix_time/posix_time.hpp",
                            "boost/multi_index/detail/hash_index_iterator.hpp",
@@ -30,6 +32,7 @@ EXPECTED_BOOST_INCLUDES = ["boost/date_time/posix_time/posix_time.hpp",
                            "boost/multi_index/tag.hpp",
                            "boost/multi_index_container.hpp",
                            "boost/operators.hpp",
+                           "boost/process.hpp",
                            "boost/signals2/connection.hpp",
                            "boost/signals2/optional_last_value.hpp",
                            "boost/signals2/signal.hpp",

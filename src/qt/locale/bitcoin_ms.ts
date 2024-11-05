@@ -36,7 +36,8 @@
     </message>
     <message>
         <source>Export the data in the current tab to a file</source>
-        <translation type="unfinished">Alihkan fail data ke dalam tab semasa</translation>
+        <translation type="unfinished">
+Alihkan fail data ke dalam tab semasa</translation>
     </message>
     <message>
         <source>&amp;Export</source>
@@ -59,6 +60,14 @@
         <translation type="unfinished">&amp;Pilih</translation>
     </message>
     <message>
+        <source>Sending addresses</source>
+        <translation type="unfinished">alamat-alamat penghantaran</translation>
+    </message>
+    <message>
+        <source>Receiving addresses</source>
+        <translation type="unfinished">alamat-alamat penerimaan</translation>
+    </message>
+    <message>
         <source>These are your Bitcoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
         <translation type="unfinished">Ini adalah alamat Bitcoin anda untuk pembayaran. Periksa jumlah dan alamat penerima sebelum membuat penghantaran koin sentiasa.</translation>
     </message>
@@ -78,14 +87,6 @@
         <source>There was an error trying to save the address list to %1. Please try again.</source>
         <extracomment>An error message. %1 is a stand-in argument for the name of the file we attempted to save to.</extracomment>
         <translation type="unfinished">Terdapat ralat semasa cubaan menyimpan senarai alamat kepada %1. Sila cuba lagi.</translation>
-    </message>
-    <message>
-        <source>Sending addresses - %1</source>
-        <translation type="unfinished">Alamat Kirim  - %1</translation>
-    </message>
-    <message>
-        <source>Receiving addresses - %1</source>
-        <translation type="unfinished">Alamat Penerima - %1</translation>
     </message>
     <message>
         <source>Exporting Failed</source>
@@ -231,12 +232,7 @@
             <numerusform />
         </translation>
     </message>
-    <message>
-        <source>default wallet</source>
-        <translation type="unfinished">dompet lalai
-</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>BitcoinGUI</name>
     <message>
@@ -381,6 +377,11 @@
         <source>Close wallet</source>
         <translation type="unfinished">Tutup Wallet</translation>
     </message>
+    <message>
+        <source>default wallet</source>
+        <translation type="unfinished">dompet lalai
+</translation>
+    </message>
     <message numerus="yes">
         <source>%n active connection(s) to Bitcoin network.</source>
         <extracomment>A substring of the tooltip.</extracomment>
@@ -398,6 +399,11 @@
     </context>
 <context>
     <name>OpenWalletActivity</name>
+    <message>
+        <source>default wallet</source>
+        <translation type="unfinished">dompet lalai
+</translation>
+    </message>
     <message>
         <source>Open Wallet</source>
         <extracomment>Title of window indicating the progress of opening of a wallet.</extracomment>
@@ -546,6 +552,14 @@
     </message>
     </context>
 <context>
+    <name>WalletModel</name>
+    <message>
+        <source>default wallet</source>
+        <translation type="unfinished">dompet lalai
+</translation>
+    </message>
+</context>
+<context>
     <name>WalletView</name>
     <message>
         <source>&amp;Export</source>
@@ -553,7 +567,8 @@
     </message>
     <message>
         <source>Export the data in the current tab to a file</source>
-        <translation type="unfinished">Alihkan fail data ke dalam tab semasa</translation>
+        <translation type="unfinished">
+Alihkan fail data ke dalam tab semasa</translation>
     </message>
     </context>
 <context>

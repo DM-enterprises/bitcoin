@@ -622,7 +622,7 @@ void CBlockPolicyEstimator::processTransaction(const NewMempoolTransactionInfo& 
     }
     trackedTxs++;
 
-    // Feerates are stored and reported as GRS-per-kb:
+    // Feerates are stored and reported as BTC-per-kb:
     const CFeeRate feeRate(tx.info.m_fee, tx.info.m_virtual_transaction_size);
 
     mapMemPoolTxs[hash].blockHeight = txHeight;
@@ -653,7 +653,7 @@ bool CBlockPolicyEstimator::processBlockTx(unsigned int nBlockHeight, const Remo
         return false;
     }
 
-    // Feerates are stored and reported as GRS-per-kb:
+    // Feerates are stored and reported as BTC-per-kb:
     CFeeRate feeRate(tx.info.m_fee, tx.info.m_virtual_transaction_size);
 
     feeStats->Record(blocksToConfirm, static_cast<double>(feeRate.GetFeePerK()));
@@ -961,7 +961,7 @@ bool CBlockPolicyEstimator::Write(AutoFile& fileout) const
 {
     try {
         LOCK(m_cs_fee_estimator);
-        fileout << 216000; // version required to read: 2.16.0 or later
+        fileout << 149900; // version required to read: 0.14.99 or later
         fileout << CLIENT_VERSION; // version that wrote the file
         fileout << nBestSeenHeight;
         if (BlockSpan() > HistoricalBlockSpan()/2) {
@@ -997,9 +997,9 @@ bool CBlockPolicyEstimator::Read(AutoFile& filein)
         unsigned int nFileBestSeenHeight;
         filein >> nFileBestSeenHeight;
 
-        if (nVersionRequired < 216000) {
+        if (nVersionRequired < 149900) {
             LogPrintf("%s: incompatible old fee estimation data (non-fatal). Version: %d\n", __func__, nVersionRequired);
-        } else { // New format introduced in 216000
+        } else { // New format introduced in 149900
             unsigned int nFileHistoricalFirst, nFileHistoricalBest;
             filein >> nFileHistoricalFirst >> nFileHistoricalBest;
             if (nFileHistoricalFirst > nFileHistoricalBest || nFileHistoricalBest > nFileBestSeenHeight) {
@@ -1055,7 +1055,7 @@ void CBlockPolicyEstimator::FlushUnconfirmed()
         _removeTx(mi->first, false); // this calls erase() on mapMemPoolTxs
     }
     const auto endclear{SteadyClock::now()};
-    LogPrint(BCLog::ESTIMATEFEE, "Recorded %u unconfirmed txs from mempool in %.3fs\n", num_entries, Ticks<SecondsDouble>(endclear - startclear));
+    LogPrint(BCLog::ESTIMATEFEE, "Recorded %u unconfirmed txs from mempool in %gs\n", num_entries, Ticks<SecondsDouble>(endclear - startclear));
 }
 
 std::chrono::hours CBlockPolicyEstimator::GetFeeEstimatorFileAge()

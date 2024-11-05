@@ -63,4 +63,4 @@ class DescriptorTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    DescriptorTest(__file__).main()
+    DescriptorTest().main()

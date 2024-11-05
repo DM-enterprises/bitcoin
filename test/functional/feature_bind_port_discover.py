@@ -75,4 +75,4 @@ class BindPortDiscoverTest(BitcoinTestFramework):
         assert found_addr1
 
 if __name__ == '__main__':
-    BindPortDiscoverTest(__file__).main()
+    BindPortDiscoverTest().main()

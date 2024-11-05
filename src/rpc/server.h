@@ -48,7 +48,7 @@ bool RPCIsInWarmup(std::string *outStatus);
 class RPCTimerBase
 {
 public:
-    virtual ~RPCTimerBase() = default;
+    virtual ~RPCTimerBase() {}
 };
 
 /**
@@ -57,7 +57,7 @@ public:
 class RPCTimerInterface
 {
 public:
-    virtual ~RPCTimerInterface() = default;
+    virtual ~RPCTimerInterface() {}
     /** Implementation name */
     virtual const char *Name() = 0;
     /** Factory function for timers.
@@ -179,6 +179,6 @@ extern CRPCTable tableRPC;
 void StartRPC();
 void InterruptRPC();
 void StopRPC();
-UniValue JSONRPCExec(const JSONRPCRequest& jreq, bool catch_errors);
+std::string JSONRPCExecBatch(const JSONRPCRequest& jreq, const UniValue& vReq);
 
 #endif // BITCOIN_RPC_SERVER_H

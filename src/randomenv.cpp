@@ -3,7 +3,9 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <config/bitcoin-config.h> // IWYU pragma: keep
+#if defined(HAVE_CONFIG_H)
+#include <config/bitcoin-config.h>
+#endif
 
 #include <randomenv.h>
 
@@ -11,7 +13,6 @@
 #include <compat/compat.h>
 #include <compat/cpuid.h>
 #include <crypto/sha512.h>
-#include <span.h>
 #include <support/cleanse.h>
 #include <util/time.h>
 
@@ -42,15 +43,15 @@
 #if HAVE_DECL_GETIFADDRS && HAVE_DECL_FREEIFADDRS
 #include <ifaddrs.h>
 #endif
-#ifdef HAVE_SYSCTL
+#if HAVE_SYSCTL
 #include <sys/sysctl.h>
-#ifdef HAVE_VM_VM_PARAM_H
+#if HAVE_VM_VM_PARAM_H
 #include <vm/vm_param.h>
 #endif
-#ifdef HAVE_SYS_RESOURCES_H
+#if HAVE_SYS_RESOURCES_H
 #include <sys/resources.h>
 #endif
-#ifdef HAVE_SYS_VMMETER_H
+#if HAVE_SYS_VMMETER_H
 #include <sys/vmmeter.h>
 #endif
 #endif
@@ -58,9 +59,7 @@
 #include <sys/auxv.h>
 #endif
 
-#ifndef _MSC_VER
 extern char** environ; // NOLINT(readability-redundant-declaration): Necessary on some platforms
-#endif
 
 namespace {
 
@@ -71,10 +70,10 @@ void RandAddSeedPerfmon(CSHA512& hasher)
 
     // This can take up to 2 seconds, so only do it every 10 minutes.
     // Initialize last_perfmon to 0 seconds, we don't skip the first call.
-    static std::atomic<SteadyClock::time_point> last_perfmon{SteadyClock::time_point{0s}};
+    static std::atomic<std::chrono::seconds> last_perfmon{0s};
     auto last_time = last_perfmon.load();
-    auto current_time = SteadyClock::now();
-    if (current_time < last_time + 10min) return;
+    auto current_time = GetTime<std::chrono::seconds>();
+    if (current_time < last_time + std::chrono::minutes{10}) return;
     last_perfmon = current_time;
 
     std::vector<unsigned char> vData(250000, 0);
@@ -164,7 +163,7 @@ void AddPath(CSHA512& hasher, const char *path)
 }
 #endif
 
-#ifdef HAVE_SYSCTL
+#if HAVE_SYSCTL
 template<int... S>
 void AddSysctl(CSHA512& hasher)
 {
@@ -276,7 +275,7 @@ void RandAddDynamicEnv(CSHA512& hasher)
     AddFile(hasher, "/proc/self/status");
 #endif
 
-#ifdef HAVE_SYSCTL
+#if HAVE_SYSCTL
 #  ifdef CTL_KERN
 #    if defined(KERN_PROC) && defined(KERN_PROC_ALL)
     AddSysctl<CTL_KERN, KERN_PROC, KERN_PROC_ALL>(hasher);
@@ -358,19 +357,10 @@ void RandAddStaticEnv(CSHA512& hasher)
     hasher << &hasher << &RandAddStaticEnv << &malloc << &errno << &environ;
 
     // Hostname
-#ifdef WIN32
-    constexpr DWORD max_size = MAX_COMPUTERNAME_LENGTH + 1;
-    char hname[max_size];
-    DWORD size = max_size;
-    if (GetComputerNameA(hname, &size) != 0) {
-        hasher.Write(UCharCast(hname), size);
-    }
-#else
     char hname[256];
     if (gethostname(hname, 256) == 0) {
         hasher.Write((const unsigned char*)hname, strnlen(hname, 256));
     }
-#endif
 
 #if HAVE_DECL_GETIFADDRS && HAVE_DECL_FREEIFADDRS
     // Network interfaces
@@ -421,7 +411,7 @@ void RandAddStaticEnv(CSHA512& hasher)
 
     // For MacOS/BSDs, gather data through sysctl instead of /proc. Not all of these
     // will exist on every system.
-#ifdef HAVE_SYSCTL
+#if HAVE_SYSCTL
 #  ifdef CTL_HW
 #    ifdef HW_MACHINE
     AddSysctl<CTL_HW, HW_MACHINE>(hasher);

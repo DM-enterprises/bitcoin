@@ -190,4 +190,4 @@ class CreateWalletTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    CreateWalletTest(__file__).main()
+    CreateWalletTest().main()

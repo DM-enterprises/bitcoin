@@ -172,13 +172,13 @@ public:
     std::unique_ptr<CCoinsViewCursor> Cursor() const final { return {}; }
     size_t EstimateSize() const final { return m_data.size(); }
 
-    bool BatchWrite(CoinsViewCacheCursor& cursor, const uint256&) final
+    bool BatchWrite(CCoinsMap& data, const uint256&, bool erase) final
     {
-        for (auto it{cursor.Begin()}; it != cursor.End(); it = cursor.NextAndMaybeErase(*it)) {
-            if (it->second.IsDirty()) {
+        for (auto it = data.begin(); it != data.end(); it = erase ? data.erase(it) : std::next(it)) {
+            if (it->second.flags & CCoinsCacheEntry::DIRTY) {
                 if (it->second.coin.IsSpent() && (it->first.n % 5) != 4) {
                     m_data.erase(it->first);
-                } else if (cursor.WillErase(*it)) {
+                } else if (erase) {
                     m_data[it->first] = std::move(it->second.coin);
                 } else {
                     m_data[it->first] = it->second.coin;

@@ -12,8 +12,6 @@
 #include <script/script.h>
 #include <uint256.h>
 
-#include <groestlcoin.h>
-
 typedef std::vector<unsigned char> valtype;
 
 namespace {
@@ -1040,8 +1038,7 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
                     else if (opcode == OP_HASH160)
                         CHash160().Write(vch).Finalize(vchHash);
                     else if (opcode == OP_HASH256)
-                        XCoin::GroestlHasher().Write(vch).Finalize(vchHash); // GRS
-                        // CHash256().Write(vch).Finalize(vchHash);
+                        CHash256().Write(vch).Finalize(vchHash);
                     popstack(stack);
                     stack.push_back(vchHash);
                 }
@@ -1324,8 +1321,8 @@ public:
     /** Serialize txTo */
     template<typename S>
     void Serialize(S &s) const {
-        // Serialize version
-        ::Serialize(s, txTo.version);
+        // Serialize nVersion
+        ::Serialize(s, txTo.nVersion);
         // Serialize vin
         unsigned int nInputs = fAnyoneCanPay ? 1 : txTo.vin.size();
         ::WriteCompactSize(s, nInputs);
@@ -1437,9 +1434,9 @@ void PrecomputedTransactionData::Init(const T& txTo, std::vector<CTxOut>&& spent
         m_outputs_single_hash = GetOutputsSHA256(txTo);
     }
     if (uses_bip143_segwit) {
-        hashPrevouts = (m_prevouts_single_hash); // GRS
-        hashSequence = (m_sequences_single_hash); // GRS
-        hashOutputs = (m_outputs_single_hash); // GRS
+        hashPrevouts = SHA256Uint256(m_prevouts_single_hash);
+        hashSequence = SHA256Uint256(m_sequences_single_hash);
+        hashOutputs = SHA256Uint256(m_outputs_single_hash);
         m_bip143_segwit_ready = true;
     }
     if (uses_bip341_taproot && m_spent_outputs_ready) {
@@ -1515,7 +1512,7 @@ bool SignatureHashSchnorr(uint256& hash_out, ScriptExecutionData& execdata, cons
     ss << hash_type;
 
     // Transaction level data
-    ss << tx_to.version;
+    ss << tx_to.nVersion;
     ss << tx_to.nLockTime;
     if (input_type != SIGHASH_ANYONECANPAY) {
         ss << cache.m_prevouts_single_hash;
@@ -1579,25 +1576,25 @@ uint256 SignatureHash(const CScript& scriptCode, const T& txTo, unsigned int nIn
         const bool cacheready = cache && cache->m_bip143_segwit_ready;
 
         if (!(nHashType & SIGHASH_ANYONECANPAY)) {
-            hashPrevouts = cacheready ? cache->hashPrevouts : GetPrevoutsSHA256(txTo); // GRS
+            hashPrevouts = cacheready ? cache->hashPrevouts : SHA256Uint256(GetPrevoutsSHA256(txTo));
         }
 
         if (!(nHashType & SIGHASH_ANYONECANPAY) && (nHashType & 0x1f) != SIGHASH_SINGLE && (nHashType & 0x1f) != SIGHASH_NONE) {
-            hashSequence = cacheready ? cache->hashSequence : GetSequencesSHA256(txTo); // GRS
+            hashSequence = cacheready ? cache->hashSequence : SHA256Uint256(GetSequencesSHA256(txTo));
         }
 
 
         if ((nHashType & 0x1f) != SIGHASH_SINGLE && (nHashType & 0x1f) != SIGHASH_NONE) {
-            hashOutputs = cacheready ? cache->hashOutputs : GetOutputsSHA256(txTo); // GRS
+            hashOutputs = cacheready ? cache->hashOutputs : SHA256Uint256(GetOutputsSHA256(txTo));
         } else if ((nHashType & 0x1f) == SIGHASH_SINGLE && nIn < txTo.vout.size()) {
             HashWriter ss{};
             ss << txTo.vout[nIn];
-            hashOutputs = ss.GetHash(); // GRS uses single-SHA256
+            hashOutputs = ss.GetHash();
         }
 
         HashWriter ss{};
         // Version
-        ss << txTo.version;
+        ss << txTo.nVersion;
         // Input prevouts/nSequence (none/all, depending on flags)
         ss << hashPrevouts;
         ss << hashSequence;
@@ -1615,7 +1612,7 @@ uint256 SignatureHash(const CScript& scriptCode, const T& txTo, unsigned int nIn
         // Sighash type
         ss << nHashType;
 
-        return ss.GetHash(); // GRS uses single-SHA256
+        return ss.GetHash();
     }
 
     // Check for invalid use of SIGHASH_SINGLE
@@ -1632,7 +1629,7 @@ uint256 SignatureHash(const CScript& scriptCode, const T& txTo, unsigned int nIn
     // Serialize and hash
     HashWriter ss{};
     ss << txTmp << nHashType;
-    return ss.GetHash(); // GRS uses single-SHA256
+    return ss.GetHash();
 }
 
 template <class T>
@@ -1746,7 +1743,7 @@ bool GenericTransactionSignatureChecker<T>::CheckSequence(const CScriptNum& nSeq
 
     // Fail if the transaction's version number is not set high
     // enough to trigger BIP 68 rules.
-    if (txTo->version < 2)
+    if (static_cast<uint32_t>(txTo->nVersion) < 2)
         return false;
 
     // Sequence numbers with their most significant bit set are not
@@ -1946,8 +1943,6 @@ static bool VerifyWitnessProgram(const CScriptWitness& witness, int witversion, 
             }
             return set_success(serror);
         }
-    } else if (!is_p2sh && CScript::IsPayToAnchor(witversion, program)) {
-        return true;
     } else {
         if (flags & SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_WITNESS_PROGRAM) {
             return set_error(serror, SCRIPT_ERR_DISCOURAGE_UPGRADABLE_WITNESS_PROGRAM);

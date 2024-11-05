@@ -21,20 +21,20 @@ BitcoinUnits::BitcoinUnits(QObject *parent):
 QList<BitcoinUnit> BitcoinUnits::availableUnits()
 {
     QList<BitcoinUnit> unitlist;
-    unitlist.append(Unit::GRS);
-    unitlist.append(Unit::mGRS);
-    unitlist.append(Unit::uGRS);
-    unitlist.append(Unit::GRO);
+    unitlist.append(Unit::BTC);
+    unitlist.append(Unit::mBTC);
+    unitlist.append(Unit::uBTC);
+    unitlist.append(Unit::SAT);
     return unitlist;
 }
 
 QString BitcoinUnits::longName(Unit unit)
 {
     switch (unit) {
-    case Unit::GRS: return QString("GRS");
-    case Unit::mGRS: return QString("mGRS");
-    case Unit::uGRS: return QString::fromUtf8("µGRS (groestls)");
-    case Unit::GRO: return QString("Gro (gro)");
+    case Unit::BTC: return QString("BTC");
+    case Unit::mBTC: return QString("mBTC");
+    case Unit::uBTC: return QString::fromUtf8("µBTC (bits)");
+    case Unit::SAT: return QString("Satoshi (sat)");
     } // no default case, so the compiler can warn about missing cases
     assert(false);
 }
@@ -42,10 +42,10 @@ QString BitcoinUnits::longName(Unit unit)
 QString BitcoinUnits::shortName(Unit unit)
 {
     switch (unit) {
-    case Unit::GRS: return longName(unit);
-    case Unit::mGRS: return longName(unit);
-    case Unit::uGRS: return QString("groestls");
-    case Unit::GRO: return QString("gro");
+    case Unit::BTC: return longName(unit);
+    case Unit::mBTC: return longName(unit);
+    case Unit::uBTC: return QString("bits");
+    case Unit::SAT: return QString("sat");
     } // no default case, so the compiler can warn about missing cases
     assert(false);
 }
@@ -53,10 +53,10 @@ QString BitcoinUnits::shortName(Unit unit)
 QString BitcoinUnits::description(Unit unit)
 {
     switch (unit) {
-    case Unit::GRS: return QString("Groestlcoins");
-    case Unit::mGRS: return QString("Milli-Groestlcoins (1 / 1" THIN_SP_UTF8 "000)");
-    case Unit::uGRS: return QString("Micro-Groestlcoins (groestls) (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
-    case Unit::GRO: return QString("Gro (gro) (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+    case Unit::BTC: return QString("Bitcoins");
+    case Unit::mBTC: return QString("Milli-Bitcoins (1 / 1" THIN_SP_UTF8 "000)");
+    case Unit::uBTC: return QString("Micro-Bitcoins (bits) (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+    case Unit::SAT: return QString("Satoshi (sat) (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
     } // no default case, so the compiler can warn about missing cases
     assert(false);
 }
@@ -64,10 +64,10 @@ QString BitcoinUnits::description(Unit unit)
 qint64 BitcoinUnits::factor(Unit unit)
 {
     switch (unit) {
-    case Unit::GRS: return 100'000'000;
-    case Unit::mGRS: return 100'000;
-    case Unit::uGRS: return 100;
-    case Unit::GRO: return 1;
+    case Unit::BTC: return 100'000'000;
+    case Unit::mBTC: return 100'000;
+    case Unit::uBTC: return 100;
+    case Unit::SAT: return 1;
     } // no default case, so the compiler can warn about missing cases
     assert(false);
 }
@@ -75,10 +75,10 @@ qint64 BitcoinUnits::factor(Unit unit)
 int BitcoinUnits::decimals(Unit unit)
 {
     switch (unit) {
-    case Unit::GRS: return 8;
-    case Unit::mGRS: return 5;
-    case Unit::uGRS: return 2;
-    case Unit::GRO: return 0;
+    case Unit::BTC: return 8;
+    case Unit::mBTC: return 5;
+    case Unit::uBTC: return 2;
+    case Unit::SAT: return 0;
     } // no default case, so the compiler can warn about missing cases
     assert(false);
 }
@@ -232,10 +232,10 @@ namespace {
 qint8 ToQint8(BitcoinUnit unit)
 {
     switch (unit) {
-    case BitcoinUnit::GRS: return 0;
-    case BitcoinUnit::mGRS: return 1;
-    case BitcoinUnit::uGRS: return 2;
-    case BitcoinUnit::GRO: return 3;
+    case BitcoinUnit::BTC: return 0;
+    case BitcoinUnit::mBTC: return 1;
+    case BitcoinUnit::uBTC: return 2;
+    case BitcoinUnit::SAT: return 3;
     } // no default case, so the compiler can warn about missing cases
     assert(false);
 }
@@ -243,10 +243,10 @@ qint8 ToQint8(BitcoinUnit unit)
 BitcoinUnit FromQint8(qint8 num)
 {
     switch (num) {
-    case 0: return BitcoinUnit::GRS;
-    case 1: return BitcoinUnit::mGRS;
-    case 2: return BitcoinUnit::uGRS;
-    case 3: return BitcoinUnit::GRO;
+    case 0: return BitcoinUnit::BTC;
+    case 1: return BitcoinUnit::mBTC;
+    case 2: return BitcoinUnit::uBTC;
+    case 3: return BitcoinUnit::SAT;
     }
     assert(false);
 }

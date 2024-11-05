@@ -8,7 +8,6 @@
 #include <key_io.h>
 #include <pubkey.h>
 #include <script/miniscript.h>
-#include <script/parsing.h>
 #include <script/script.h>
 #include <script/signingprovider.h>
 #include <script/solver.h>
@@ -18,6 +17,7 @@
 #include <span.h>
 #include <util/bip32.h>
 #include <util/check.h>
+#include <util/spanparsing.h>
 #include <util/strencodings.h>
 #include <util/vector.h>
 
@@ -26,8 +26,6 @@
 #include <optional>
 #include <string>
 #include <vector>
-
-using util::Split;
 
 namespace {
 
@@ -116,13 +114,13 @@ std::string DescriptorChecksum(const Span<const char>& span)
      * As a result, within-group-of-32 errors count as 1 symbol, as do cross-group errors that don't affect
      * the position within the groups.
      */
-    static const std::string INPUT_CHARSET =
+    static std::string INPUT_CHARSET =
         "0123456789()[],'/*abcdefgh@:$%{}"
         "IJKLMNOPQRSTUVWXYZ&+-.;<=>?!^_|~"
         "ijklmnopqrstuvwxyzABCDEFGH`#\"\\ ";
 
     /** The character set for the checksum itself (same as bech32). */
-    static const std::string CHECKSUM_CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
+    static std::string CHECKSUM_CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
 
     uint64_t c = 1;
     int cls = 0;
@@ -214,11 +212,6 @@ public:
 
     /** Derive a private key, if private data is available in arg. */
     virtual bool GetPrivKey(int pos, const SigningProvider& arg, CKey& key) const = 0;
-
-    /** Return the non-extended public key for this PubkeyProvider, if it has one. */
-    virtual std::optional<CPubKey> GetRootPubKey() const = 0;
-    /** Return the extended public key for this PubkeyProvider, if it has one. */
-    virtual std::optional<CExtPubKey> GetRootExtPubKey() const = 0;
 };
 
 class OriginPubkeyProvider final : public PubkeyProvider
@@ -272,14 +265,6 @@ public:
     {
         return m_provider->GetPrivKey(pos, arg, key);
     }
-    std::optional<CPubKey> GetRootPubKey() const override
-    {
-        return m_provider->GetRootPubKey();
-    }
-    std::optional<CExtPubKey> GetRootExtPubKey() const override
-    {
-        return m_provider->GetRootExtPubKey();
-    }
 };
 
 /** An object representing a parsed constant public key in a descriptor. */
@@ -324,14 +309,6 @@ public:
     bool GetPrivKey(int pos, const SigningProvider& arg, CKey& key) const override
     {
         return arg.GetKey(m_pubkey.GetID(), key);
-    }
-    std::optional<CPubKey> GetRootPubKey() const override
-    {
-        return m_pubkey;
-    }
-    std::optional<CExtPubKey> GetRootExtPubKey() const override
-    {
-        return std::nullopt;
     }
 };
 
@@ -548,14 +525,6 @@ public:
         key = extkey.key;
         return true;
     }
-    std::optional<CPubKey> GetRootPubKey() const override
-    {
-        return std::nullopt;
-    }
-    std::optional<CExtPubKey> GetRootExtPubKey() const override
-    {
-        return m_root_extkey;
-    }
 };
 
 /** Base class for all Descriptor implementations. */
@@ -601,7 +570,6 @@ public:
         COMPAT, // string calculation that mustn't change over time to stay compatible with previous software versions
     };
 
-    // NOLINTNEXTLINE(misc-no-recursion)
     bool IsSolvable() const override
     {
         for (const auto& arg : m_subdescriptor_args) {
@@ -610,7 +578,6 @@ public:
         return true;
     }
 
-    // NOLINTNEXTLINE(misc-no-recursion)
     bool IsRange() const final
     {
         for (const auto& pubkey : m_pubkey_args) {
@@ -622,7 +589,6 @@ public:
         return false;
     }
 
-    // NOLINTNEXTLINE(misc-no-recursion)
     virtual bool ToStringSubScriptHelper(const SigningProvider* arg, std::string& ret, const StringType type, const DescriptorCache* cache = nullptr) const
     {
         size_t pos = 0;
@@ -635,7 +601,6 @@ public:
         return true;
     }
 
-    // NOLINTNEXTLINE(misc-no-recursion)
     virtual bool ToStringHelper(const SigningProvider* arg, std::string& out, const StringType type, const DescriptorCache* cache = nullptr) const
     {
         std::string extra = ToStringExtra();
@@ -688,7 +653,6 @@ public:
         return ret;
     }
 
-    // NOLINTNEXTLINE(misc-no-recursion)
     bool ExpandHelper(int pos, const SigningProvider& arg, const DescriptorCache* read_cache, std::vector<CScript>& output_scripts, FlatSigningProvider& out, DescriptorCache* write_cache) const
     {
         std::vector<std::pair<CPubKey, KeyOriginInfo>> entries;
@@ -730,7 +694,6 @@ public:
         return ExpandHelper(pos, DUMMY_SIGNING_PROVIDER, &read_cache, output_scripts, out, nullptr);
     }
 
-    // NOLINTNEXTLINE(misc-no-recursion)
     void ExpandPrivate(int pos, const SigningProvider& provider, FlatSigningProvider& out) const final
     {
         for (const auto& p : m_pubkey_args) {
@@ -757,20 +720,6 @@ public:
     std::optional<int64_t> MaxSatisfactionWeight(bool) const override { return {}; }
 
     std::optional<int64_t> MaxSatisfactionElems() const override { return {}; }
-
-    // NOLINTNEXTLINE(misc-no-recursion)
-    void GetPubKeys(std::set<CPubKey>& pubkeys, std::set<CExtPubKey>& ext_pubs) const override
-    {
-        for (const auto& p : m_pubkey_args) {
-            std::optional<CPubKey> pub = p->GetRootPubKey();
-            if (pub) pubkeys.insert(*pub);
-            std::optional<CExtPubKey> ext_pub = p->GetRootExtPubKey();
-            if (ext_pub) ext_pubs.insert(*ext_pub);
-        }
-        for (const auto& arg : m_subdescriptor_args) {
-            arg->GetPubKeys(pubkeys, ext_pubs);
-        }
-    }
 };
 
 /** A parsed addr(A) descriptor. */
@@ -1352,6 +1301,8 @@ enum class ParseScriptContext {
 /** Parse a public key that excludes origin information. */
 std::unique_ptr<PubkeyProvider> ParsePubkeyInner(uint32_t key_exp_index, const Span<const char>& sp, ParseScriptContext ctx, FlatSigningProvider& out, bool& apostrophe, std::string& error)
 {
+    using namespace spanparsing;
+
     bool permit_uncompressed = ctx == ParseScriptContext::TOP || ctx == ParseScriptContext::P2SH;
     auto split = Split(sp, '/');
     std::string str(split[0].begin(), split[0].end());
@@ -1424,6 +1375,8 @@ std::unique_ptr<PubkeyProvider> ParsePubkeyInner(uint32_t key_exp_index, const S
 /** Parse a public key including origin information (if enabled). */
 std::unique_ptr<PubkeyProvider> ParsePubkey(uint32_t key_exp_index, const Span<const char>& sp, ParseScriptContext ctx, FlatSigningProvider& out, std::string& error)
 {
+    using namespace spanparsing;
+
     auto origin_split = Split(sp, ']');
     if (origin_split.size() > 2) {
         error = "Multiple ']' characters found for a single pubkey";
@@ -1584,10 +1537,9 @@ struct KeyParser {
 };
 
 /** Parse a script in a particular context. */
-// NOLINTNEXTLINE(misc-no-recursion)
 std::unique_ptr<DescriptorImpl> ParseScript(uint32_t& key_exp_index, Span<const char>& sp, ParseScriptContext ctx, FlatSigningProvider& out, std::string& error)
 {
-    using namespace script;
+    using namespace spanparsing;
 
     auto expr = Expr(sp);
     if (Func("pk", expr)) {
@@ -1892,7 +1844,6 @@ std::unique_ptr<DescriptorImpl> InferMultiA(const CScript& script, ParseScriptCo
     return std::make_unique<MultiADescriptor>(match->first, std::move(keys));
 }
 
-// NOLINTNEXTLINE(misc-no-recursion)
 std::unique_ptr<DescriptorImpl> InferScript(const CScript& script, ParseScriptContext ctx, const SigningProvider& provider)
 {
     if (ctx == ParseScriptContext::P2TR && script.size() == 34 && script[0] == 32 && script[33] == OP_CHECKSIG) {
@@ -2036,6 +1987,8 @@ std::unique_ptr<DescriptorImpl> InferScript(const CScript& script, ParseScriptCo
 /** Check a descriptor checksum, and update desc to be the checksum-less part. */
 bool CheckChecksum(Span<const char>& sp, bool require_checksum, std::string& error, std::string* out_checksum = nullptr)
 {
+    using namespace spanparsing;
+
     auto check_split = Split(sp, '#');
     if (check_split.size() > 2) {
         error = "Multiple '#' symbols";

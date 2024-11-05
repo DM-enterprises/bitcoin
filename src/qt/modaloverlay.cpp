@@ -2,8 +2,6 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <config/bitcoin-config.h> // IWYU pragma: keep
-
 #include <qt/modaloverlay.h>
 #include <qt/forms/ui_modaloverlay.h>
 
@@ -25,7 +23,6 @@ ModalOverlay::ModalOverlay(bool enable_wallet, QWidget* parent)
         parent->installEventFilter(this);
         raise();
     }
-    ui->closeButton->installEventFilter(this);
 
     blockProcessTime.clear();
     setVisible(false);
@@ -61,11 +58,6 @@ bool ModalOverlay::eventFilter(QObject * obj, QEvent * ev) {
             raise();
         }
     }
-
-    if (obj == ui->closeButton && ev->type() == QEvent::FocusOut && layerIsVisible) {
-        ui->closeButton->setFocus(Qt::OtherFocusReason);
-    }
-
     return QWidget::eventFilter(obj, ev);
 }
 
@@ -193,10 +185,6 @@ void ModalOverlay::showHide(bool hide, bool userRequested)
     m_animation.setEndValue(QPoint(0, hide ? height() : 0));
     m_animation.start(QAbstractAnimation::KeepWhenStopped);
     layerIsVisible = !hide;
-
-    if (layerIsVisible) {
-        ui->closeButton->setFocus(Qt::OtherFocusReason);
-    }
 }
 
 void ModalOverlay::closeClicked()

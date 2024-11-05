@@ -111,4 +111,4 @@ class CreateWalletWatchonlyTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    CreateWalletWatchonlyTest(__file__).main()
+    CreateWalletWatchonlyTest().main()

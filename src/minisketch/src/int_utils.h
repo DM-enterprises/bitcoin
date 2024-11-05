@@ -7,16 +7,13 @@
 #ifndef _MINISKETCH_INT_UTILS_H_
 #define _MINISKETCH_INT_UTILS_H_
 
-#include <stdint.h>
 #include <stdlib.h>
 
 #include <limits>
 #include <algorithm>
 #include <type_traits>
 
-#if defined(__cpp_lib_int_pow2) && __cpp_lib_int_pow2 >= 202002L
-#  include <bit>
-#elif defined(_MSC_VER)
+#ifdef _MSC_VER
 #  include <intrin.h>
 #endif
 
@@ -57,10 +54,11 @@ class BitWriter {
     int offset = 0;
     unsigned char* out;
 
+public:
+    BitWriter(unsigned char* output) : out(output) {}
+
     template<int BITS, typename I>
-    inline void WriteInner(I val) {
-        // We right shift by up to 8 bits below. Verify that's well defined for the type I.
-        static_assert(std::numeric_limits<I>::digits > 8, "BitWriter::WriteInner needs I > 8 bits");
+    inline void Write(I val) {
         int bits = BITS;
         if (bits + offset >= 8) {
             state |= ((val & ((I(1) << (8 - offset)) - 1)) << offset);
@@ -77,19 +75,6 @@ class BitWriter {
         }
         state |= ((val & ((I(1) << bits) - 1)) << offset);
         offset += bits;
-    }
-
-
-public:
-    BitWriter(unsigned char* output) : out(output) {}
-
-    template<int BITS, typename I>
-    inline void Write(I val) {
-        // If I is smaller than an unsigned int, invoke WriteInner with argument converted to unsigned.
-        using compute_type = typename std::conditional<
-            (std::numeric_limits<I>::digits < std::numeric_limits<unsigned>::digits),
-            unsigned, I>::type;
-        return WriteInner<BITS, compute_type>(val);
     }
 
     inline void Flush() {
@@ -144,11 +129,7 @@ constexpr inline I Mask() { return ((I((I(-1)) << (std::numeric_limits<I>::digit
 /** Compute the smallest power of two that is larger than val. */
 template<typename I>
 static inline int CountBits(I val, int max) {
-#if defined(__cpp_lib_int_pow2) && __cpp_lib_int_pow2 >= 202002L
-    // c++20 impl
-    (void)max;
-    return std::bit_width(val);
-#elif defined(_MSC_VER)
+#ifdef _MSC_VER
     (void)max;
     unsigned long index;
     unsigned char ret;
@@ -159,7 +140,7 @@ static inline int CountBits(I val, int max) {
     }
     if (!ret) return 0;
     return index + 1;
-#elif defined(HAVE_CLZ)
+#elif HAVE_CLZ
     (void)max;
     if (val == 0) return 0;
     if (std::numeric_limits<unsigned>::digits >= std::numeric_limits<I>::digits) {
@@ -194,7 +175,6 @@ public:
     }
 
     static constexpr inline bool IsZero(I a) { return a == 0; }
-    static constexpr inline bool IsOne(I a) { return a == 1; }
     static constexpr inline I Mask(I val) { return val & MASK; }
     static constexpr inline I Shift(I val, int bits) { return ((val << bits) & MASK); }
     static constexpr inline I UnsafeShift(I val, int bits) { return (val << bits); }
@@ -210,7 +190,7 @@ public:
     static constexpr inline int TopBits(I val) {
         static_assert(Count > 0, "BitsInt::TopBits needs Count > 0");
         static_assert(Count <= BITS, "BitsInt::TopBits needs Offset <= BITS");
-        return static_cast<int>(val >> (BITS - Count));
+        return val >> (BITS - Count);
     }
 
     static inline constexpr I CondXorWith(I val, bool cond, I v) {
@@ -253,7 +233,7 @@ template<typename I, int N, typename L, typename F> inline constexpr I GFMul(con
 template<typename I, typename F, int BITS, uint32_t MOD>
 inline I InvExtGCD(I x)
 {
-    if (F::IsZero(x) || F::IsOne(x)) return x;
+    if (F::IsZero(x)) return x;
     I t(0), newt(1);
     I r(MOD), newr = x;
     int rlen = BITS + 1, newrlen = F::Bits(newr, BITS);

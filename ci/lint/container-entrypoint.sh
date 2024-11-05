@@ -7,14 +7,14 @@
 export LC_ALL=C
 
 # Fixes permission issues when there is a container UID/GID mismatch with the owner
-# of the mounted groestlcoin src dir.
-git config --global --add safe.directory /groestlcoin
+# of the mounted bitcoin src dir.
+git config --global --add safe.directory /bitcoin
 
 export PATH="/python_build/bin:${PATH}"
 export LINT_RUNNER_PATH="/lint_test_runner"
 
 if [ -z "$1" ]; then
-  bash -ic "./ci/lint/06_script.sh"
+  LOCAL_BRANCH=1 bash -ic "./ci/lint/06_script.sh"
 else
   exec "$@"
 fi

@@ -12,13 +12,13 @@ import random
 # Parameters:
 
 # Aim for still working fine at some point in the future. [datetime]
-TIME = datetime(2027, 4, 1)
+TIME = datetime(2026, 10, 5)
 
 # Expected block interval. [timedelta]
-BLOCK_INTERVAL = timedelta(seconds=60)
+BLOCK_INTERVAL = timedelta(seconds=600)
 
 # The number of headers corresponding to the minchainwork parameter. [headers]
-MINCHAINWORK_HEADERS = 4794500
+MINCHAINWORK_HEADERS = 804000
 
 # Combined processing bandwidth from all attackers to one victim. [bit/s]
 # 6 Gbit/s is approximately the speed at which a single thread of a Ryzen 5950X CPU thread can hash
@@ -118,7 +118,7 @@ HEADER_BATCH_COUNT = 2000
 RANDOMIZE_OFFSET = True
 
 # Timestamp of the genesis block
-GENESIS_TIME = datetime(2014, 3, 22)
+GENESIS_TIME = datetime(2009, 1, 3)
 
 # Derived values:
 
@@ -136,7 +136,7 @@ ATTACK_HEADERS = LIMIT_FRACTION * MINCHAINWORK_HEADERS
 
 
 def find_max_headers(when):
-    """Compute the maximum number of headers a valid Groestlcoin chain can have at given time."""
+    """Compute the maximum number of headers a valid Bitcoin chain can have at given time."""
     # When exploiting the timewarp attack, this can be up to 6 per second since genesis.
     return 6 * ((when - GENESIS_TIME) // timedelta(seconds=1))
 

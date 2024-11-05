@@ -18,7 +18,7 @@
 #include <vector>
 
 namespace wallet {
-static const std::string DUMP_MAGIC = "GROESTLCOIN_CORE_WALLET_DUMP";
+static const std::string DUMP_MAGIC = "BITCOIN_CORE_WALLET_DUMP";
 uint32_t DUMP_VERSION = 1;
 
 bool DumpWallet(const ArgsManager& args, WalletDatabase& db, bilingual_str& error)
@@ -60,13 +60,7 @@ bool DumpWallet(const ArgsManager& args, WalletDatabase& db, bilingual_str& erro
     hasher << Span{line};
 
     // Write out the file format
-    std::string format = db.Format();
-    // BDB files that are opened using BerkeleyRODatabase have it's format as "bdb_ro"
-    // We want to override that format back to "bdb"
-    if (format == "bdb_ro") {
-        format = "bdb";
-    }
-    line = strprintf("%s,%s\n", "format", format);
+    line = strprintf("%s,%s\n", "format", db.Format());
     dump_file.write(line.data(), line.size());
     hasher << Span{line};
 
@@ -158,7 +152,7 @@ bool CreateFromDump(const ArgsManager& args, const std::string& name, const fs::
         return false;
     }
     if (ver != DUMP_VERSION) {
-        error = strprintf(_("Error: Dumpfile version is not supported. This version of groestlcoin-wallet only supports version 1 dumpfiles. Got dumpfile with version %s"), version_value);
+        error = strprintf(_("Error: Dumpfile version is not supported. This version of bitcoin-wallet only supports version 1 dumpfiles. Got dumpfile with version %s"), version_value);
         dump_file.close();
         return false;
     }
@@ -186,8 +180,6 @@ bool CreateFromDump(const ArgsManager& args, const std::string& name, const fs::
         data_format = DatabaseFormat::BERKELEY;
     } else if (file_format == "sqlite") {
         data_format = DatabaseFormat::SQLITE;
-    } else if (file_format == "bdb_swap") {
-        data_format = DatabaseFormat::BERKELEY_SWAP;
     } else {
         error = strprintf(_("Unknown wallet file format \"%s\" provided. Please provide one of \"bdb\" or \"sqlite\"."), file_format);
         return false;

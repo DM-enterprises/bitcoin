@@ -507,4 +507,4 @@ class WalletTaprootTest(BitcoinTestFramework):
         )
 
 if __name__ == '__main__':
-    WalletTaprootTest(__file__).main()
+    WalletTaprootTest().main()

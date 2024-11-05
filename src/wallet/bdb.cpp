@@ -65,8 +65,6 @@ RecursiveMutex cs_db;
 std::map<std::string, std::weak_ptr<BerkeleyEnvironment>> g_dbenvs GUARDED_BY(cs_db); //!< Map from directory name to db environment.
 } // namespace
 
-static constexpr auto REVERSE_BYTE_ORDER{std::endian::native == std::endian::little ? 4321 : 1234};
-
 bool WalletDatabaseFileId::operator==(const WalletDatabaseFileId& rhs) const
 {
     return memcmp(value, &rhs.value, sizeof(value)) == 0;
@@ -302,11 +300,7 @@ static Span<const std::byte> SpanFromDbt(const SafeDbt& dbt)
 }
 
 BerkeleyDatabase::BerkeleyDatabase(std::shared_ptr<BerkeleyEnvironment> env, fs::path filename, const DatabaseOptions& options) :
-    WalletDatabase(),
-    env(std::move(env)),
-    m_byteswap(options.require_format == DatabaseFormat::BERKELEY_SWAP),
-    m_filename(std::move(filename)),
-    m_max_log_mb(options.max_log_mb)
+    WalletDatabase(), env(std::move(env)), m_filename(std::move(filename)), m_max_log_mb(options.max_log_mb)
 {
     auto inserted = this->env->m_databases.emplace(m_filename, std::ref(*this));
     assert(inserted.second);
@@ -393,10 +387,6 @@ void BerkeleyDatabase::Open()
                 if (ret != 0) {
                     throw std::runtime_error(strprintf("BerkeleyDatabase: Failed to configure for no temp file backing for database %s", strFile));
                 }
-            }
-
-            if (m_byteswap) {
-                pdb_temp->set_lorder(REVERSE_BYTE_ORDER);
             }
 
             ret = pdb_temp->open(nullptr,                             // Txn pointer
@@ -530,10 +520,6 @@ bool BerkeleyDatabase::Rewrite(const char* pszSkip)
                 { // surround usage of db with extra {}
                     BerkeleyBatch db(*this, true);
                     std::unique_ptr<Db> pdbCopy = std::make_unique<Db>(env->dbenv.get(), 0);
-
-                    if (m_byteswap) {
-                        pdbCopy->set_lorder(REVERSE_BYTE_ORDER);
-                    }
 
                     int ret = pdbCopy->open(nullptr,               // Txn pointer
                                             strFileRes.c_str(), // Filename
@@ -901,12 +887,7 @@ bool BerkeleyBatch::HasKey(DataStream&& key)
 
 bool BerkeleyBatch::ErasePrefix(Span<const std::byte> prefix)
 {
-    // Because this function erases records one by one, ensure that it is executed within a txn context.
-    // Otherwise, consistency is at risk; it's possible that certain records are removed while others
-    // remain due to an internal failure during the procedure.
-    // Additionally, the Dbc::del() cursor delete call below would fail without an active transaction.
-    if (!Assume(activeTxn)) return false;
-
+    if (!TxnBegin()) return false;
     auto cursor{std::make_unique<BerkeleyCursor>(m_database, *this)};
     // const_cast is safe below even though prefix_key is an in/out parameter,
     // because we are not using the DB_DBT_USERMEM flag, so BDB will allocate
@@ -920,7 +901,7 @@ bool BerkeleyBatch::ErasePrefix(Span<const std::byte> prefix)
         ret = cursor->dbc()->del(0);
     }
     cursor.reset();
-    return ret == 0 || ret == DB_NOTFOUND;
+    return TxnCommit() && (ret == 0 || ret == DB_NOTFOUND);
 }
 
 void BerkeleyDatabase::AddRef()

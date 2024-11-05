@@ -12,7 +12,7 @@ For example:
 
     make HOST=x86_64-w64-mingw32 -j4
 
-**Groestlcoin Core's `configure` script by default will ignore the depends output.** In
+**Bitcoin Core's `configure` script by default will ignore the depends output.** In
 order for it to pick up libraries, tools, and settings from the depends build,
 you must set the `CONFIG_SITE` environment variable to point to a `config.site` settings file.
 Make sure that `CONFIG_SITE` is an absolute path.
@@ -38,22 +38,21 @@ Common `host-platform-triplet`s for cross compilation are:
 - `riscv32-linux-gnu` for Linux RISC-V 32 bit
 - `riscv64-linux-gnu` for Linux RISC-V 64 bit
 - `s390x-linux-gnu` for Linux S390X
+- `armv7a-linux-android` for Android ARM 32 bit
+- `aarch64-linux-android` for Android ARM 64 bit
+- `x86_64-linux-android` for Android x86 64 bit
 
-The paths are automatically configured and no other options are needed.
+The paths are automatically configured and no other options are needed unless targeting [Android](../doc/build-android.md).
 
 ### Install the required dependencies: Ubuntu & Debian
 
-#### Common
-
-    apt install automake bison cmake curl libtool make patch pkg-config python3 xz-utils
-
 #### For macOS cross compilation
 
-    apt install clang lld llvm g++ zip
+    sudo apt-get install curl bsdmainutils cmake zip
 
-Clang 18 or later is required. You must also obtain the macOS SDK before
-proceeding with a cross-compile. Under the depends directory, create a
-subdirectory named `SDKs`. Then, place the extracted SDK under this new directory.
+Note: You must obtain the macOS SDK before proceeding with a cross-compile.
+Under the depends directory, create a subdirectory named `SDKs`.
+Then, place the extracted SDK under this new directory.
 For more information, see [SDK Extraction](../contrib/macdeploy/README.md#sdk-extraction).
 
 #### For Win64 cross compilation
@@ -64,7 +63,7 @@ For more information, see [SDK Extraction](../contrib/macdeploy/README.md#sdk-ex
 
 Common linux dependencies:
 
-    sudo apt-get install g++-multilib binutils
+    sudo apt-get install make automake cmake curl g++-multilib libtool binutils bsdmainutils pkg-config python3 patch bison
 
 For linux ARM cross compilation:
 
@@ -85,10 +84,6 @@ For linux RISC-V 64-bit cross compilation (there are no packages for 32-bit):
 For linux S390X cross compilation:
 
     sudo apt-get install g++-s390x-linux-gnu binutils-s390x-linux-gnu
-
-### Install the required dependencies: FreeBSD
-
-    pkg install bash
 
 ### Install the required dependencies: OpenBSD
 
@@ -119,6 +114,9 @@ The following can be set when running make: `make FOO=bar`
 - `DEBUG`: Disable some optimizations and enable more runtime checking
 - `HOST_ID_SALT`: Optional salt to use when generating host package ids
 - `BUILD_ID_SALT`: Optional salt to use when generating build package ids
+- `FORCE_USE_SYSTEM_CLANG`: (EXPERTS ONLY) When cross-compiling for macOS, use Clang found in the
+  system's `$PATH` rather than the default prebuilt release of Clang
+  from llvm.org. Clang 8 or later is required
 - `LOG`: Use file-based logging for individual packages. During a package build its log file
   resides in the `depends` directory, and the log file is printed out automatically in case
   of build error. After successful build log files are moved along with package archives

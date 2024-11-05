@@ -1,6 +1,6 @@
 UNIX BUILD NOTES
 ====================
-Some notes on how to build Groestlcoin Core in Unix.
+Some notes on how to build Bitcoin Core in Unix.
 
 (For BSD specific instructions, see `build-*bsd.md` in this directory.)
 
@@ -21,7 +21,7 @@ distributions](#linux-distribution-specific-instructions), or the
 ## Memory Requirements
 
 C++ compilers are memory-hungry. It is recommended to have at least 1.5 GB of
-memory available when compiling Groestlcoin Core. On systems with less, gcc can be
+memory available when compiling Bitcoin Core. On systems with less, gcc can be
 tuned to conserve memory with additional CXXFLAGS:
 
 
@@ -30,7 +30,7 @@ tuned to conserve memory with additional CXXFLAGS:
 Alternatively, or in addition, debugging information can be skipped for compilation. The default compile flags are
 `-g -O2`, and can be changed with:
 
-    ./configure CXXFLAGS="-g0"
+    ./configure CXXFLAGS="-O2"
 
 Finally, clang (often less resource hungry) can be used instead of gcc, which is used by default:
 
@@ -54,11 +54,12 @@ SQLite is required for the descriptor wallet:
 
     sudo apt install libsqlite3-dev
 
-Berkeley DB is only required for the legacy wallet. Ubuntu and Debian have their own `libdb5.3`, `libdb5.3-dev` and `libdb5.3++-dev` packages,
-these will install Berkeley DB 5.3. If you do not care about wallet compatibility, pass
- `--with-incompatible-bdb` to configure. Otherwise, you can build Berkeley DB [yourself](#berkeley-db).
+Berkeley DB is only required for the legacy wallet. Ubuntu and Debian have their own `libdb-dev` and `libdb++-dev` packages,
+but these will install Berkeley DB 5.3 or later. This will break binary wallet compatibility with the distributed
+executables, which are based on BerkeleyDB 4.8. If you do not care about wallet compatibility, pass
+`--with-incompatible-bdb` to configure. Otherwise, you can build Berkeley DB [yourself](#berkeley-db).
 
-To build Groestlcoin Core without wallet, see [*Disable-wallet mode*](#disable-wallet-mode)
+To build Bitcoin Core without wallet, see [*Disable-wallet mode*](#disable-wallet-mode)
 
 Optional port mapping libraries (see: `--with-miniupnpc` and `--with-natpmp`):
 
@@ -74,13 +75,13 @@ User-Space, Statically Defined Tracing (USDT) dependencies:
 
 GUI dependencies:
 
-If you want to build groestlcoin-qt, make sure that the required packages for Qt development
+If you want to build bitcoin-qt, make sure that the required packages for Qt development
 are installed. Qt 5 is necessary to build the GUI.
 To build without GUI pass `--without-gui`.
 
 To build with Qt 5 you need the following:
 
-    sudo apt-get install qtbase5-dev qttools5-dev qttools5-dev-tools
+    sudo apt-get install libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools
 
 Additionally, to support Wayland protocol for modern desktop environments:
 
@@ -90,7 +91,7 @@ libqrencode (optional) can be installed with:
 
     sudo apt-get install libqrencode-dev
 
-Once these are installed, they will be found by configure and a groestlcoin-qt executable will be
+Once these are installed, they will be found by configure and a bitcoin-qt executable will be
 built by default.
 
 
@@ -110,10 +111,12 @@ SQLite is required for the descriptor wallet:
 
     sudo dnf install sqlite-devel
 
-Berkeley DB is only required for the legacy wallet. Fedora releases have only `libdb-devel` and `libdb-cxx-devel` packages, these will install
-Berkeley DB 5.3. If you do not care about wallet compatibility, pass `--with-incompatible-bdb` to configure. Otherwise, you can build Berkeley DB [yourself](#berkeley-db).
+Berkeley DB is only required for the legacy wallet. Fedora releases have only `libdb-devel` and `libdb-cxx-devel` packages, but these will install
+Berkeley DB 5.3 or later. This will break binary wallet compatibility with the distributed executables, which
+are based on Berkeley DB 4.8. If you do not care about wallet compatibility,
+pass `--with-incompatible-bdb` to configure. Otherwise, you can build Berkeley DB [yourself](#berkeley-db).
 
-To build Groestlcoin Core without wallet, see [*Disable-wallet mode*](#disable-wallet-mode)
+To build Bitcoin Core without wallet, see [*Disable-wallet mode*](#disable-wallet-mode)
 
 Optional port mapping libraries (see: `--with-miniupnpc` and `--with-natpmp`):
 
@@ -129,7 +132,7 @@ User-Space, Statically Defined Tracing (USDT) dependencies:
 
 GUI dependencies:
 
-If you want to build groestlcoin-qt, make sure that the required packages for Qt development
+If you want to build bitcoin-qt, make sure that the required packages for Qt development
 are installed. Qt 5 is necessary to build the GUI.
 To build without GUI pass `--without-gui`.
 
@@ -145,7 +148,7 @@ libqrencode (optional) can be installed with:
 
     sudo dnf install qrencode-devel
 
-Once these are installed, they will be found by configure and a groestlcoin-qt executable will be
+Once these are installed, they will be found by configure and a bitcoin-qt executable will be
 built by default.
 
 ## Dependencies
@@ -157,19 +160,19 @@ not use the packages of your Linux distribution.
 ### Berkeley DB
 
 The legacy wallet uses Berkeley DB. To ensure backwards compatibility it is
-recommended to use Berkeley DB 5.3. If you have to build it yourself, and don't
+recommended to use Berkeley DB 4.8. If you have to build it yourself, and don't
 want to use any other libraries built in depends, you can do:
 ```bash
 make -C depends NO_BOOST=1 NO_LIBEVENT=1 NO_QT=1 NO_SQLITE=1 NO_NATPMP=1 NO_UPNP=1 NO_ZMQ=1 NO_USDT=1
 ...
-to: /path/to/groestlcoin/depends/x86_64-pc-linux-gnu
+to: /path/to/bitcoin/depends/x86_64-pc-linux-gnu
 ```
 and configure using the following:
 ```bash
-export BDB_PREFIX="/path/to/groestlcoin/depends/x86_64-pc-linux-gnu"
+export BDB_PREFIX="/path/to/bitcoin/depends/x86_64-pc-linux-gnu"
 
 ./configure \
-    BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-5.3" \
+    BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-4.8" \
     BDB_CFLAGS="-I${BDB_PREFIX}/include"
 ```
 
@@ -179,7 +182,7 @@ export BDB_PREFIX="/path/to/groestlcoin/depends/x86_64-pc-linux-gnu"
 
 Disable-wallet mode
 --------------------
-When the intention is to only run a P2P node, without a wallet, Groestlcoin Core can
+When the intention is to only run a P2P node, without a wallet, Bitcoin Core can
 be compiled in disable-wallet mode with:
 
     ./configure --disable-wallet
@@ -200,10 +203,11 @@ Setup and Build Example: Arch Linux
 This example lists the steps necessary to setup and build a command line only distribution of the latest changes on Arch Linux:
 
     pacman --sync --needed autoconf automake boost gcc git libevent libtool make pkgconf python sqlite
-    git clone https://github.com/groestlcoin/groestlcoin.git
-    cd groestlcoin/
+    git clone https://github.com/bitcoin/bitcoin.git
+    cd bitcoin/
     ./autogen.sh
     ./configure
-    ./src/groestlcoind
+    make check
+    ./src/bitcoind
 
 If you intend to work with legacy Berkeley DB wallets, see [Berkeley DB](#berkeley-db) section.

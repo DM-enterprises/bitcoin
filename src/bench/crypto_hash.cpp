@@ -196,6 +196,22 @@ static void SipHash_32b(benchmark::Bench& bench)
     });
 }
 
+static void FastRandom_32bit(benchmark::Bench& bench)
+{
+    FastRandomContext rng(true);
+    bench.run([&] {
+        rng.rand32();
+    });
+}
+
+static void FastRandom_1bit(benchmark::Bench& bench)
+{
+    FastRandomContext rng(true);
+    bench.run([&] {
+        rng.randbool();
+    });
+}
+
 static void MuHash(benchmark::Bench& bench)
 {
     MuHash3072 acc;
@@ -258,6 +274,8 @@ BENCHMARK(SHA256D64_1024_STANDARD, benchmark::PriorityLevel::HIGH);
 BENCHMARK(SHA256D64_1024_SSE4, benchmark::PriorityLevel::HIGH);
 BENCHMARK(SHA256D64_1024_AVX2, benchmark::PriorityLevel::HIGH);
 BENCHMARK(SHA256D64_1024_SHANI, benchmark::PriorityLevel::HIGH);
+BENCHMARK(FastRandom_32bit, benchmark::PriorityLevel::HIGH);
+BENCHMARK(FastRandom_1bit, benchmark::PriorityLevel::HIGH);
 
 BENCHMARK(MuHash, benchmark::PriorityLevel::HIGH);
 BENCHMARK(MuHashMul, benchmark::PriorityLevel::HIGH);

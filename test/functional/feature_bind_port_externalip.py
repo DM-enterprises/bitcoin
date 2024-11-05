@@ -72,4 +72,4 @@ class BindPortExternalIPTest(BitcoinTestFramework):
             assert found
 
 if __name__ == '__main__':
-    BindPortExternalIPTest(__file__).main()
+    BindPortExternalIPTest().main()

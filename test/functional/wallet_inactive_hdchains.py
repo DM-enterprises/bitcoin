@@ -146,4 +146,4 @@ class InactiveHDChainsTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    InactiveHDChainsTest(__file__).main()
+    InactiveHDChainsTest().main()

@@ -136,4 +136,4 @@ class ListDescriptorsTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    ListDescriptorsTest(__file__).main()
+    ListDescriptorsTest().main()

@@ -7,6 +7,7 @@
 This is meant to be documentation as much as functional tests, so it is kept as simple and readable as possible.
 """
 
+from test_framework.address import base58_to_byte
 from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_approx,
@@ -29,12 +30,10 @@ class WalletMultisigDescriptorPSBTTest(BitcoinTestFramework):
         self.skip_if_no_sqlite()
 
     @staticmethod
-    def _get_xpub(wallet, internal):
+    def _get_xpub(wallet):
         """Extract the wallet's xpubs using `listdescriptors` and pick the one from the `pkh` descriptor since it's least likely to be accidentally reused (legacy addresses)."""
-        pkh_descriptor = next(filter(lambda d: d["desc"].startswith("pkh(") and d["internal"] == internal, wallet.listdescriptors()["descriptors"]))
-        # Keep all key origin information (master key fingerprint and all derivation steps) for proper support of hardware devices
-        # See section 'Key origin identification' in 'doc/descriptors.md' for more details...
-        return pkh_descriptor["desc"].split("pkh(")[1].split(")")[0]
+        descriptor = next(filter(lambda d: d["desc"].startswith("pkh"), wallet.listdescriptors()["descriptors"]))
+        return descriptor["desc"].split("]")[-1].split("/")[0]
 
     @staticmethod
     def _check_psbt(psbt, to, value, multisig):
@@ -48,13 +47,19 @@ class WalletMultisigDescriptorPSBTTest(BitcoinTestFramework):
                 amount += vout["value"]
         assert_approx(amount, float(value), vspan=0.001)
 
-    def participants_create_multisigs(self, external_xpubs, internal_xpubs):
+    def participants_create_multisigs(self, xpubs):
         """The multisig is created by importing the following descriptors. The resulting wallet is watch-only and every participant can do this."""
+        # some simple validation
+        assert_equal(len(xpubs), self.N)
+        # a sanity-check/assertion, this will throw if the base58 checksum of any of the provided xpubs are invalid
+        for xpub in xpubs:
+            base58_to_byte(xpub)
+
         for i, node in enumerate(self.nodes):
             node.createwallet(wallet_name=f"{self.name}_{i}", blank=True, descriptors=True, disable_private_keys=True)
             multisig = node.get_wallet_rpc(f"{self.name}_{i}")
-            external = multisig.getdescriptorinfo(f"wsh(sortedmulti({self.M},{f','.join(external_xpubs)}))")
-            internal = multisig.getdescriptorinfo(f"wsh(sortedmulti({self.M},{f','.join(internal_xpubs)}))")
+            external = multisig.getdescriptorinfo(f"wsh(sortedmulti({self.M},{f'/0/*,'.join(xpubs)}/0/*))")
+            internal = multisig.getdescriptorinfo(f"wsh(sortedmulti({self.M},{f'/1/*,'.join(xpubs)}/1/*))")
             result = multisig.importdescriptors([
                 {  # receiving addresses (internal: False)
                     "desc": external["descriptor"],
@@ -88,10 +93,10 @@ class WalletMultisigDescriptorPSBTTest(BitcoinTestFramework):
         }
 
         self.log.info("Generate and exchange xpubs...")
-        external_xpubs, internal_xpubs = [[self._get_xpub(signer, internal) for signer in participants["signers"]] for internal in [False, True]]
+        xpubs = [self._get_xpub(signer) for signer in participants["signers"]]
 
         self.log.info("Every participant imports the following descriptors to create the watch-only multisig...")
-        participants["multisigs"] = list(self.participants_create_multisigs(external_xpubs, internal_xpubs))
+        participants["multisigs"] = list(self.participants_create_multisigs(xpubs))
 
         self.log.info("Check that every participant's multisig generates the same addresses...")
         for _ in range(10):  # we check that the first 10 generated addresses are the same for all participant's multisigs
@@ -154,4 +159,4 @@ class WalletMultisigDescriptorPSBTTest(BitcoinTestFramework):
 
 
 if __name__ == "__main__":
-    WalletMultisigDescriptorPSBTTest(__file__).main()
+    WalletMultisigDescriptorPSBTTest().main()

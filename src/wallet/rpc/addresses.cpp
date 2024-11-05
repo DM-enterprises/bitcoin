@@ -1,8 +1,6 @@
-// Copyright (c) 2011-present The Bitcoin Core developers
+// Copyright (c) 2011-2022 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
-#include <config/bitcoin-config.h> // IWYU pragma: keep
 
 #include <core_io.h>
 #include <key_io.h>
@@ -21,7 +19,7 @@ namespace wallet {
 RPCHelpMan getnewaddress()
 {
     return RPCHelpMan{"getnewaddress",
-                "\nReturns a new Groestlcoin address for receiving payments.\n"
+                "\nReturns a new Bitcoin address for receiving payments.\n"
                 "If 'label' is specified, it is added to the address book \n"
                 "so payments received with the address will be associated with 'label'.\n",
                 {
@@ -29,7 +27,7 @@ RPCHelpMan getnewaddress()
                     {"address_type", RPCArg::Type::STR, RPCArg::DefaultHint{"set by -addresstype"}, "The address type to use. Options are \"legacy\", \"p2sh-segwit\", \"bech32\", and \"bech32m\"."},
                 },
                 RPCResult{
-                    RPCResult::Type::STR, "address", "The new groestlcoin address"
+                    RPCResult::Type::STR, "address", "The new bitcoin address"
                 },
                 RPCExamples{
                     HelpExampleCli("getnewaddress", "")
@@ -73,7 +71,7 @@ RPCHelpMan getnewaddress()
 RPCHelpMan getrawchangeaddress()
 {
     return RPCHelpMan{"getrawchangeaddress",
-                "\nReturns a new Groestlcoin address, for receiving change.\n"
+                "\nReturns a new Bitcoin address, for receiving change.\n"
                 "This is for use with raw transactions, NOT normal use.\n",
                 {
                     {"address_type", RPCArg::Type::STR, RPCArg::DefaultHint{"set by -changetype"}, "The address type to use. Options are \"legacy\", \"p2sh-segwit\", \"bech32\", and \"bech32m\"."},
@@ -122,7 +120,7 @@ RPCHelpMan setlabel()
     return RPCHelpMan{"setlabel",
                 "\nSets the label associated with the given address.\n",
                 {
-                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The groestlcoin address to be associated with a label."},
+                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The bitcoin address to be associated with a label."},
                     {"label", RPCArg::Type::STR, RPCArg::Optional::NO, "The label to assign to the address."},
                 },
                 RPCResult{RPCResult::Type::NONE, "", ""},
@@ -139,7 +137,7 @@ RPCHelpMan setlabel()
 
     CTxDestination dest = DecodeDestination(request.params[0].get_str());
     if (!IsValidDestination(dest)) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Groestlcoin address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address");
     }
 
     const std::string label{LabelFromValue(request.params[1])};
@@ -169,7 +167,7 @@ RPCHelpMan listaddressgroupings()
                         {
                             {RPCResult::Type::ARR_FIXED, "", "",
                             {
-                                {RPCResult::Type::STR, "address", "The groestlcoin address"},
+                                {RPCResult::Type::STR, "address", "The bitcoin address"},
                                 {RPCResult::Type::STR_AMOUNT, "amount", "The amount in " + CURRENCY_UNIT},
                                 {RPCResult::Type::STR, "label", /*optional=*/true, "The label"},
                             }},
@@ -206,9 +204,9 @@ RPCHelpMan listaddressgroupings()
                     addressInfo.push_back(address_book_entry->GetLabel());
                 }
             }
-            jsonGrouping.push_back(std::move(addressInfo));
+            jsonGrouping.push_back(addressInfo);
         }
-        jsonGroupings.push_back(std::move(jsonGrouping));
+        jsonGroupings.push_back(jsonGrouping);
     }
     return jsonGroupings;
 },
@@ -219,16 +217,16 @@ RPCHelpMan addmultisigaddress()
 {
     return RPCHelpMan{"addmultisigaddress",
                 "\nAdd an nrequired-to-sign multisignature address to the wallet. Requires a new wallet backup.\n"
-                "Each key is a Groestlcoin address or hex-encoded public key.\n"
+                "Each key is a Bitcoin address or hex-encoded public key.\n"
                 "This functionality is only intended for use with non-watchonly addresses.\n"
                 "See `importaddress` for watchonly p2sh address support.\n"
                 "If 'label' is specified, assign address to that label.\n"
                 "Note: This command is only compatible with legacy wallets.\n",
                 {
                     {"nrequired", RPCArg::Type::NUM, RPCArg::Optional::NO, "The number of required signatures out of the n keys or addresses."},
-                    {"keys", RPCArg::Type::ARR, RPCArg::Optional::NO, "The groestlcoin addresses or hex-encoded public keys",
+                    {"keys", RPCArg::Type::ARR, RPCArg::Optional::NO, "The bitcoin addresses or hex-encoded public keys",
                         {
-                            {"key", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "groestlcoin address or hex-encoded public key"},
+                            {"key", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "bitcoin address or hex-encoded public key"},
                         },
                         },
                     {"label", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "A label to assign the addresses to."},
@@ -287,30 +285,9 @@ RPCHelpMan addmultisigaddress()
         output_type = parsed.value();
     }
 
-    // Construct multisig scripts
-    FlatSigningProvider provider;
+    // Construct using pay-to-script-hash:
     CScript inner;
-    CTxDestination dest = AddAndGetMultisigDestination(required, pubkeys, output_type, provider, inner);
-
-    // Import scripts into the wallet
-    for (const auto& [id, script] : provider.scripts) {
-        // Due to a bug in the legacy wallet, the p2sh maximum script size limit is also imposed on 'p2sh-segwit' and 'bech32' redeem scripts.
-        // Even when redeem scripts over MAX_SCRIPT_ELEMENT_SIZE bytes are valid for segwit output types, we don't want to
-        // enable it because:
-        // 1) It introduces a compatibility-breaking change requiring downgrade protection; older wallets would be unable to interact with these "new" legacy wallets.
-        // 2) Considering the ongoing deprecation of the legacy spkm, this issue adds another good reason to transition towards descriptors.
-        if (script.size() > MAX_SCRIPT_ELEMENT_SIZE) throw JSONRPCError(RPC_WALLET_ERROR, "Unsupported multisig script size for legacy wallet. Upgrade to descriptors to overcome this limitation for p2sh-segwit or bech32 scripts");
-
-        if (!spk_man.AddCScript(script)) {
-            if (CScript inner_script; spk_man.GetCScript(CScriptID(script), inner_script)) {
-                CHECK_NONFATAL(inner_script == script); // Nothing to add, script already contained by the wallet
-                continue;
-            }
-            throw JSONRPCError(RPC_WALLET_ERROR, strprintf("Error importing script into the wallet"));
-        }
-    }
-
-    // Store destination in the addressbook
+    CTxDestination dest = AddAndGetMultisigDestination(required, pubkeys, output_type, spk_man, inner);
     pwallet->SetAddressBook(dest, label, AddressPurpose::SEND);
 
     // Make the descriptor
@@ -414,7 +391,6 @@ class DescribeWalletAddressVisitor
 public:
     const SigningProvider * const provider;
 
-    // NOLINTNEXTLINE(misc-no-recursion)
     void ProcessSubScript(const CScript& subscript, UniValue& obj) const
     {
         // Always present: script type and redeemscript
@@ -428,9 +404,9 @@ public:
             // Only when the script corresponds to an address.
             UniValue subobj(UniValue::VOBJ);
             UniValue detail = DescribeAddress(embedded);
-            subobj.pushKVs(std::move(detail));
+            subobj.pushKVs(detail);
             UniValue wallet_detail = std::visit(*this, embedded);
-            subobj.pushKVs(std::move(wallet_detail));
+            subobj.pushKVs(wallet_detail);
             subobj.pushKV("address", EncodeDestination(embedded));
             subobj.pushKV("scriptPubKey", HexStr(subscript));
             // Always report the pubkey at the top level, so that `getnewaddress()['pubkey']` always works.
@@ -465,7 +441,6 @@ public:
         return obj;
     }
 
-    // NOLINTNEXTLINE(misc-no-recursion)
     UniValue operator()(const ScriptHash& scripthash) const
     {
         UniValue obj(UniValue::VOBJ);
@@ -486,7 +461,6 @@ public:
         return obj;
     }
 
-    // NOLINTNEXTLINE(misc-no-recursion)
     UniValue operator()(const WitnessV0ScriptHash& id) const
     {
         UniValue obj(UniValue::VOBJ);
@@ -501,7 +475,6 @@ public:
     }
 
     UniValue operator()(const WitnessV1Taproot& id) const { return UniValue(UniValue::VOBJ); }
-    UniValue operator()(const PayToAnchor& id) const { return UniValue(UniValue::VOBJ); }
     UniValue operator()(const WitnessUnknown& id) const { return UniValue(UniValue::VOBJ); }
 };
 
@@ -512,7 +485,7 @@ static UniValue DescribeWalletAddress(const CWallet& wallet, const CTxDestinatio
     CScript script = GetScriptForDestination(dest);
     std::unique_ptr<SigningProvider> provider = nullptr;
     provider = wallet.GetSolvingProvider(script);
-    ret.pushKVs(std::move(detail));
+    ret.pushKVs(detail);
     ret.pushKVs(std::visit(DescribeWalletAddressVisitor(provider.get()), dest));
     return ret;
 }
@@ -520,22 +493,22 @@ static UniValue DescribeWalletAddress(const CWallet& wallet, const CTxDestinatio
 RPCHelpMan getaddressinfo()
 {
     return RPCHelpMan{"getaddressinfo",
-                "\nReturn information about the given groestlcoin address.\n"
+                "\nReturn information about the given bitcoin address.\n"
                 "Some of the information will only be present if the address is in the active wallet.\n",
                 {
-                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The groestlcoin address for which to get information."},
+                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The bitcoin address for which to get information."},
                 },
                 RPCResult{
                     RPCResult::Type::OBJ, "", "",
                     {
-                        {RPCResult::Type::STR, "address", "The groestlcoin address validated."},
-                        {RPCResult::Type::STR_HEX, "scriptPubKey", "The hex-encoded output script generated by the address."},
+                        {RPCResult::Type::STR, "address", "The bitcoin address validated."},
+                        {RPCResult::Type::STR_HEX, "scriptPubKey", "The hex-encoded scriptPubKey generated by the address."},
                         {RPCResult::Type::BOOL, "ismine", "If the address is yours."},
                         {RPCResult::Type::BOOL, "iswatchonly", "If the address is watchonly."},
                         {RPCResult::Type::BOOL, "solvable", "If we know how to spend coins sent to this address, ignoring the possible lack of private keys."},
                         {RPCResult::Type::STR, "desc", /*optional=*/true, "A descriptor for spending coins sent to this address (only when solvable)."},
                         {RPCResult::Type::STR, "parent_desc", /*optional=*/true, "The descriptor used to derive this address if this is a descriptor wallet"},
-                        {RPCResult::Type::BOOL, "isscript", /*optional=*/true, "If the key is a script."},
+                        {RPCResult::Type::BOOL, "isscript", "If the key is a script."},
                         {RPCResult::Type::BOOL, "ischange", "If the address was used for change output."},
                         {RPCResult::Type::BOOL, "iswitness", "If the address is a witness address."},
                         {RPCResult::Type::NUM, "witness_version", /*optional=*/true, "The version number of the witness program."},
@@ -629,7 +602,7 @@ RPCHelpMan getaddressinfo()
     ret.pushKV("iswatchonly", bool(mine & ISMINE_WATCH_ONLY));
 
     UniValue detail = DescribeWalletAddress(*pwallet, dest);
-    ret.pushKVs(std::move(detail));
+    ret.pushKVs(detail);
 
     ret.pushKV("ischange", ScriptIsChange(*pwallet, scriptPubKey));
 
@@ -710,7 +683,7 @@ RPCHelpMan getaddressesbylabel()
             // which currently is O(1).
             UniValue value(UniValue::VOBJ);
             value.pushKV("purpose", _purpose ? PurposeToString(*_purpose) : "unknown");
-            ret.pushKVEnd(address, std::move(value));
+            ret.pushKVEnd(address, value);
         }
     });
 
@@ -785,7 +758,7 @@ RPCHelpMan walletdisplayaddress()
         "walletdisplayaddress",
         "Display address on an external signer for verification.",
         {
-            {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "groestlcoin address to display"},
+            {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "bitcoin address to display"},
         },
         RPCResult{
             RPCResult::Type::OBJ,"","",
@@ -809,8 +782,9 @@ RPCHelpMan walletdisplayaddress()
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
             }
 
-            util::Result<void> res = pwallet->DisplayAddress(dest);
-            if (!res) throw JSONRPCError(RPC_MISC_ERROR, util::ErrorString(res).original);
+            if (!pwallet->DisplayAddress(dest)) {
+                throw JSONRPCError(RPC_MISC_ERROR, "Failed to display address");
+            }
 
             UniValue result(UniValue::VOBJ);
             result.pushKV("address", request.params[0].get_str());

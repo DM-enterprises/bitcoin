@@ -3,8 +3,6 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <config/bitcoin-config.h> // IWYU pragma: keep
-
 #include <addrman.h>
 #include <addrman_impl.h>
 
@@ -16,7 +14,6 @@
 #include <random.h>
 #include <serialize.h>
 #include <streams.h>
-#include <groestlcoin.h>
 #include <tinyformat.h>
 #include <uint256.h>
 #include <util/check.h>
@@ -174,7 +171,7 @@ void AddrManImpl::Serialize(Stream& s_) const
      */
 
     // Always serialize in the latest version (FILE_FORMAT).
-    ParamsStream s{s_, CAddress::V2_DISK};
+    ParamsStream s{CAddress::V2_DISK, s_};
 
     s << static_cast<uint8_t>(FILE_FORMAT);
 
@@ -239,7 +236,7 @@ void AddrManImpl::Unserialize(Stream& s_)
     s_ >> Using<CustomUintFormatter<1>>(format);
 
     const auto ser_params = (format >= Format::V3_BIP155 ? CAddress::V2_DISK : CAddress::V1_DISK);
-    ParamsStream s{s_, ser_params};
+    ParamsStream s{ser_params, s_};
 
     uint8_t compat;
     s >> compat;
@@ -588,10 +585,11 @@ bool AddrManImpl::AddSingle(const CAddress& addr, const CNetAddr& source, std::c
             return false;
 
         // stochastic test: previous nRefCount == N: 2^N times harder to increase it
-        if (pinfo->nRefCount > 0) {
-            const int nFactor{1 << pinfo->nRefCount};
-            if (insecure_rand.randrange(nFactor) != 0) return false;
-        }
+        int nFactor = 1;
+        for (int n = 0; n < pinfo->nRefCount; n++)
+            nFactor *= 2;
+        if (nFactor > 1 && (insecure_rand.randrange(nFactor) != 0))
+            return false;
     } else {
         pinfo = Create(addr, source, &nId);
         pinfo->nTime = std::max(NodeSeconds{0s}, pinfo->nTime - time_penalty);
@@ -777,7 +775,7 @@ std::pair<CAddress, NodeSeconds> AddrManImpl::Select_(bool new_only, std::option
         const AddrInfo& info{it_found->second};
 
         // With probability GetChance() * chance_factor, return the entry.
-        if (insecure_rand.randbits<30>() < chance_factor * info.GetChance() * (1 << 30)) {
+        if (insecure_rand.randbits(30) < chance_factor * info.GetChance() * (1 << 30)) {
             LogPrint(BCLog::ADDRMAN, "Selected %s from %s\n", info.ToStringAddrPort(), search_tried ? "tried" : "new");
             return {info, info.m_last_try};
         }

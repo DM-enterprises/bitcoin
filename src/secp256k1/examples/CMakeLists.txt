@@ -28,7 +28,3 @@ endif()
 if(SECP256K1_ENABLE_MODULE_SCHNORRSIG)
   add_example(schnorr)
 endif()
-
-if(SECP256K1_ENABLE_MODULE_ELLSWIFT)
-  add_example(ellswift)
-endif()

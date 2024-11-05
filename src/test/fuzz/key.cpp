@@ -32,7 +32,7 @@
 
 void initialize_key()
 {
-    static ECC_Context ecc_context{};
+    ECC_Start();
     SelectParams(ChainType::REGTEST);
 }
 
@@ -76,6 +76,16 @@ FUZZ_TARGET(key, .init = initialize_key)
         CKey copied_key;
         copied_key.Set(key.begin(), key.end(), key.IsCompressed());
         assert(copied_key == key);
+    }
+
+    {
+        CKey negated_key = key;
+        negated_key.Negate();
+        assert(negated_key.IsValid());
+        assert(!(negated_key == key));
+
+        negated_key.Negate();
+        assert(negated_key == key);
     }
 
     const uint256 random_uint256 = Hash(buffer);

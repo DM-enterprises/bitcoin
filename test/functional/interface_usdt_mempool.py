@@ -322,4 +322,4 @@ class MempoolTracepointTest(BitcoinTestFramework):
 
 
 if __name__ == "__main__":
-    MempoolTracepointTest(__file__).main()
+    MempoolTracepointTest().main()

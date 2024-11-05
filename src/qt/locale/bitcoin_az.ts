@@ -3,11 +3,11 @@
     <name>AddressBookPage</name>
     <message>
         <source>Right-click to edit address or label</source>
-        <translation type="unfinished">Ünvanı və ya etiketi redaktə etmək üçün sağ klikləyin</translation>
+        <translation type="unfinished">Ünvana və ya etiketə düzəliş etmək üçün sağ klikləyin</translation>
     </message>
     <message>
         <source>Create a new address</source>
-        <translation type="unfinished">Yeni ünvan yaradın</translation>
+        <translation type="unfinished">Yeni bir ünvan yaradın</translation>
     </message>
     <message>
         <source>&amp;New</source>
@@ -56,6 +56,14 @@
     <message>
         <source>C&amp;hoose</source>
         <translation type="unfinished">Seç</translation>
+    </message>
+    <message>
+        <source>Sending addresses</source>
+        <translation type="unfinished">Göndərilən ünvanlar</translation>
+    </message>
+    <message>
+        <source>Receiving addresses</source>
+        <translation type="unfinished">Alınan ünvanlar</translation>
     </message>
     <message>
         <source>These are your Bitcoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
@@ -176,10 +184,6 @@ Daxil olma, yalnız 'qanuni' tipli ünvanlar ilə mümkündür.</translation>
         <translation type="unfinished">Pulqabı üçün köhnə şifrəli sözü və yeni şifrəli sözü daxil edin</translation>
     </message>
     <message>
-        <source>Continue</source>
-        <translation type="unfinished">Davam et</translation>
-    </message>
-    <message>
         <source>Remember that encrypting your wallet cannot fully protect your bitcoins from being stolen by malware infecting your computer.</source>
         <translation type="unfinished">Unutmayın ki, pulqabınızın şifrələməsi bitcoinlərinizi kompüterinizə zərərli proqram tərəfindən oğurlanmaqdan tamamilə qoruya bilməz.</translation>
     </message>
@@ -279,60 +283,52 @@ Daxil olma, yalnız 'qanuni' tipli ünvanlar ilə mümkündür.</translation>
         <translation type="unfinished">%1 hələ də təhlükəsiz bağlanmayıb...</translation>
     </message>
     <message>
-        <source>unknown</source>
-        <translation type="unfinished">naməlum</translation>
-    </message>
-    <message>
         <source>Amount</source>
         <translation type="unfinished">Məbləğ</translation>
     </message>
     <message numerus="yes">
         <source>%n second(s)</source>
         <translation type="unfinished">
-            <numerusform>%n second(s)</numerusform>
-            <numerusform>%n second(s)</numerusform>
+            <numerusform />
+            <numerusform />
         </translation>
     </message>
     <message numerus="yes">
         <source>%n minute(s)</source>
         <translation type="unfinished">
-            <numerusform>%n minute(s)</numerusform>
-            <numerusform>%n minute(s)</numerusform>
+            <numerusform />
+            <numerusform />
         </translation>
     </message>
     <message numerus="yes">
         <source>%n hour(s)</source>
         <translation type="unfinished">
-            <numerusform>%n hour(s)</numerusform>
-            <numerusform>%n hour(s)</numerusform>
+            <numerusform />
+            <numerusform />
         </translation>
     </message>
     <message numerus="yes">
         <source>%n day(s)</source>
         <translation type="unfinished">
-            <numerusform>%n day(s)</numerusform>
-            <numerusform>%n day(s)</numerusform>
+            <numerusform />
+            <numerusform />
         </translation>
     </message>
     <message numerus="yes">
         <source>%n week(s)</source>
         <translation type="unfinished">
-            <numerusform>%n week(s)</numerusform>
-            <numerusform>%n week(s)</numerusform>
+            <numerusform />
+            <numerusform />
         </translation>
     </message>
     <message numerus="yes">
         <source>%n year(s)</source>
         <translation type="unfinished">
-            <numerusform>%n year(s)</numerusform>
-            <numerusform>%n year(s)</numerusform>
+            <numerusform />
+            <numerusform />
         </translation>
     </message>
-    <message>
-        <source>default wallet</source>
-        <translation type="unfinished">standart cüzdan</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>BitcoinGUI</name>
     <message>
@@ -514,7 +510,7 @@ Daxil olma, yalnız 'qanuni' tipli ünvanlar ilə mümkündür.</translation>
     </message>
     <message>
         <source>Request payments (generates QR codes and bitcoin: URIs)</source>
-        <translation type="unfinished">Ödəmə tələbi (QR-kodlar və Bitcoin URI-ləri yaradılır):</translation>
+        <translation type="unfinished">Ödəmə tələbi (QR-kodlar və Bitcoin URI-ləri yaradılır)^</translation>
     </message>
     <message>
         <source>Show the list of used sending addresses and labels</source>
@@ -522,7 +518,7 @@ Daxil olma, yalnız 'qanuni' tipli ünvanlar ilə mümkündür.</translation>
     </message>
     <message>
         <source>Show the list of used receiving addresses and labels</source>
-        <translation type="unfinished">İstifadə edilmiş qəbuletmə ünvanlarının və etiketlərin siyahısını göstərmək</translation>
+        <translation type="unfinished">İstifadə edilmiş </translation>
     </message>
     <message>
         <source>&amp;Command-line options</source>
@@ -537,7 +533,7 @@ Daxil olma, yalnız 'qanuni' tipli ünvanlar ilə mümkündür.</translation>
     </message>
     <message>
         <source>%1 behind</source>
-        <translation type="unfinished">%1 geridə qalır</translation>
+        <translation type="unfinished">%1 geridə qaldı</translation>
     </message>
     <message>
         <source>Catching up…</source>
@@ -638,6 +634,10 @@ Daxil olma, yalnız 'qanuni' tipli ünvanlar ilə mümkündür.</translation>
         <translation type="unfinished">İcmal vərəqində dəyərləri gizlədin</translation>
     </message>
     <message>
+        <source>default wallet</source>
+        <translation type="unfinished">standart cüzdan</translation>
+    </message>
+    <message>
         <source>No wallets available</source>
         <translation type="unfinished">Heç bir cüzdan yoxdur</translation>
     </message>
@@ -654,7 +654,7 @@ Daxil olma, yalnız 'qanuni' tipli ünvanlar ilə mümkündür.</translation>
     <message>
         <source>Restore Wallet</source>
         <extracomment>Title of pop-up window shown when the user is attempting to restore a wallet.</extracomment>
-        <translation type="unfinished">Pulqabını bərpa et</translation>
+        <translation type="unfinished">Cüzdanı bərpa et</translation>
     </message>
     <message>
         <source>Wallet Name</source>
@@ -820,6 +820,10 @@ Daxil olma, yalnız 'qanuni' tipli ünvanlar ilə mümkündür.</translation>
         <translation type="unfinished">Komissiya:</translation>
     </message>
     <message>
+        <source>Dust:</source>
+        <translation type="unfinished">Toz:</translation>
+    </message>
+    <message>
         <source>After Fee:</source>
         <translation type="unfinished">Komissiydan sonra:</translation>
     </message>
@@ -908,12 +912,28 @@ Daxil olma, yalnız 'qanuni' tipli ünvanlar ilə mümkündür.</translation>
         <translation type="unfinished">Baytları koyalayın</translation>
     </message>
     <message>
+        <source>Copy dust</source>
+        <translation type="unfinished">Tozu kopyalayın</translation>
+    </message>
+    <message>
         <source>Copy change</source>
         <translation type="unfinished">Dəyişikliyi kopyalayın</translation>
     </message>
     <message>
         <source>(%1 locked)</source>
         <translation type="unfinished">(%1 kilidləndi)</translation>
+    </message>
+    <message>
+        <source>yes</source>
+        <translation type="unfinished">bəli</translation>
+    </message>
+    <message>
+        <source>no</source>
+        <translation type="unfinished">xeyr</translation>
+    </message>
+    <message>
+        <source>This label turns red if any recipient receives an amount smaller than the current dust threshold.</source>
+        <translation type="unfinished">Əgər alıcı məbləği cari toz həddindən az alarsa bu etiket qırmızı olur.</translation>
     </message>
     <message>
         <source>Can vary +/- %1 satoshi(s) per input.</source>
@@ -971,13 +991,6 @@ Daxil olma, yalnız 'qanuni' tipli ünvanlar ilə mümkündür.</translation>
     </message>
 </context>
 <context>
-    <name>MigrateWalletActivity</name>
-    <message>
-        <source>Migrate wallet</source>
-        <translation type="unfinished">Pulqabını köçür</translation>
-    </message>
-    </context>
-<context>
     <name>OpenWalletActivity</name>
     <message>
         <source>Open wallet failed</source>
@@ -988,9 +1001,13 @@ Daxil olma, yalnız 'qanuni' tipli ünvanlar ilə mümkündür.</translation>
         <translation type="unfinished">Pulqabının açılması xəbərdarlığı</translation>
     </message>
     <message>
+        <source>default wallet</source>
+        <translation type="unfinished">standart cüzdan</translation>
+    </message>
+    <message>
         <source>Open Wallet</source>
         <extracomment>Title of window indicating the progress of opening of a wallet.</extracomment>
-        <translation type="unfinished">Pulqabını açın</translation>
+        <translation type="unfinished">Cüzdanı açın</translation>
     </message>
     <message>
         <source>Opening Wallet &lt;b&gt;%1&lt;/b&gt;…</source>
@@ -1003,7 +1020,7 @@ Daxil olma, yalnız 'qanuni' tipli ünvanlar ilə mümkündür.</translation>
     <message>
         <source>Restore Wallet</source>
         <extracomment>Title of progress window which is displayed when wallets are being restored.</extracomment>
-        <translation type="unfinished">Pulqabını bərpa et</translation>
+        <translation type="unfinished">Cüzdanı bərpa et</translation>
     </message>
     <message>
         <source>Restoring Wallet &lt;b&gt;%1&lt;/b&gt;…</source>
@@ -1013,24 +1030,24 @@ Daxil olma, yalnız 'qanuni' tipli ünvanlar ilə mümkündür.</translation>
     <message>
         <source>Restore wallet failed</source>
         <extracomment>Title of message box which is displayed when the wallet could not be restored.</extracomment>
-        <translation type="unfinished">Pulqabı bərpa oluna bilmədi</translation>
+        <translation type="unfinished">Cüzdan bərpa oluna bilmədi</translation>
     </message>
     <message>
         <source>Restore wallet warning</source>
         <extracomment>Title of message box which is displayed when the wallet is restored with some warning.</extracomment>
-        <translation type="unfinished">Pulqabının bərpa olunması xəbərdarlığı</translation>
+        <translation type="unfinished">Cüzdanın bərpa olunması xəbərdarlığı</translation>
     </message>
     <message>
         <source>Restore wallet message</source>
         <extracomment>Title of message box which is displayed when the wallet is successfully restored.</extracomment>
-        <translation type="unfinished">Pulqabının bərpası ismarıcı</translation>
+        <translation type="unfinished">Cüzdanın bərpası ismarıcı</translation>
     </message>
 </context>
 <context>
     <name>WalletController</name>
     <message>
         <source>Close wallet</source>
-        <translation type="unfinished">Pulqabını bağlayın</translation>
+        <translation type="unfinished">Cüzdanı bağlayın</translation>
     </message>
     <message>
         <source>Are you sure you wish to close the wallet &lt;i&gt;%1&lt;/i&gt;?</source>
@@ -1053,7 +1070,7 @@ Daxil olma, yalnız 'qanuni' tipli ünvanlar ilə mümkündür.</translation>
     <name>CreateWalletDialog</name>
     <message>
         <source>Create Wallet</source>
-        <translation type="unfinished">Pulqabı yaradın</translation>
+        <translation type="unfinished">Cüzdan yaradın</translation>
     </message>
     <message>
         <source>Wallet Name</source>
@@ -1090,6 +1107,14 @@ Daxil olma, yalnız 'qanuni' tipli ünvanlar ilə mümkündür.</translation>
     <message>
         <source>Make Blank Wallet</source>
         <translation type="unfinished">Boş pulqabı yaradın</translation>
+    </message>
+    <message>
+        <source>Use descriptors for scriptPubKey management</source>
+        <translation type="unfinished">Publik açar skripti (scriptPubKey) idarəetməsi üçün deskreptorlardan itifadə edin</translation>
+    </message>
+    <message>
+        <source>Descriptor Wallet</source>
+        <translation type="unfinished">Deskriptor pulqabı</translation>
     </message>
     <message>
         <source>Use an external signing device such as a hardware wallet. Configure the external signer script in wallet preferences first.</source>
@@ -1147,30 +1172,30 @@ Daxil olma, yalnız 'qanuni' tipli ünvanlar ilə mümkündür.</translation>
     <message numerus="yes">
         <source>%n GB of space available</source>
         <translation type="unfinished">
-            <numerusform>%n GB of space available</numerusform>
-            <numerusform>%n GB of space available</numerusform>
+            <numerusform />
+            <numerusform />
         </translation>
     </message>
     <message numerus="yes">
         <source>(of %n GB needed)</source>
         <translation type="unfinished">
-            <numerusform>(of %n GB needed)</numerusform>
-            <numerusform>(of %n GB needed)</numerusform>
+            <numerusform />
+            <numerusform />
         </translation>
     </message>
     <message numerus="yes">
         <source>(%n GB needed for full chain)</source>
         <translation type="unfinished">
-            <numerusform>(%n GB needed for full chain)</numerusform>
-            <numerusform>(%n GB needed for full chain)</numerusform>
+            <numerusform />
+            <numerusform />
         </translation>
     </message>
     <message numerus="yes">
         <source>(sufficient to restore backups %n day(s) old)</source>
         <extracomment>Explanatory text on the capability of the current prune target.</extracomment>
         <translation type="unfinished">
-            <numerusform>(sufficient to restore backups %n day(s) old)</numerusform>
-            <numerusform>(sufficient to restore backups %n day(s) old)</numerusform>
+            <numerusform />
+            <numerusform />
         </translation>
     </message>
     <message>
@@ -1423,27 +1448,19 @@ Daxil olma, yalnız 'qanuni' tipli ünvanlar ilə mümkündür.</translation>
     </message>
     <message>
         <source>After Fee:</source>
-        <translation type="unfinished">Komissiyadan sonra:</translation>
+        <translation type="unfinished">Komissiydan sonra:</translation>
     </message>
     <message>
         <source>Change:</source>
         <translation type="unfinished">Qalıq:</translation>
     </message>
     <message>
-        <source>per kilobyte</source>
-        <translation type="unfinished">kilobayt başına</translation>
-    </message>
-    <message>
         <source>Hide</source>
         <translation type="unfinished">Gizlə</translation>
     </message>
     <message>
-        <source>Choose…</source>
-        <translation type="unfinished">Seçin…</translation>
-    </message>
-    <message>
-        <source>Balance:</source>
-        <translation type="unfinished">Balans:</translation>
+        <source>Dust:</source>
+        <translation type="unfinished">Toz:</translation>
     </message>
     <message>
         <source>Copy quantity</source>
@@ -1466,6 +1483,10 @@ Daxil olma, yalnız 'qanuni' tipli ünvanlar ilə mümkündür.</translation>
         <translation type="unfinished">Baytları koyalayın</translation>
     </message>
     <message>
+        <source>Copy dust</source>
+        <translation type="unfinished">Tozu kopyalayın</translation>
+    </message>
+    <message>
         <source>Copy change</source>
         <translation type="unfinished">Dəyişikliyi kopyalayın</translation>
     </message>
@@ -1480,8 +1501,8 @@ Daxil olma, yalnız 'qanuni' tipli ünvanlar ilə mümkündür.</translation>
     <message numerus="yes">
         <source>Estimated to begin confirmation within %n block(s).</source>
         <translation type="unfinished">
-            <numerusform>Estimated to begin confirmation within %n block(s).</numerusform>
-            <numerusform>Estimated to begin confirmation within %n block(s).</numerusform>
+            <numerusform />
+            <numerusform />
         </translation>
     </message>
     <message>
@@ -1495,19 +1516,11 @@ Daxil olma, yalnız 'qanuni' tipli ünvanlar ilə mümkündür.</translation>
         <source>Date</source>
         <translation type="unfinished">Tarix</translation>
     </message>
-    <message>
-        <source>unknown</source>
-        <translation type="unfinished">naməlum</translation>
-    </message>
-    <message>
-        <source>own address</source>
-        <translation type="unfinished">öz ünvanı</translation>
-    </message>
     <message numerus="yes">
         <source>matures in %n more block(s)</source>
         <translation type="unfinished">
-            <numerusform>matures in %n more block(s)</numerusform>
-            <numerusform>matures in %n more block(s)</numerusform>
+            <numerusform />
+            <numerusform />
         </translation>
     </message>
     <message>
@@ -1585,6 +1598,13 @@ Daxil olma, yalnız 'qanuni' tipli ünvanlar ilə mümkündür.</translation>
         <translation type="unfinished">Xəta</translation>
     </message>
     </context>
+<context>
+    <name>WalletModel</name>
+    <message>
+        <source>default wallet</source>
+        <translation type="unfinished">standart cüzdan</translation>
+    </message>
+</context>
 <context>
     <name>WalletView</name>
     <message>

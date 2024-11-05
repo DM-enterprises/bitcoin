@@ -3,8 +3,6 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <config/bitcoin-config.h> // IWYU pragma: keep
-
 #include <chainparams.h>
 #include <httpserver.h>
 #include <index/blockfilterindex.h>
@@ -24,7 +22,6 @@
 #include <univalue.h>
 #include <util/any.h>
 #include <util/check.h>
-#include <util/time.h>
 
 #include <stdint.h>
 #ifdef HAVE_MALLOC_INFO
@@ -57,11 +54,9 @@ static RPCHelpMan setmocktime()
     LOCK(cs_main);
 
     const int64_t time{request.params[0].getInt<int64_t>()};
-    constexpr int64_t max_time{Ticks<std::chrono::seconds>(std::chrono::nanoseconds::max())};
-    if (time < 0 || time > max_time) {
-        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Mocktime must be in the range [0, %s], not %s.", max_time, time));
+    if (time < 0) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Mocktime cannot be negative: %s.", time));
     }
-
     SetMockTime(time);
     const NodeContext& node_context{EnsureAnyNodeContext(request.context)};
     for (const auto& chain_client : node_context.chain_clients) {
@@ -95,7 +90,7 @@ static RPCHelpMan mockscheduler()
 
     const NodeContext& node_context{EnsureAnyNodeContext(request.context)};
     CHECK_NONFATAL(node_context.scheduler)->MockForward(std::chrono::seconds{delta_seconds});
-    CHECK_NONFATAL(node_context.validation_signals)->SyncWithValidationInterfaceQueue();
+    SyncWithValidationInterfaceQueue();
     for (const auto& chain_client : node_context.chain_clients) {
         chain_client->schedulerMockForward(std::chrono::seconds(delta_seconds));
     }
@@ -221,6 +216,7 @@ static RPCHelpMan logging()
             "The valid logging categories are: " + LogInstance().LogCategoriesString() + "\n"
             "In addition, the following are available as category names with special meanings:\n"
             "  - \"all\",  \"1\" : represent all logging categories.\n"
+            "  - \"none\", \"0\" : even if other logging categories are specified, ignore all of them.\n"
             ,
                 {
                     {"include", RPCArg::Type::ARR, RPCArg::Optional::OMITTED, "The categories to add to debug logging",
@@ -275,7 +271,7 @@ static RPCHelpMan echo(const std::string& name)
                 "\nSimply echo back the input arguments. This command is for testing.\n"
                 "\nIt will return an internal bug report when arg9='trigger_internal_bug' is passed.\n"
                 "\nThe difference between echo and echojson is that echojson has argument conversion enabled in the client-side table in "
-                "groestlcoin-cli and the GUI. There is no server-side difference.",
+                "bitcoin-cli and the GUI. There is no server-side difference.",
         {
             {"arg0", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "", RPCArgOptions{.skip_type_check = true}},
             {"arg1", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "", RPCArgOptions{.skip_type_check = true}},
@@ -318,20 +314,20 @@ static RPCHelpMan echoipc()
             interfaces::Init& local_init = *EnsureAnyNodeContext(request.context).init;
             std::unique_ptr<interfaces::Echo> echo;
             if (interfaces::Ipc* ipc = local_init.ipc()) {
-                // Spawn a new groestlcoin-node process and call makeEcho to get a
+                // Spawn a new bitcoin-node process and call makeEcho to get a
                 // client pointer to a interfaces::Echo instance running in
                 // that process. This is just for testing. A slightly more
                 // realistic test spawning a different executable instead of
-                // the same executable would add a new groestlcoin-echo executable,
-                // and spawn groestlcoin-echo below instead of groestlcoin-node. But
-                // using groestlcoin-node avoids the need to build and install a
+                // the same executable would add a new bitcoin-echo executable,
+                // and spawn bitcoin-echo below instead of bitcoin-node. But
+                // using bitcoin-node avoids the need to build and install a
                 // new executable just for this one test.
-                auto init = ipc->spawnProcess("groestlcoin-node");
+                auto init = ipc->spawnProcess("bitcoin-node");
                 echo = init->makeEcho();
                 ipc->addCleanup(*echo, [init = init.release()] { delete init; });
             } else {
-                // IPC support is not available because this is a groestlcoind
-                // process not a groestlcoind-node process, so just create a local
+                // IPC support is not available because this is a bitcoind
+                // process not a bitcoind-node process, so just create a local
                 // interfaces::Echo object and return it so the `echoipc` RPC
                 // method will work, and the python test calling `echoipc`
                 // can expect the same result.
@@ -350,7 +346,7 @@ static UniValue SummaryToJSON(const IndexSummary&& summary, std::string index_na
     UniValue entry(UniValue::VOBJ);
     entry.pushKV("synced", summary.synced);
     entry.pushKV("best_block_height", summary.best_block_height);
-    ret_summary.pushKV(summary.name, std::move(entry));
+    ret_summary.pushKV(summary.name, entry);
     return ret_summary;
 }
 

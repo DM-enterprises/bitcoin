@@ -243,13 +243,16 @@ bool CZMQPublishRawBlockNotifier::NotifyBlock(const CBlockIndex *pindex)
 {
     LogPrint(BCLog::ZMQ, "Publish rawblock %s to %s\n", pindex->GetBlockHash().GetHex(), this->address);
 
-    std::vector<uint8_t> block{};
+    DataStream ss;
+    CBlock block;
     if (!m_get_block_by_index(block, *pindex)) {
         zmqError("Can't read block from disk");
         return false;
     }
 
-    return SendZmqMessage(MSG_RAWBLOCK, block.data(), block.size());
+    ss << TX_WITH_WITNESS(block);
+
+    return SendZmqMessage(MSG_RAWBLOCK, &(*ss.begin()), ss.size());
 }
 
 bool CZMQPublishRawTransactionNotifier::NotifyTransaction(const CTransaction &transaction)

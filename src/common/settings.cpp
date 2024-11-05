@@ -4,7 +4,9 @@
 
 #include <common/settings.h>
 
-#include <config/bitcoin-config.h> // IWYU pragma: keep
+#if defined(HAVE_CONFIG_H)
+#include <config/bitcoin-config.h>
+#endif
 
 #include <tinyformat.h>
 #include <univalue.h>

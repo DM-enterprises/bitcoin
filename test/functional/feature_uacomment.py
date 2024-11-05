@@ -37,4 +37,4 @@ class UacommentTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    UacommentTest(__file__).main()
+    UacommentTest().main()

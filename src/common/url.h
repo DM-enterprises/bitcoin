@@ -6,12 +6,9 @@
 #define BITCOIN_COMMON_URL_H
 
 #include <string>
-#include <string_view>
 
-/* Decode a URL.
- *
- * Notably this implementation does not decode a '+' to a ' '.
- */
-std::string UrlDecode(std::string_view url_encoded);
+using UrlDecodeFn = std::string(const std::string& url_encoded);
+UrlDecodeFn urlDecode;
+extern UrlDecodeFn* const URL_DECODE;
 
 #endif // BITCOIN_COMMON_URL_H

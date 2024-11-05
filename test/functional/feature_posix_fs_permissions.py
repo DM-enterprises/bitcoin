@@ -40,4 +40,4 @@ class PosixFsPermissionsTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    PosixFsPermissionsTest(__file__).main()
+    PosixFsPermissionsTest().main()

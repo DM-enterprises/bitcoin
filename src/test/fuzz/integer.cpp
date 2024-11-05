@@ -40,8 +40,6 @@
 #include <set>
 #include <vector>
 
-using util::ToString;
-
 void initialize_integer()
 {
     SelectParams(ChainType::REGTEST);
@@ -78,10 +76,11 @@ FUZZ_TARGET(integer, .init = initialize_integer)
     } else {
         (void)CompressAmount(u64);
     }
-    constexpr uint256 u256_min{"0000000000000000000000000000000000000000000000000000000000000000"};
-    constexpr uint256 u256_max{"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"};
+    static const uint256 u256_min(uint256S("0000000000000000000000000000000000000000000000000000000000000000"));
+    static const uint256 u256_max(uint256S("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
     const std::vector<uint256> v256{u256, u256_min, u256_max};
     (void)ComputeMerkleRoot(v256);
+    (void)CountBits(u64);
     (void)DecompressAmount(u64);
     {
         if (std::optional<CAmount> parsed = ParseMoney(FormatMoney(i64))) {

@@ -2,7 +2,9 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <config/bitcoin-config.h> // IWYU pragma: keep
+#if defined(HAVE_CONFIG_H)
+#include <config/bitcoin-config.h>
+#endif
 
 #include <common/run_command.h>
 
@@ -10,34 +12,39 @@
 #include <univalue.h>
 
 #ifdef ENABLE_EXTERNAL_SIGNER
-#include <util/subprocess.h>
+#include <boost/process.hpp>
 #endif // ENABLE_EXTERNAL_SIGNER
 
 UniValue RunCommandParseJSON(const std::string& str_command, const std::string& str_std_in)
 {
 #ifdef ENABLE_EXTERNAL_SIGNER
-    namespace sp = subprocess;
+    namespace bp = boost::process;
 
     UniValue result_json;
-    std::istringstream stdout_stream;
-    std::istringstream stderr_stream;
+    bp::opstream stdin_stream;
+    bp::ipstream stdout_stream;
+    bp::ipstream stderr_stream;
 
     if (str_command.empty()) return UniValue::VNULL;
 
-    auto c = sp::Popen(str_command, sp::input{sp::PIPE}, sp::output{sp::PIPE}, sp::error{sp::PIPE});
+    bp::child c(
+        str_command,
+        bp::std_out > stdout_stream,
+        bp::std_err > stderr_stream,
+        bp::std_in < stdin_stream
+    );
     if (!str_std_in.empty()) {
-        c.send(str_std_in);
+        stdin_stream << str_std_in << std::endl;
     }
-    auto [out_res, err_res] = c.communicate();
-    stdout_stream.str(std::string{out_res.buf.begin(), out_res.buf.end()});
-    stderr_stream.str(std::string{err_res.buf.begin(), err_res.buf.end()});
+    stdin_stream.pipe().close();
 
     std::string result;
     std::string error;
     std::getline(stdout_stream, result);
     std::getline(stderr_stream, error);
 
-    const int n_error = c.retcode();
+    c.wait();
+    const int n_error = c.exit_code();
     if (n_error) throw std::runtime_error(strprintf("RunCommandParseJSON error: process(%s) returned %d: %s\n", str_command, n_error, error));
     if (!result_json.read(result)) throw std::runtime_error("Unable to parse JSON: " + result);
 

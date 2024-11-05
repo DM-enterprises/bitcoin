@@ -8,12 +8,12 @@ import sys
 import tempfile
 
 BINARIES = [
-'src/groestlcoind',
-'src/groestlcoin-cli',
-'src/groestlcoin-tx',
-'src/groestlcoin-wallet',
-'src/groestlcoin-util',
-'src/qt/groestlcoin-qt',
+'src/bitcoind',
+'src/bitcoin-cli',
+'src/bitcoin-tx',
+'src/bitcoin-wallet',
+'src/bitcoin-util',
+'src/qt/bitcoin-qt',
 ]
 
 # Paths to external utilities.
@@ -47,7 +47,7 @@ for relpath in BINARIES:
     assert verstr.startswith('v')
     # remaining lines are copyright
     copyright = r.stdout.split('\n')[1:]
-    #assert copyright[0].startswith('Copyright (C)') \\ GRS
+    assert copyright[0].startswith('Copyright (C)')
 
     versions.append((abspath, verstr, copyright))
 
@@ -62,10 +62,6 @@ with tempfile.NamedTemporaryFile('w', suffix='.h2m') as footer:
     # Copyright is the same for all binaries, so just use the first.
     footer.write('[COPYRIGHT]\n')
     footer.write('\n'.join(versions[0][2]).strip())
-    # Create SEE ALSO section
-    footer.write('\n[SEE ALSO]\n')
-    footer.write(', '.join(s.rpartition('/')[2] + '(1)' for s in BINARIES))
-    footer.write('\n')
     footer.flush()
 
     # Call the binaries through help2man to produce a manual page for each of them.

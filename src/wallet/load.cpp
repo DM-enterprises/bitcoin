@@ -21,8 +21,6 @@
 
 #include <system_error>
 
-using util::Join;
-
 namespace wallet {
 bool VerifyWallets(WalletContext& context)
 {
@@ -69,7 +67,7 @@ bool VerifyWallets(WalletContext& context)
             // Pass write=false because no need to write file and probably
             // better not to. If unnamed wallet needs to be added next startup
             // and the setting is empty, this code will just run again.
-            chain.overwriteRwSetting("wallet", wallets, /*write=*/false);
+            chain.updateRwSetting("wallet", wallets, /* write= */ false);
         }
     }
 
@@ -178,7 +176,7 @@ void UnloadWallets(WalletContext& context)
         wallets.pop_back();
         std::vector<bilingual_str> warnings;
         RemoveWallet(context, wallet, /* load_on_start= */ std::nullopt, warnings);
-        WaitForDeleteWallet(std::move(wallet));
+        UnloadWallet(std::move(wallet));
     }
 }
 } // namespace wallet

@@ -33,4 +33,4 @@ class I2PSessions(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    I2PSessions(__file__).main()
+    I2PSessions().main()

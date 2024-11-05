@@ -1,6 +1,6 @@
-# Support for Output Descriptors in Groestlcoin Core
+# Support for Output Descriptors in Bitcoin Core
 
-Since Groestlcoin Core v2.17.2, there is support for Output Descriptors. This is a
+Since Bitcoin Core v0.17, there is support for Output Descriptors. This is a
 simple language which can be used to describe collections of output scripts.
 Supporting RPCs are:
 - `scantxoutset` takes as input descriptors to scan for, and also reports
@@ -10,16 +10,16 @@ Supporting RPCs are:
 - `deriveaddresses` takes as input a descriptor and computes the corresponding
   addresses.
 - `listunspent` outputs a specialized descriptor for the reported unspent outputs.
-- `getaddressinfo` outputs a descriptor for solvable addresses (since v2.18).
+- `getaddressinfo` outputs a descriptor for solvable addresses (since v0.18).
 - `importmulti` takes as input descriptors to import into a legacy wallet
-  (since v2.18).
+  (since v0.18).
 - `generatetodescriptor` takes as input a descriptor and generates coins to it
-  (`regtest` only, since v2.19).
+  (`regtest` only, since v0.19).
 - `utxoupdatepsbt` takes as input descriptors to add information to the psbt
-  (since v2.19).
-- `createmultisig` and `addmultisigaddress` return descriptors as well (since v2.20).
+  (since v0.19).
+- `createmultisig` and `addmultisigaddress` return descriptors as well (since v0.20).
 - `importdescriptors` takes as input descriptors to import into a descriptor wallet
-  (since v2.21).
+  (since v0.21).
 - `listdescriptors` outputs descriptors imported into a descriptor wallet (since v22).
 - `scanblocks` takes as input descriptors to scan for in blocks and returns the
    relevant blockhashes (since v25).
@@ -63,7 +63,6 @@ Output descriptors currently support:
 - `wsh(sortedmulti(1,xpub661MyMwAqRbcFW31YEwpkMuc5THy2PSt5bDMsktWQcFF8syAmRUapSCGu8ED9W6oDMSgv6Zz8idoc4a6mr8BDzTJY47LJhkJ8UB7WEGuduB/1/0/*,xpub69H7F5d8KSRgmmdJg2KhpAK8SR3DjMwAdkxj3ZuxV27CprR9LgpeyGmXUbC6wb7ERfvrnKZjXoUmmDznezpbZb7ap6r1D3tgFxHmwMkQTPH/0/0/*))` describes a set of *1-of-2* P2WSH multisig outputs where one multisig key is the *1/0/`i`* child of the first specified xpub and the other multisig key is the *0/0/`i`* child of the second specified xpub, and `i` is any number in a configurable range (`0-1000` by default). The order of public keys in the resulting witnessScripts is determined by the lexicographic order of the public keys at that index.
 - `tr(c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5,{pk(fff97bd5755eeea420453a14355235d382f6472f8568a18b2f057a1460297556),pk(e493dbf1c10d80f3581e4904930b1404cc6c13900ee0758474fa94abe8c4cd13)})` describes a P2TR output with the `c6...` x-only pubkey as internal key, and two script paths.
 - `tr(c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5,sortedmulti_a(2,2f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4,5cbdf0646e5db4eaa398f365f2ea7a0e3d419b7e0330e39ce92bddedcac4f9bc))` describes a P2TR output with the `c6...` x-only pubkey as internal key, and a single `multi_a` script that needs 2 signatures with 2 specified x-only keys, which will be sorted lexicographically.
-- `wsh(sortedmulti(2,[6f53d49c/44h/1h/0h]tpubDDjsCRDQ9YzyaAq9rspCfq8RZFrWoBpYnLxK6sS2hS2yukqSczgcYiur8Scx4Hd5AZatxTuzMtJQJhchufv1FRFanLqUP7JHwusSSpfcEp2/0/*,[e6807791/44h/1h/0h]tpubDDAfvogaaAxaFJ6c15ht7Tq6ZmiqFYfrSmZsHu7tHXBgnjMZSHAeHSwhvjARNA6Qybon4ksPksjRbPDVp7yXA1KjTjSd5x18KHqbppnXP1s/0/*,[367c9cfa/44h/1h/0h]tpubDDtPnSgWYk8dDnaDwnof4ehcnjuL5VoUt1eW2MoAed1grPHuXPDnkX1fWMvXfcz3NqFxPbhqNZ3QBdYjLz2hABeM9Z2oqMR1Gt2HHYDoCgh/0/*))#av0kxgw0` describes a *2-of-3* multisig. For brevity, the internal "change" descriptor accompanying the above external "receiving" descriptor is not included here, but it typically differs only in the xpub derivation steps, ending in `/1/*` for change addresses.
 
 ## Reference
 
@@ -108,9 +107,9 @@ Descriptors consist of several types of expressions. The top level expression is
 - An open brace `{`, a `TREE` expression, a comma `,`, a `TREE` expression, and a closing brace `}`
 
 `ADDR` expressions are any type of supported address:
-- P2PKH addresses (base58, of the form `F...` for mainnet or `[nm]...` for testnet). Note that P2PKH addresses in descriptors cannot be used for P2PK outputs (use the `pk` function instead).
+- P2PKH addresses (base58, of the form `1...` for mainnet or `[nm]...` for testnet). Note that P2PKH addresses in descriptors cannot be used for P2PK outputs (use the `pk` function instead).
 - P2SH addresses (base58, of the form `3...` for mainnet or `2...` for testnet, defined in [BIP 13](https://github.com/bitcoin/bips/blob/master/bip-0013.mediawiki)).
-- Segwit addresses (bech32 and bech32m, of the form `grs1...` for mainnet or `tgrs1...` for testnet, defined in [BIP 173](https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki) and [BIP 350](https://github.com/bitcoin/bips/blob/master/bip-0350.mediawiki)).
+- Segwit addresses (bech32 and bech32m, of the form `bc1...` for mainnet or `tb1...` for testnet, defined in [BIP 173](https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki) and [BIP 350](https://github.com/bitcoin/bips/blob/master/bip-0350.mediawiki)).
 
 ## Explanation
 
@@ -158,7 +157,7 @@ wallets and PSBTs, as well as a signing flow, see [this functional test](/test/f
 Disclaimers: It is important to note that this example serves as a quick-start and is kept basic for readability. A downside of the approach
 outlined here is that each participant must maintain (and backup) two separate wallets: a signer and the corresponding multisig.
 It should also be noted that privacy best-practices are not "by default" here - participants should take care to only use the signer to sign
-transactions related to the multisig. Lastly, it is not recommended to use anything other than a Groestlcoin Core descriptor wallet to serve as your
+transactions related to the multisig. Lastly, it is not recommended to use anything other than a Bitcoin Core descriptor wallet to serve as your
 signer(s). Other wallets, whether hardware or software, likely impose additional checks and safeguards to prevent users from signing transactions that
 could lead to loss of funds, or are deemed security hazards. Conforming to various 3rd-party checks and verifications is not in the scope of this example.
 
@@ -168,9 +167,9 @@ The basic steps are:
      the participant's signer wallet. Avoid reusing this wallet for any purpose other than signing transactions from the
      corresponding multisig we are about to create. Hint: extract the wallet's xpubs using `listdescriptors` and pick the one from the
      `pkh` descriptor since it's least likely to be accidentally reused (legacy addresses)
-  2. Create a watch-only descriptor wallet (blank, private keys disabled). Now the multisig is created by importing the external and internal descriptors:
+  2. Create a watch-only descriptor wallet (blank, private keys disabled). Now the multisig is created by importing the two descriptors:
      `wsh(sortedmulti(<M>,XPUB1/0/*,XPUB2/0/*,…,XPUBN/0/*))` and `wsh(sortedmulti(<M>,XPUB1/1/*,XPUB2/1/*,…,XPUBN/1/*))`
-     (one descriptor w/ `0` for receiving addresses and another w/ `1` for change). Every participant does this. All key origin information (master key fingerprint and all derivation steps) should be included with xpubs for proper support of hardware devices / external signers
+     (one descriptor w/ `0` for receiving addresses and another w/ `1` for change). Every participant does this
   3. A receiving address is generated for the multisig. As a check to ensure step 2 was done correctly, every participant
      should verify they get the same addresses
   4. Funds are sent to the resulting address
@@ -244,23 +243,12 @@ Often it is useful to communicate a description of scripts along with the
 necessary private keys. For this reason, anywhere a public key or xpub is
 supported, a private key in WIF format or xprv may be provided instead.
 This is useful when private keys are necessary for hardened derivation
-steps, for signing transactions, or for dumping wallet descriptors
-including private key material.
-
-For example, after importing the following 2-of-3 multisig descriptor
-into a wallet, one could use `signrawtransactionwithwallet`
-to sign a transaction with the first key:
-```
-sh(multi(2,xprv.../84'/0'/0'/0/0,xpub1...,xpub2...))
-```
-Note how the first key is an xprv private key with a specific derivation path,
-while the other two are public keys.
-
+steps, or for dumping wallet descriptors including private key material.
 
 ### Compatibility with old wallets
 
 In order to easily represent the sets of scripts currently supported by
-existing Groestlcoin Core wallets, a convenience function `combo` is
+existing Bitcoin Core wallets, a convenience function `combo` is
 provided, which takes as input a public key, and describes a set of P2PK,
 P2PKH, P2WPKH, and P2SH-P2WPKH scripts for that key. In case the key is
 uncompressed, the set only includes P2PK and P2PKH scripts.
@@ -277,7 +265,7 @@ be detected in descriptors up to 501 characters, and up to 3 errors in longer
 ones. For larger numbers of errors, or other types of errors, there is a
 roughly 1 in a trillion chance of not detecting the errors.
 
-All RPCs in Groestlcoin Core will include the checksum in their output. Only
+All RPCs in Bitcoin Core will include the checksum in their output. Only
 certain RPCs require checksums on input, including `deriveaddresses` and
 `importmulti`. The checksum for a descriptor without one can be computed
 using the `getdescriptorinfo` RPC.

@@ -115,4 +115,4 @@ class MinimumChainWorkTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    MinimumChainWorkTest(__file__).main()
+    MinimumChainWorkTest().main()

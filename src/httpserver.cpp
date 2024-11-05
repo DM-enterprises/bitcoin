@@ -2,7 +2,9 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <config/bitcoin-config.h> // IWYU pragma: keep
+#if defined(HAVE_CONFIG_H)
+#include <config/bitcoin-config.h>
+#endif
 
 #include <httpserver.h>
 
@@ -26,7 +28,6 @@
 #include <deque>
 #include <memory>
 #include <optional>
-#include <span>
 #include <string>
 #include <unordered_map>
 
@@ -635,7 +636,7 @@ void HTTPRequest::WriteHeader(const std::string& hdr, const std::string& value)
  * Replies must be sent in the main loop in the main http thread,
  * this cannot be done from worker threads.
  */
-void HTTPRequest::WriteReply(int nStatus, std::span<const std::byte> reply)
+void HTTPRequest::WriteReply(int nStatus, const std::string& strReply)
 {
     assert(!replySent && req);
     if (m_interrupt) {
@@ -644,7 +645,7 @@ void HTTPRequest::WriteReply(int nStatus, std::span<const std::byte> reply)
     // Send event to main http thread to send reply message
     struct evbuffer* evb = evhttp_request_get_output_buffer(req);
     assert(evb);
-    evbuffer_add(evb, reply.data(), reply.size());
+    evbuffer_add(evb, strReply.data(), strReply.size());
     auto req_copy = req;
     HTTPEvent* ev = new HTTPEvent(eventBase, true, [req_copy, nStatus]{
         evhttp_send_reply(req_copy, nStatus, nullptr, nullptr);

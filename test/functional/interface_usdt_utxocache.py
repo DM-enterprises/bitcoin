@@ -407,4 +407,4 @@ class UTXOCacheTracepointTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    UTXOCacheTracepointTest(__file__).main()
+    UTXOCacheTracepointTest().main()

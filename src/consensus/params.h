@@ -73,7 +73,7 @@ struct BIP9Deployment {
  */
 struct Params {
     uint256 hashGenesisBlock;
-    // GRS int nSubsidyHalvingInterval;
+    int nSubsidyHalvingInterval;
     /**
      * Hashes of blocks that
      * - are known to be consensus valid, and
@@ -108,11 +108,6 @@ struct Params {
     /** Proof of work parameters */
     uint256 powLimit;
     bool fPowAllowMinDifficultyBlocks;
-    /**
-      * Enfore BIP94 timewarp attack mitigation. On testnet4 this also enforces
-      * the block storm mitigation.
-      */
-    bool enforce_BIP94;
     bool fPowNoRetargeting;
     int64_t nPowTargetSpacing;
     int64_t nPowTargetTimespan;

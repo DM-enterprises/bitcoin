@@ -101,4 +101,4 @@ class LoggingTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    LoggingTest(__file__).main()
+    LoggingTest().main()

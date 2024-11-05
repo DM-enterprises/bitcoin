@@ -69,4 +69,4 @@ class MessageCaptureTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    MessageCaptureTest(__file__).main()
+    MessageCaptureTest().main()

@@ -26,5 +26,6 @@ FUZZ_TARGET(random)
     (void)fast_random_context();
 
     std::vector<int64_t> integrals = ConsumeRandomLengthIntegralVector<int64_t>(fuzzed_data_provider);
+    Shuffle(integrals.begin(), integrals.end(), fast_random_context);
     std::shuffle(integrals.begin(), integrals.end(), fast_random_context);
 }

@@ -263,4 +263,4 @@ class MempoolPersistTest(BitcoinTestFramework):
 
 
 if __name__ == "__main__":
-    MempoolPersistTest(__file__).main()
+    MempoolPersistTest().main()

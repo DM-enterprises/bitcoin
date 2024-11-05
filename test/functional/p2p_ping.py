@@ -117,4 +117,4 @@ class PingPongTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    PingPongTest(__file__).main()
+    PingPongTest().main()

@@ -59,4 +59,4 @@ class HelpTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    HelpTest(__file__).main()
+    HelpTest().main()

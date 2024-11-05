@@ -1,8 +1,8 @@
 # NetBSD Build Guide
 
-**Updated for NetBSD [10.0](https://netbsd.org/releases/formal-10/NetBSD-10.0.html)**
+Updated for NetBSD [9.2](https://netbsd.org/releases/formal-9/NetBSD-9.2.html).
 
-This guide describes how to build groestlcoind, command-line utilities, and GUI on NetBSD.
+This guide describes how to build bitcoind, command-line utilities, and GUI on NetBSD.
 
 ## Preparation
 
@@ -12,45 +12,45 @@ Install the required dependencies the usual way you [install software on NetBSD]
 The example commands below use `pkgin`.
 
 ```bash
-pkgin install autoconf automake libtool pkg-config git gmake boost-headers libevent
+pkgin install autoconf automake libtool pkg-config git gmake boost libevent
 
 ```
 
 NetBSD currently ships with an older version of `gcc` than is needed to build. You should upgrade your `gcc` and then pass this new version to the configure script.
 
-For example, grab `gcc12`:
+For example, grab `gcc9`:
 ```
-pkgin install gcc12
+pkgin install gcc9
 ```
 
 Then, when configuring, pass the following:
 ```bash
 ./configure
     ...
-    CC="/usr/pkg/gcc12/bin/gcc" \
-    CXX="/usr/pkg/gcc12/bin/g++" \
+    CC="/usr/pkg/gcc9/bin/gcc" \
+    CXX="/usr/pkg/gcc9/bin/g++" \
     ...
 ```
 
 See [dependencies.md](dependencies.md) for a complete overview.
 
-### 2. Clone Groestlcoin Repo
+### 2. Clone Bitcoin Repo
 
-Clone the Groestlcoin Core repository to a directory. All build scripts and commands will run from this directory.
+Clone the Bitcoin Core repository to a directory. All build scripts and commands will run from this directory.
 
 ```bash
-git clone https://github.com/Groestlcoin/groestlcoin.git
+git clone https://github.com/bitcoin/bitcoin.git
 ```
 
 ### 3. Install Optional Dependencies
 
 #### Wallet Dependencies
 
-It is not necessary to build wallet functionality to run groestlcoind or the GUI.
+It is not necessary to build wallet functionality to run bitcoind or the GUI.
 
 ###### Descriptor Wallet Support
 
-`sqlite3` is required to enable support for [descriptor wallets](https://github.com/Groestlcoin/groestlcoin/blob/master/doc/descriptors.md).
+`sqlite3` is required to enable support for [descriptor wallets](https://github.com/bitcoin/bitcoin/blob/master/doc/descriptors.md).
 
 ```bash
 pkgin install sqlite3
@@ -58,18 +58,18 @@ pkgin install sqlite3
 
 ###### Legacy Wallet Support
 
-`db5` is required to enable support for legacy wallets.
+`db4` is required to enable support for legacy wallets.
 
 ```bash
-pkgin install db5
+pkgin install db4
 ```
 
 #### GUI Dependencies
 
-Groestlcoin Core includes a GUI built with the cross-platform Qt Framework. To compile the GUI, Qt 5 is required.
+Bitcoin Core includes a GUI built with the cross-platform Qt Framework. To compile the GUI, we need to install `qt5`.
 
 ```bash
-pkgin install qt5-qtbase qt5-qttools
+pkgin install qt5
 ```
 
 The GUI can encode addresses in a QR Code. To build in QR support for the GUI, install `qrencode`.
@@ -84,17 +84,17 @@ There is an included test suite that is useful for testing code changes when dev
 To run the test suite (recommended), you will need to have Python 3 installed:
 
 ```bash
-pkgin install python39
+pkgin install python37
 ```
 
-### Building Groestlcoin Core
+### Building Bitcoin Core
 
 **Note**: Use `gmake` (the non-GNU `make` will exit with an error).
 
 
 ### 1. Configuration
 
-There are many ways to configure Groestlcoin Core. Here is an example that
+There are many ways to configure Bitcoin Core. Here is an example that
 explicitly disables the wallet and GUI:
 
 ```bash

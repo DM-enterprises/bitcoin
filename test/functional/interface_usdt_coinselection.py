@@ -231,4 +231,4 @@ class CoinSelectionTracepointTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    CoinSelectionTracepointTest(__file__).main()
+    CoinSelectionTracepointTest().main()

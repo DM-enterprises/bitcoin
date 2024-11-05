@@ -225,4 +225,4 @@ class ExampleTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    ExampleTest(__file__).main()
+    ExampleTest().main()

@@ -46,4 +46,4 @@ class GetdataTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    GetdataTest(__file__).main()
+    GetdataTest().main()

@@ -2,14 +2,11 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <config/bitcoin-config.h> // IWYU pragma: keep
-
 #include <crypto/sha256.h>
 #include <crypto/common.h>
 
-#include <algorithm>
-#include <cassert>
-#include <cstring>
+#include <assert.h>
+#include <string.h>
 
 #if !defined(DISABLE_OPTIMIZED_SHA256)
 #include <compat/cpuid.h>
@@ -19,16 +16,18 @@
 #include <asm/hwcap.h>
 #endif
 
-#if defined(__APPLE__) && defined(ENABLE_ARM_SHANI)
+#if defined(MAC_OSX) && defined(ENABLE_ARM_SHANI)
 #include <sys/types.h>
 #include <sys/sysctl.h>
 #endif
 
 #if defined(__x86_64__) || defined(__amd64__) || defined(__i386__)
+#if defined(USE_ASM)
 namespace sha256_sse4
 {
 void Transform(uint32_t* s, const unsigned char* chunk, size_t blocks);
 }
+#endif
 #endif
 
 namespace sha256d64_sse41
@@ -571,7 +570,7 @@ bool SelfTest() {
 }
 
 #if !defined(DISABLE_OPTIMIZED_SHA256)
-#if (defined(__x86_64__) || defined(__amd64__) || defined(__i386__))
+#if defined(USE_ASM) && (defined(__x86_64__) || defined(__amd64__) || defined(__i386__))
 /** Check whether the OS has enabled AVX registers. */
 bool AVXEnabled()
 {
@@ -594,7 +593,7 @@ std::string SHA256AutoDetect(sha256_implementation::UseImplementation use_implem
     TransformD64_8way = nullptr;
 
 #if !defined(DISABLE_OPTIMIZED_SHA256)
-#if defined(HAVE_GETCPUID)
+#if defined(USE_ASM) && defined(HAVE_GETCPUID)
     bool have_sse4 = false;
     bool have_xsave = false;
     bool have_avx = false;
@@ -622,7 +621,7 @@ std::string SHA256AutoDetect(sha256_implementation::UseImplementation use_implem
         }
     }
 
-#if defined(ENABLE_SSE41) && defined(ENABLE_X86_SHANI)
+#if defined(ENABLE_X86_SHANI)
     if (have_x86_shani) {
         Transform = sha256_x86_shani::Transform;
         TransformD64 = TransformD64Wrapper<sha256_x86_shani::Transform>;
@@ -651,7 +650,7 @@ std::string SHA256AutoDetect(sha256_implementation::UseImplementation use_implem
         ret += ",avx2(8way)";
     }
 #endif
-#endif // defined(HAVE_GETCPUID)
+#endif // defined(USE_ASM) && defined(HAVE_GETCPUID)
 
 #if defined(ENABLE_ARM_SHANI)
     bool have_arm_shani = false;
@@ -669,7 +668,7 @@ std::string SHA256AutoDetect(sha256_implementation::UseImplementation use_implem
 #endif
 #endif
 
-#if defined(__APPLE__)
+#if defined(MAC_OSX)
         int val = 0;
         size_t len = sizeof(val);
         if (sysctlbyname("hw.optional.arm.FEAT_SHA256", &val, &len, nullptr, 0) == 0) {

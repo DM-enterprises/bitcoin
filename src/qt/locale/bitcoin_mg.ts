@@ -34,6 +34,14 @@
         <translation type="unfinished">Fidio ny adiresy handraisana vola</translation>
     </message>
     <message>
+        <source>Sending addresses</source>
+        <translation type="unfinished">Adiresy fandefasana</translation>
+    </message>
+    <message>
+        <source>Receiving addresses</source>
+        <translation type="unfinished">Adiresy fandraisana</translation>
+    </message>
+    <message>
         <source>These are your Bitcoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
         <translation type="unfinished">Ireto ny adiresy Bitcoin natokana handefasanao vola. Hamarino hatrany ny tarehimarika sy ny adiresy handefasana alohan'ny handefa vola.</translation>
     </message>
@@ -225,6 +233,14 @@
     <message>
         <source>&amp;Copy address</source>
         <translation type="unfinished">&amp;Adikao ny adiresy</translation>
+    </message>
+    <message>
+        <source>yes</source>
+        <translation type="unfinished">eny</translation>
+    </message>
+    <message>
+        <source>no</source>
+        <translation type="unfinished">tsia</translation>
     </message>
     </context>
 <context>

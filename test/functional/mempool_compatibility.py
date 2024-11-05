@@ -78,4 +78,4 @@ class MempoolCompatibilityTest(BitcoinTestFramework):
 
 
 if __name__ == "__main__":
-    MempoolCompatibilityTest(__file__).main()
+    MempoolCompatibilityTest().main()

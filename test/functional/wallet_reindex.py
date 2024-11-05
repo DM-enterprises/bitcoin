@@ -105,4 +105,4 @@ class WalletReindexTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    WalletReindexTest(__file__).main()
+    WalletReindexTest().main()

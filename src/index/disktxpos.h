@@ -20,7 +20,7 @@ struct CDiskTxPos : public FlatFilePos
     CDiskTxPos(const FlatFilePos &blockIn, unsigned int nTxOffsetIn) : FlatFilePos(blockIn.nFile, blockIn.nPos), nTxOffset(nTxOffsetIn) {
     }
 
-    CDiskTxPos() = default;
+    CDiskTxPos() {}
 };
 
 #endif // BITCOIN_INDEX_DISKTXPOS_H

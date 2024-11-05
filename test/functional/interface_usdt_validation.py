@@ -131,4 +131,4 @@ class ValidationTracepointTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    ValidationTracepointTest(__file__).main()
+    ValidationTracepointTest().main()

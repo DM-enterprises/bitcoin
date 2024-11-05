@@ -168,4 +168,4 @@ class NetTracepointTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    NetTracepointTest(__file__).main()
+    NetTracepointTest().main()

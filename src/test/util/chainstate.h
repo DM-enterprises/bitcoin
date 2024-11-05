@@ -56,7 +56,7 @@ CreateAndActivateUTXOSnapshot(
     //
     FILE* infile{fsbridge::fopen(snapshot_path, "rb")};
     AutoFile auto_infile{infile};
-    node::SnapshotMetadata metadata{node.chainman->GetParams().MessageStart()};
+    node::SnapshotMetadata metadata;
     auto_infile >> metadata;
 
     malleation(auto_infile, metadata);
@@ -91,16 +91,13 @@ CreateAndActivateUTXOSnapshot(
             // these blocks instead
             CBlockIndex *pindex = orig_tip;
             while (pindex && pindex != chain.m_chain.Tip()) {
-                // Remove all data and validity flags by just setting
-                // BLOCK_VALID_TREE. Also reset transaction counts and sequence
-                // ids that are set when blocks are received, to make test setup
-                // more realistic and satisfy consistency checks in
-                // CheckBlockIndex().
-                assert(pindex->IsValid(BlockStatus::BLOCK_VALID_TREE));
-                pindex->nStatus = BlockStatus::BLOCK_VALID_TREE;
-                pindex->nTx = 0;
-                pindex->m_chain_tx_count = 0;
-                pindex->nSequenceId = 0;
+                pindex->nStatus &= ~BLOCK_HAVE_DATA;
+                pindex->nStatus &= ~BLOCK_HAVE_UNDO;
+                // We have to set the ASSUMED_VALID flag, because otherwise it
+                // would not be possible to have a block index entry without HAVE_DATA
+                // and with nTx > 0 (since we aren't setting the pruned flag);
+                // see CheckBlockIndex().
+                pindex->nStatus |= BLOCK_ASSUMED_VALID;
                 pindex = pindex->pprev;
             }
         }
@@ -124,11 +121,11 @@ CreateAndActivateUTXOSnapshot(
         new_active.m_chain.SetTip(*(tip->pprev));
     }
 
-    auto res = node.chainman->ActivateSnapshot(auto_infile, metadata, in_memory_chainstate);
+    bool res = node.chainman->ActivateSnapshot(auto_infile, metadata, in_memory_chainstate);
 
     // Restore the old tip.
     new_active.m_chain.SetTip(*tip);
-    return !!res;
+    return res;
 }
 
 

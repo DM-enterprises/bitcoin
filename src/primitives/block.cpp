@@ -6,12 +6,11 @@
 #include <primitives/block.h>
 
 #include <hash.h>
-#include <groestlcoin.h>
 #include <tinyformat.h>
 
 uint256 CBlockHeader::GetHash() const
 {
-    return (XCoin::GroestlHashWriter{} << *this).GetHash(); // GRS
+    return (HashWriter{} << *this).GetHash();
 }
 
 std::string CBlock::ToString() const

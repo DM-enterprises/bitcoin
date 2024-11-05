@@ -21,8 +21,6 @@
 #include <system_error>
 #include <vector>
 
-using util::ToString;
-
 inline bool operator==(const common::SettingsValue& a, const common::SettingsValue& b)
 {
     return a.write() == b.write();

@@ -507,7 +507,8 @@ namespace detail {
 class FormatArg
 {
     public:
-        FormatArg() = default;
+        FormatArg()
+        { }
 
         template<typename T>
         explicit FormatArg(const T& value)

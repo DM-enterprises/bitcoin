@@ -109,4 +109,4 @@ class MempoolUnbroadcastTest(BitcoinTestFramework):
 
 
 if __name__ == "__main__":
-    MempoolUnbroadcastTest(__file__).main()
+    MempoolUnbroadcastTest().main()

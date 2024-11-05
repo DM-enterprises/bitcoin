@@ -17,10 +17,6 @@
 
 #include <optional>
 
-namespace node {
-enum class TransactionError;
-} // namespace node
-
 // Magic bytes
 static constexpr uint8_t PSBT_MAGIC_BYTES[5] = {'p', 's', 'b', 't', 0xff};
 
@@ -225,7 +221,7 @@ struct PSBTInput
     void FillSignatureData(SignatureData& sigdata) const;
     void FromSignatureData(const SignatureData& sigdata);
     void Merge(const PSBTInput& input);
-    PSBTInput() = default;
+    PSBTInput() {}
 
     template <typename Stream>
     inline void Serialize(Stream& s) const {
@@ -241,7 +237,7 @@ struct PSBTInput
 
         if (final_script_sig.empty() && final_script_witness.IsNull()) {
             // Write any partial signatures
-            for (const auto& sig_pair : partial_sigs) {
+            for (auto sig_pair : partial_sigs) {
                 SerializeToVector(s, CompactSizeWriter(PSBT_IN_PARTIAL_SIG), Span{sig_pair.second.first});
                 s << sig_pair.second.second;
             }
@@ -726,7 +722,7 @@ struct PSBTOutput
     void FillSignatureData(SignatureData& sigdata) const;
     void FromSignatureData(const SignatureData& sigdata);
     void Merge(const PSBTOutput& output);
-    PSBTOutput() = default;
+    PSBTOutput() {}
 
     template <typename Stream>
     inline void Serialize(Stream& s) const {
@@ -963,11 +959,11 @@ struct PartiallySignedTransaction
     uint32_t GetVersion() const;
 
     /** Merge psbt into this. The two psbts must have the same underlying CTransaction (i.e. the
-      * same actual Groestlcoin transaction.) Returns true if the merge succeeded, false otherwise. */
+      * same actual Bitcoin transaction.) Returns true if the merge succeeded, false otherwise. */
     [[nodiscard]] bool Merge(const PartiallySignedTransaction& psbt);
     bool AddInput(const CTxIn& txin, PSBTInput& psbtin);
     bool AddOutput(const CTxOut& txout, const PSBTOutput& psbtout);
-    PartiallySignedTransaction() = default;
+    PartiallySignedTransaction() {}
     explicit PartiallySignedTransaction(const CMutableTransaction& tx);
     /**
      * Finds the UTXO for a given input index
@@ -1177,13 +1173,8 @@ struct PartiallySignedTransaction
             inputs.push_back(input);
 
             // Make sure the non-witness utxo matches the outpoint
-            if (input.non_witness_utxo) {
-                if (input.non_witness_utxo->GetHash() != tx->vin[i].prevout.hash) {
-                    throw std::ios_base::failure("Non-witness UTXO does not match outpoint hash");
-                }
-                if (tx->vin[i].prevout.n >= input.non_witness_utxo->vout.size()) {
-                    throw std::ios_base::failure("Input specifies output index that does not exist");
-                }
+            if (input.non_witness_utxo && input.non_witness_utxo->GetHash() != tx->vin[i].prevout.hash) {
+                throw std::ios_base::failure("Non-witness UTXO does not match outpoint hash");
             }
             ++i;
         }
@@ -1272,9 +1263,9 @@ bool FinalizeAndExtractPSBT(PartiallySignedTransaction& psbtx, CMutableTransacti
  *
  * @param[out] out   the combined PSBT, if successful
  * @param[in]  psbtxs the PSBTs to combine
- * @return True if we successfully combined the transactions, false if they were not compatible
+ * @return error (OK if we successfully combined the transactions, other error if they were not compatible)
  */
-[[nodiscard]] bool CombinePSBTs(PartiallySignedTransaction& out, const std::vector<PartiallySignedTransaction>& psbtxs);
+[[nodiscard]] TransactionError CombinePSBTs(PartiallySignedTransaction& out, const std::vector<PartiallySignedTransaction>& psbtxs);
 
 //! Decode a base64ed PSBT into a PartiallySignedTransaction
 [[nodiscard]] bool DecodeBase64PSBT(PartiallySignedTransaction& decoded_psbt, const std::string& base64_psbt, std::string& error);

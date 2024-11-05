@@ -2,6 +2,10 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#if defined(HAVE_CONFIG_H)
+#include <config/bitcoin-config.h>
+#endif
+
 #include <qt/walletmodel.h>
 
 #include <qt/addresstablemodel.h>
@@ -19,7 +23,6 @@
 #include <interfaces/node.h>
 #include <key_io.h>
 #include <node/interface_ui.h>
-#include <node/types.h>
 #include <psbt.h>
 #include <util/translation.h>
 #include <wallet/coincontrol.h>
@@ -445,13 +448,6 @@ void WalletModel::unsubscribeFromCoreSignals()
 // WalletModel::UnlockContext implementation
 WalletModel::UnlockContext WalletModel::requestUnlock()
 {
-    // Bugs in earlier versions may have resulted in wallets with private keys disabled to become "encrypted"
-    // (encryption keys are present, but not actually doing anything).
-    // To avoid issues with such wallets, check if the wallet has private keys disabled, and if so, return a context
-    // that indicates the wallet is not encrypted.
-    if (m_wallet->privateKeysDisabled()) {
-        return UnlockContext(this, /*valid=*/true, /*relock=*/false);
-    }
     bool was_locked = getEncryptionStatus() == Locked;
     if(was_locked)
     {
@@ -530,13 +526,19 @@ bool WalletModel::bumpFee(uint256 hash, uint256& new_hash)
         return false;
     }
 
+    WalletModel::UnlockContext ctx(requestUnlock());
+    if(!ctx.isValid())
+    {
+        return false;
+    }
+
     // Short-circuit if we are returning a bumped transaction PSBT to clipboard
     if (retval == QMessageBox::Save) {
         // "Create Unsigned" clicked
         PartiallySignedTransaction psbtx(mtx);
         bool complete = false;
-        const auto err{wallet().fillPSBT(SIGHASH_ALL, /*sign=*/false, /*bip32derivs=*/true, nullptr, psbtx, complete)};
-        if (err || complete) {
+        const TransactionError err = wallet().fillPSBT(SIGHASH_ALL, /*sign=*/false, /*bip32derivs=*/true, nullptr, psbtx, complete);
+        if (err != TransactionError::OK || complete) {
             QMessageBox::critical(nullptr, tr("Fee bump error"), tr("Can't draft transaction."));
             return false;
         }
@@ -544,13 +546,8 @@ bool WalletModel::bumpFee(uint256 hash, uint256& new_hash)
         DataStream ssTx{};
         ssTx << psbtx;
         GUIUtil::setClipboard(EncodeBase64(ssTx.str()).c_str());
-        Q_EMIT message(tr("PSBT copied"), tr("Fee-bump PSBT copied to clipboard"), CClientUIInterface::MSG_INFORMATION | CClientUIInterface::MODAL);
+        Q_EMIT message(tr("PSBT copied"), tr("Copied to clipboard", "Fee-bump PSBT saved"), CClientUIInterface::MSG_INFORMATION);
         return true;
-    }
-
-    WalletModel::UnlockContext ctx(requestUnlock());
-    if (!ctx.isValid()) {
-        return false;
     }
 
     assert(!m_wallet->privateKeysDisabled() || wallet().hasExternalSigner());
@@ -569,17 +566,16 @@ bool WalletModel::bumpFee(uint256 hash, uint256& new_hash)
     return true;
 }
 
-void WalletModel::displayAddress(std::string sAddress) const
+bool WalletModel::displayAddress(std::string sAddress) const
 {
     CTxDestination dest = DecodeDestination(sAddress);
+    bool res = false;
     try {
-        util::Result<void> result = m_wallet->displayAddress(dest);
-        if (!result) {
-            QMessageBox::warning(nullptr, tr("Signer error"), QString::fromStdString(util::ErrorString(result).translated));
-        }
+        res = m_wallet->displayAddress(dest);
     } catch (const std::runtime_error& e) {
         QMessageBox::critical(nullptr, tr("Can't display address"), e.what());
     }
+    return res;
 }
 
 bool WalletModel::isWalletEnabled()
@@ -594,7 +590,8 @@ QString WalletModel::getWalletName() const
 
 QString WalletModel::getDisplayName() const
 {
-    return GUIUtil::WalletDisplayName(getWalletName());
+    const QString name = getWalletName();
+    return name.isEmpty() ? "["+tr("default wallet")+"]" : name;
 }
 
 bool WalletModel::isMultiwallet() const

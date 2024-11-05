@@ -239,7 +239,7 @@ bool CRollingBloomFilter::contains(Span<const unsigned char> vKey) const
 
 void CRollingBloomFilter::reset()
 {
-    nTweak = FastRandomContext().rand<unsigned int>();
+    nTweak = GetRand<unsigned int>();
     nEntriesThisGeneration = 0;
     nGeneration = 1;
     std::fill(data.begin(), data.end(), 0);

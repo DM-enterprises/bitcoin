@@ -51,7 +51,7 @@ fi
 time-machine() {
     # shellcheck disable=SC2086
     guix time-machine --url=https://git.savannah.gnu.org/git/guix.git \
-                      --commit=7bf1d7aeaffba15c4f680f93ae88fbef25427252 \
+                      --commit=d5ca4d4fd713a9f7e17e074a1e37dda99bbb09fc \
                       --cores="$JOBS" \
                       --keep-failed \
                       --fallback \
@@ -66,7 +66,7 @@ time-machine() {
 ################
 
 VERSION="${FORCE_VERSION:-$(git_head_version)}"
-DISTNAME="${DISTNAME:-groestlcoin-${VERSION}}"
+DISTNAME="${DISTNAME:-bitcoin-${VERSION}}"
 
 version_base_prefix="${PWD}/guix-build-"
 VERSION_BASE="${version_base_prefix}${VERSION}"  # TOP

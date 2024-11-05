@@ -40,4 +40,4 @@ class SendmanyTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    SendmanyTest(__file__).main()
+    SendmanyTest().main()

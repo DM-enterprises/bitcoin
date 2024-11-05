@@ -27,6 +27,7 @@
 #include <vector>
 
 namespace {
+const TestingSetup* g_setup;
 const Coin EMPTY_COIN{};
 
 bool operator==(const Coin& a, const Coin& b)
@@ -38,7 +39,8 @@ bool operator==(const Coin& a, const Coin& b)
 
 void initialize_coins_view()
 {
-    static const auto testing_setup = MakeNoLogFileContext<>();
+    static const auto testing_setup = MakeNoLogFileContext<const TestingSetup>();
+    g_setup = testing_setup.get();
 }
 
 FUZZ_TARGET(coins_view, .init = initialize_coins_view)
@@ -120,15 +122,12 @@ FUZZ_TARGET(coins_view, .init = initialize_coins_view)
                 random_mutable_transaction = *opt_mutable_transaction;
             },
             [&] {
-                CoinsCachePair sentinel{};
-                sentinel.second.SelfRef(sentinel);
-                size_t usage{0};
                 CCoinsMapMemoryResource resource;
                 CCoinsMap coins_map{0, SaltedOutpointHasher{/*deterministic=*/true}, CCoinsMap::key_equal{}, &resource};
                 LIMITED_WHILE(good_data && fuzzed_data_provider.ConsumeBool(), 10'000)
                 {
                     CCoinsCacheEntry coins_cache_entry;
-                    const auto flags{fuzzed_data_provider.ConsumeIntegral<uint8_t>()};
+                    coins_cache_entry.flags = fuzzed_data_provider.ConsumeIntegral<unsigned char>();
                     if (fuzzed_data_provider.ConsumeBool()) {
                         coins_cache_entry.coin = random_coin;
                     } else {
@@ -139,14 +138,11 @@ FUZZ_TARGET(coins_view, .init = initialize_coins_view)
                         }
                         coins_cache_entry.coin = *opt_coin;
                     }
-                    auto it{coins_map.emplace(random_out_point, std::move(coins_cache_entry)).first};
-                    it->second.AddFlags(flags, *it, sentinel);
-                    usage += it->second.coin.DynamicMemoryUsage();
+                    coins_map.emplace(random_out_point, std::move(coins_cache_entry));
                 }
                 bool expected_code_path = false;
                 try {
-                    auto cursor{CoinsViewCacheCursor(usage, sentinel, coins_map, /*will_erase=*/true)};
-                    coins_view_cache.BatchWrite(cursor, fuzzed_data_provider.ConsumeBool() ? ConsumeUInt256(fuzzed_data_provider) : coins_view_cache.GetBestBlock());
+                    coins_view_cache.BatchWrite(coins_map, fuzzed_data_provider.ConsumeBool() ? ConsumeUInt256(fuzzed_data_provider) : coins_view_cache.GetBestBlock());
                     expected_code_path = true;
                 } catch (const std::logic_error& e) {
                     if (e.what() == std::string{"FRESH flag misapplied to coin that exists in parent cache"}) {

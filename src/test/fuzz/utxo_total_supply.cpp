@@ -23,7 +23,7 @@ FUZZ_TARGET(utxo_total_supply)
     ChainTestingSetup test_setup{
         ChainType::REGTEST,
         {
-            .extra_args = {"-testactivationheight=bip34@2"},
+            "-testactivationheight=bip34@2",
         },
     };
     // Create chainstate

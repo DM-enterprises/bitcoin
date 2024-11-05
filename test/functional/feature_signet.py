@@ -82,4 +82,4 @@ class SignetBasicTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    SignetBasicTest(__file__).main()
+    SignetBasicTest().main()

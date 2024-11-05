@@ -277,7 +277,7 @@ void TransactionTableModel::updateAmountColumnTitle()
 void TransactionTableModel::updateTransaction(const QString &hash, int status, bool showTransaction)
 {
     uint256 updated;
-    updated.SetHexDeprecated(hash.toStdString());
+    updated.SetHex(hash.toStdString());
 
     priv->updateWallet(walletModel->wallet(), updated, status, showTransaction);
 }

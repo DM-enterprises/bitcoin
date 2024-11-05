@@ -125,4 +125,4 @@ class P2PBlocksOnly(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    P2PBlocksOnly(__file__).main()
+    P2PBlocksOnly().main()

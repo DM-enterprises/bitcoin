@@ -154,4 +154,4 @@ class GetBlockFromPeerTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    GetBlockFromPeerTest(__file__).main()
+    GetBlockFromPeerTest().main()

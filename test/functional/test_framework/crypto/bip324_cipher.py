@@ -25,8 +25,6 @@ def pad16(x):
 
 def aead_chacha20_poly1305_encrypt(key, nonce, aad, plaintext):
     """Encrypt a plaintext using ChaCha20Poly1305."""
-    if plaintext is None:
-        return None
     ret = bytearray()
     msg_len = len(plaintext)
     for i in range((msg_len + 63) // 64):
@@ -44,7 +42,7 @@ def aead_chacha20_poly1305_encrypt(key, nonce, aad, plaintext):
 
 def aead_chacha20_poly1305_decrypt(key, nonce, aad, ciphertext):
     """Decrypt a ChaCha20Poly1305 ciphertext."""
-    if ciphertext is None or len(ciphertext) < 16:
+    if len(ciphertext) < 16:
         return None
     msg_len = len(ciphertext) - 16
     poly1305 = Poly1305(chacha20_block(key, nonce, 0)[:32])
@@ -193,11 +191,11 @@ class TestFrameworkAEAD(unittest.TestCase):
             dec_aead = FSChaCha20Poly1305(key)
 
             for _ in range(msg_idx):
-                enc_aead.encrypt(b"", None)
+                enc_aead.encrypt(b"", b"")
             ciphertext = enc_aead.encrypt(aad, plain)
             self.assertEqual(hex_cipher, ciphertext.hex())
 
             for _ in range(msg_idx):
-                dec_aead.decrypt(b"", None)
+                dec_aead.decrypt(b"", bytes(16))
             plaintext = dec_aead.decrypt(aad, ciphertext)
             self.assertEqual(plain, plaintext)

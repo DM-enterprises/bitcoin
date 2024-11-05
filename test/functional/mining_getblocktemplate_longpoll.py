@@ -73,4 +73,4 @@ class GetBlockTemplateLPTest(BitcoinTestFramework):
         assert not thr.is_alive()
 
 if __name__ == '__main__':
-    GetBlockTemplateLPTest(__file__).main()
+    GetBlockTemplateLPTest().main()

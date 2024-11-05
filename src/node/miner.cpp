@@ -20,12 +20,11 @@
 #include <policy/policy.h>
 #include <pow.h>
 #include <primitives/transaction.h>
+#include <timedata.h>
 #include <util/moneystr.h>
-#include <util/time.h>
 #include <validation.h>
 
 #include <algorithm>
-#include <memory>
 #include <utility>
 
 namespace node {
@@ -33,14 +32,6 @@ int64_t UpdateTime(CBlockHeader* pblock, const Consensus::Params& consensusParam
 {
     int64_t nOldTime = pblock->nTime;
     int64_t nNewTime{std::max<int64_t>(pindexPrev->GetMedianTimePast() + 1, TicksSinceEpoch<std::chrono::seconds>(NodeClock::now()))};
-
-    if (consensusParams.enforce_BIP94) {
-        // Height of block to be mined.
-        const int height{pindexPrev->nHeight + 1};
-        if (height % consensusParams.DifficultyAdjustmentInterval() == 0) {
-            nNewTime = std::max<int64_t>(nNewTime, pindexPrev->GetBlockTime() - MAX_TIMEWARP);
-        }
-    }
 
     if (nOldTime < nNewTime) {
         pblock->nTime = nNewTime;
@@ -68,17 +59,14 @@ void RegenerateCommitments(CBlock& block, ChainstateManager& chainman)
 
 static BlockAssembler::Options ClampOptions(BlockAssembler::Options options)
 {
-    Assert(options.coinbase_max_additional_weight <= DEFAULT_BLOCK_MAX_WEIGHT);
-    Assert(options.coinbase_output_max_additional_sigops <= MAX_BLOCK_SIGOPS_COST);
-    // Limit weight to between coinbase_max_additional_weight and DEFAULT_BLOCK_MAX_WEIGHT for sanity:
-    // Coinbase (reserved) outputs can safely exceed -blockmaxweight, but the rest of the block template will be empty.
-    options.nBlockMaxWeight = std::clamp<size_t>(options.nBlockMaxWeight, options.coinbase_max_additional_weight, DEFAULT_BLOCK_MAX_WEIGHT);
+    // Limit weight to between 4K and DEFAULT_BLOCK_MAX_WEIGHT for sanity:
+    options.nBlockMaxWeight = std::clamp<size_t>(options.nBlockMaxWeight, 4000, DEFAULT_BLOCK_MAX_WEIGHT);
     return options;
 }
 
 BlockAssembler::BlockAssembler(Chainstate& chainstate, const CTxMemPool* mempool, const Options& options)
     : chainparams{chainstate.m_chainman.GetParams()},
-      m_mempool{options.use_mempool ? mempool : nullptr},
+      m_mempool{mempool},
       m_chainstate{chainstate},
       m_options{ClampOptions(options)}
 {
@@ -91,16 +79,24 @@ void ApplyArgsManOptions(const ArgsManager& args, BlockAssembler::Options& optio
     if (const auto blockmintxfee{args.GetArg("-blockmintxfee")}) {
         if (const auto parsed{ParseMoney(*blockmintxfee)}) options.blockMinFeeRate = CFeeRate{*parsed};
     }
-    options.print_modified_fee = args.GetBoolArg("-printpriority", options.print_modified_fee);
 }
+static BlockAssembler::Options ConfiguredOptions()
+{
+    BlockAssembler::Options options;
+    ApplyArgsManOptions(gArgs, options);
+    return options;
+}
+
+BlockAssembler::BlockAssembler(Chainstate& chainstate, const CTxMemPool* mempool)
+    : BlockAssembler(chainstate, mempool, ConfiguredOptions()) {}
 
 void BlockAssembler::resetBlock()
 {
     inBlock.clear();
 
     // Reserve space for coinbase tx
-    nBlockWeight = m_options.coinbase_max_additional_weight;
-    nBlockSigOpsCost = m_options.coinbase_output_max_additional_sigops;
+    nBlockWeight = 4000;
+    nBlockSigOpsCost = 400;
 
     // These counters do not include coinbase tx
     nBlockTx = 0;
@@ -235,7 +231,8 @@ void BlockAssembler::AddToBlock(CTxMemPool::txiter iter)
     nFees += iter->GetFee();
     inBlock.insert(iter->GetSharedTx()->GetHash());
 
-    if (m_options.print_modified_fee) {
+    bool fPrintPriority = gArgs.GetBoolArg("-printpriority", DEFAULT_PRINTPRIORITY);
+    if (fPrintPriority) {
         LogPrintf("fee rate %s txid %s\n",
                   CFeeRate(iter->GetModifiedFee(), iter->GetTxSize()).ToString(),
                   iter->GetTx().GetHash().ToString());
@@ -391,7 +388,7 @@ void BlockAssembler::addPackageTxs(const CTxMemPool& mempool, int& nPackagesSele
             ++nConsecutiveFailed;
 
             if (nConsecutiveFailed > MAX_CONSECUTIVE_FAILURES && nBlockWeight >
-                    m_options.nBlockMaxWeight - m_options.coinbase_max_additional_weight) {
+                    m_options.nBlockMaxWeight - 4000) {
                 // Give up if we're close to full and haven't succeeded in a while
                 break;
             }

@@ -4,6 +4,9 @@
 
 #include <bench/bench.h>
 #include <key.h>
+#if defined(HAVE_CONSENSUS_LIB)
+#include <script/bitcoinconsensus.h>
+#endif
 #include <script/script.h>
 #include <script/interpreter.h>
 #include <streams.h>
@@ -15,7 +18,7 @@
 // modified to measure performance of other types of scripts.
 static void VerifyScriptBench(benchmark::Bench& bench)
 {
-    ECC_Context ecc_context{};
+    ECC_Start();
 
     const uint32_t flags{SCRIPT_VERIFY_WITNESS | SCRIPT_VERIFY_P2SH};
     const int witnessversion = 0;
@@ -56,7 +59,19 @@ static void VerifyScriptBench(benchmark::Bench& bench)
             &err);
         assert(err == SCRIPT_ERR_OK);
         assert(success);
+
+#if defined(HAVE_CONSENSUS_LIB)
+        DataStream stream;
+        stream << TX_WITH_WITNESS(txSpend);
+        int csuccess = bitcoinconsensus_verify_script_with_amount(
+            txCredit.vout[0].scriptPubKey.data(),
+            txCredit.vout[0].scriptPubKey.size(),
+            txCredit.vout[0].nValue,
+            (const unsigned char*)stream.data(), stream.size(), 0, flags, nullptr);
+        assert(csuccess == 1);
+#endif
     });
+    ECC_Stop();
 }
 
 static void VerifyNestedIfScript(benchmark::Bench& bench)

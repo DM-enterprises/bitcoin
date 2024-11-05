@@ -75,7 +75,6 @@ class AddrReceiver(P2PInterface):
         return self.num_ipv4_received != 0
 
     def on_version(self, message):
-        self.send_version()
         self.send_message(msg_verack())
         if (self.send_getaddr):
             self.send_message(msg_getaddr())
@@ -142,8 +141,7 @@ class AddrTest(BitcoinTestFramework):
 
         msg = self.setup_addr_msg(1010)
         with self.nodes[0].assert_debug_log(['addr message size = 1010']):
-            addr_source.send_message(msg)
-            addr_source.wait_for_disconnect()
+            addr_source.send_and_ping(msg)
 
         self.nodes[0].disconnect_p2ps()
 
@@ -441,4 +439,4 @@ class AddrTest(BitcoinTestFramework):
 
 
 if __name__ == '__main__':
-    AddrTest(__file__).main()
+    AddrTest().main()
